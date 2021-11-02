@@ -18,5 +18,5 @@ export default {
      * @see {@link https://www.w3.org/TR/vocab-ssn/}
      */
     sosa: 'http://www.w3.org/ns/sosa/',
-    openhps: 'http://openhps.org/owl/',
+    openhps: 'http://openhps.org/terms#',
 } as Namespaces;

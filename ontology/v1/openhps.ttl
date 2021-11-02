@@ -1,124 +1,190 @@
-@prefix : <http://openhps.org/owl/> .
+@prefix : <http://openhps.org/terms#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://openhps.org/owl/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix openhps: <http://openhps.org/terms#> .
+@base <http://openhps.org/terms#> .
 
-<http://openhps.org/owl/> rdf:type owl:Ontology ;
-                           owl:versionIRI <http://openhps.org/owl/v1/> .
+<http://openhps.org/terms#> rdf:type owl:Ontology ;
+                             owl:versionIRI <http://openhps.org/terms/v1#> ;
+                             dcterms:abstract "OpenHPS is an open source hybrid positioning system to help developers fuse various positioning technologies and algorithms. The system offers a modular data processing framework with each modules ranging from computer vision to common algorithms such as fingerprinting or data persistence of sampled data. The framework is maintained and used by the Web and Information Systems Engineering Lab at the Vrije Universiteit Brussel."@en ;
+                             dcterms:contributor "Beat Signer"@de ,
+                                                 "Maxim Van de Wynckel"@nl ;
+                             dcterms:creator "Maxim Van de Wynckel"@nl ;
+                             dcterms:license <https://www.apache.org/licenses/LICENSE-2.0.txt> ;
+                             dcterms:modified "2021-11-02"@en ;
+                             dcterms:title "OpenHPS Terminology"@en .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/terms/abstract
+dcterms:abstract rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/contributor
+dcterms:contributor rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+dcterms:creator rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/license
+dcterms:license rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/modified
+dcterms:modified rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/title
+dcterms:title rdf:type owl:AnnotationProperty .
+
 
 #################################################################
 #    Object Properties
 #################################################################
 
-###  http://openhps.org/owl/accuracy
-:accuracy rdf:type owl:ObjectProperty ;
-          rdfs:comment "Defines the accuracy of an observation." .
+###  http://openhps.org/terms#accuracy
+openhps:accuracy rdf:type owl:ObjectProperty ;
+                 rdfs:range openhps:Accuracy ;
+                 rdfs:comment "Defines the accuracy of an observation." .
 
 
-###  http://openhps.org/owl/DataObject/position
-<http://openhps.org/owl/DataObject/position> rdf:type owl:ObjectProperty ;
-                                             rdfs:domain :DataObject ;
-                                             rdfs:range :Position ;
-                                             rdfs:comment "The position of an object." .
+###  http://openhps.org/terms#includesObject
+openhps:includesObject rdf:type owl:ObjectProperty ;
+                       rdfs:domain openhps:DataFrame ;
+                       rdfs:range openhps:DataObject .
+
+
+###  http://openhps.org/terms#position
+openhps:position rdf:type owl:ObjectProperty ;
+                 rdfs:domain openhps:DataObject ;
+                 rdfs:range openhps:Position ;
+                 rdfs:comment "The position of an object." .
+
+
+###  http://openhps.org/terms#relativeTo
+openhps:relativeTo rdf:type owl:ObjectProperty ;
+                   rdfs:domain openhps:Position ;
+                   rdfs:range openhps:DataObject ;
+                   rdfs:comment "A position relative to an object or space." .
 
 
 #################################################################
 #    Data properties
 #################################################################
 
-###  http://openhps.org/owl/EulerOrientation/pitch
-<http://openhps.org/owl/EulerOrientation/pitch> rdf:type owl:DatatypeProperty ;
-                                                rdfs:range xsd:decimal .
+###  http://openhps.org/terms#pitch
+openhps:pitch rdf:type owl:DatatypeProperty ;
+              rdfs:domain openhps:EulerOrientation ;
+              rdfs:range xsd:decimal .
 
 
-###  http://openhps.org/owl/EulerOrientation/roll
-<http://openhps.org/owl/EulerOrientation/roll> rdf:type owl:DatatypeProperty ;
-                                               rdfs:range xsd:decimal .
+###  http://openhps.org/terms#roll
+openhps:roll rdf:type owl:DatatypeProperty ;
+             rdfs:domain openhps:EulerOrientation ;
+             rdfs:range xsd:decimal .
 
 
-###  http://openhps.org/owl/EulerOrientation/yaw
-<http://openhps.org/owl/EulerOrientation/yaw> rdf:type owl:DatatypeProperty ;
-                                              rdfs:range xsd:decimal .
+###  http://openhps.org/terms#yaw
+openhps:yaw rdf:type owl:DatatypeProperty ;
+            rdfs:domain openhps:EulerOrientation ;
+            rdfs:range xsd:decimal .
 
 
 #################################################################
 #    Classes
 #################################################################
 
-###  http://openhps.org/owl/Absolute2DPosition
-:Absolute2DPosition rdf:type owl:Class ;
-                    rdfs:subClassOf :AbsolutePosition ;
-                    rdfs:comment "Defines the absolute position of an object represented as a 2D point." ;
-                    rdfs:label "Absolute2DPosition" .
+###  http://openhps.org/terms#Absolute2DPosition
+openhps:Absolute2DPosition rdf:type owl:Class ;
+                           rdfs:subClassOf openhps:AbsolutePosition ;
+                           rdfs:comment "Defines the absolute position of an object represented as a 2D point." ;
+                           rdfs:label "Absolute 2D position" .
 
 
-###  http://openhps.org/owl/Absolute3DPosition
-:Absolute3DPosition rdf:type owl:Class ;
-                    rdfs:subClassOf :AbsolutePosition ;
-                    rdfs:comment "Defines the absolute position of an object represented as a 3D point." ;
-                    rdfs:label "Absolute3DPosition" .
+###  http://openhps.org/terms#Absolute3DPosition
+openhps:Absolute3DPosition rdf:type owl:Class ;
+                           rdfs:subClassOf openhps:AbsolutePosition ;
+                           rdfs:comment "Defines the absolute position of an object represented as a 3D point." ;
+                           rdfs:label "Absolute 3D position" .
 
 
-###  http://openhps.org/owl/AbsolutePosition
-:AbsolutePosition rdf:type owl:Class ;
-                  rdfs:subClassOf :Position ;
-                  rdfs:comment "Defines the absolute position of an object." .
+###  http://openhps.org/terms#AbsolutePosition
+openhps:AbsolutePosition rdf:type owl:Class ;
+                         rdfs:subClassOf openhps:Position ;
+                         rdfs:comment "Defines the absolute position of an object." ;
+                         rdfs:label "Absolute position" .
 
 
-###  http://openhps.org/owl/Accuracy
-:Accuracy rdf:type owl:Class .
+###  http://openhps.org/terms#Accuracy
+openhps:Accuracy rdf:type owl:Class ;
+                 rdfs:label "Accuracy" .
 
 
-###  http://openhps.org/owl/AxisAngleOrientation
-:AxisAngleOrientation rdf:type owl:Class ;
-                      rdfs:subClassOf :Orientation .
+###  http://openhps.org/terms#AxisAngleOrientation
+openhps:AxisAngleOrientation rdf:type owl:Class ;
+                             rdfs:subClassOf openhps:Orientation ;
+                             rdfs:label "Axis angle orientation" .
 
 
-###  http://openhps.org/owl/DataFrame
-:DataFrame rdf:type owl:Class .
+###  http://openhps.org/terms#DataFrame
+openhps:DataFrame rdf:type owl:Class ;
+                  rdfs:comment "A frame containing sensor data generated by a specific data object source." ;
+                  rdfs:label "Data frame" .
 
 
-###  http://openhps.org/owl/DataObject
-:DataObject rdf:type owl:Class .
+###  http://openhps.org/terms#DataObject
+openhps:DataObject rdf:type owl:Class ;
+                   rdfs:comment "An object or person relevant for the positioning of other data objects." ;
+                   rdfs:label "Data object" .
 
 
-###  http://openhps.org/owl/EulerOrientation
-:EulerOrientation rdf:type owl:Class ;
-                  rdfs:subClassOf :Orientation .
+###  http://openhps.org/terms#EulerOrientation
+openhps:EulerOrientation rdf:type owl:Class ;
+                         rdfs:subClassOf openhps:Orientation ;
+                         rdfs:label "Euler orientation" .
 
 
-###  http://openhps.org/owl/GeographicalPosition
-:GeographicalPosition rdf:type owl:Class ;
-                      rdfs:subClassOf :AbsolutePosition ;
-                      rdfs:comment "Defines the absolute position of an object represented as a geographical point." ;
-                      rdfs:label "GeographicalPosition" .
+###  http://openhps.org/terms#GeographicalPosition
+openhps:GeographicalPosition rdf:type owl:Class ;
+                             rdfs:subClassOf openhps:AbsolutePosition ;
+                             rdfs:comment "Defines the absolute position of an object represented as a geographical point." ;
+                             rdfs:label "Geographical position" .
 
 
-###  http://openhps.org/owl/Orientation
-:Orientation rdf:type owl:Class ;
-             rdfs:comment "Defines the orientation of an object." .
+###  http://openhps.org/terms#Orientation
+openhps:Orientation rdf:type owl:Class ;
+                    rdfs:comment "Defines the orientation of an object." .
 
 
-###  http://openhps.org/owl/Position
-:Position rdf:type owl:Class .
+###  http://openhps.org/terms#Position
+openhps:Position rdf:type owl:Class ;
+                 rdfs:label "Position" .
 
 
-###  http://openhps.org/owl/QuaternionOrientation
-:QuaternionOrientation rdf:type owl:Class ;
-                       rdfs:subClassOf :Orientation .
+###  http://openhps.org/terms#QuaternionOrientation
+openhps:QuaternionOrientation rdf:type owl:Class ;
+                              rdfs:subClassOf openhps:Orientation ;
+                              rdfs:label "Quaternion orientation" .
 
 
-###  http://openhps.org/owl/ReferenceSpace
-:ReferenceSpace rdf:type owl:Class ;
-                rdfs:subClassOf :DataObject .
+###  http://openhps.org/terms#ReferenceSpace
+openhps:ReferenceSpace rdf:type owl:Class ;
+                       rdfs:subClassOf openhps:DataObject ;
+                       rdfs:label "Reference space" .
 
 
-###  http://openhps.org/owl/RelativePosition
-:RelativePosition rdf:type owl:Class ;
-                  rdfs:subClassOf :Position .
+###  http://openhps.org/terms#RelativePosition
+openhps:RelativePosition rdf:type owl:Class ;
+                         rdfs:subClassOf openhps:Position ;
+                         rdfs:label "Relative position" .
 
 
 ###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

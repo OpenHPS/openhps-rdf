@@ -6,6 +6,7 @@
 import { generateFiles } from './generateFiles';
 import { Mirrors } from './generateNamespaceTs';
 import namespacesToGenerate from '../namespaces';
+import * as path from 'path';
 
 const mirrors: Mirrors = {
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
@@ -15,7 +16,7 @@ const mirrors: Mirrors = {
     'http://www.ontology-of-units-of-measure.org/resource/om-2-ucum':
         'https://raw.githubusercontent.com/HajoRijgersberg/OM/master/om-2-ucum.ttl',
     'http://purl.org/iot/vocab/m3-lite#': 'http://smart-ics.ee.surrey.ac.uk/ontology/m3-lite.owl#',
-    'http://openhps.org/owl/': 'http://openhps.org/owl/v1/ontology.ttl',
+    'http://openhps.org/terms#': 'https://raw.githubusercontent.com/OpenHPS/openhps-rdf/master/ontology/v1/openhps.ttl',
 };
 
 generateFiles(namespacesToGenerate, { mirrors });
