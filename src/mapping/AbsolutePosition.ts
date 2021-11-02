@@ -12,6 +12,7 @@ createRDFSerializable(AbsolutePosition, function (baseUri?) {
     })
         .addIri(rdf.type, openhps.AbsolutePosition)
         .addIri(rdf.type, sosa.Observation)
+        // .addIri(m3lite.unit, m3lite.Metre)
         .addDatetime(dct.created, new Date(this.timestamp))
         .addDatetime(dqm.timeOfAssessment, new Date(this.timestamp));
     if (this.orientation) {

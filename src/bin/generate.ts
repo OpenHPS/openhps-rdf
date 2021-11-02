@@ -16,6 +16,7 @@ const mirrors: Mirrors = {
         'https://raw.githubusercontent.com/HajoRijgersberg/OM/master/om-2-ucum.ttl',
     'http://purl.org/iot/vocab/m3-lite#': 'http://smart-ics.ee.surrey.ac.uk/ontology/m3-lite.owl#',
     'http://openhps.org/terms#': 'https://cdn.jsdelivr.net/gh/OpenHPS/openhps-rdf@master/ontology/v1/openhps.ttl',
+    'http://purl.oclc.org/NET/ssnx/qu/qu#': 'https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu.owl'
 };
 
 generateFiles(namespacesToGenerate, { mirrors });

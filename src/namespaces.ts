@@ -18,5 +18,11 @@ export default {
      * @see {@link https://www.w3.org/TR/vocab-ssn/}
      */
     sosa: 'http://www.w3.org/ns/sosa/',
+    /**
+     * Library for Quantity Kinds and Units: schema, based on QUDV model
+     *
+     * @see {@link https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu}
+     */
+    qu: 'http://purl.oclc.org/NET/ssnx/qu/qu#',
     openhps: 'http://openhps.org/terms#',
 } as Namespaces;
