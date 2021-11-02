@@ -33,7 +33,7 @@ jobs:
       - name: Publish Ontology Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: web
+          name: ontology
           path: |
             ontology/*
       - name: Publish Documentation
