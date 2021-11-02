@@ -29,7 +29,7 @@
   "scripts": {
     "test": "mocha --config test/.mocharc.json",
     "cover": "nyc mocha --config test/.mocharc.json && nyc report --reporter=cobertura",
-    "lint": "eslint src/** --ignore-pattern vocab --ignore-pattern bin",
+    "lint": "eslint src/ --ignore-pattern vocab --ignore-pattern bin",
     "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
     "build": "npm run clean && npm run build:declarations && npm-run-all --parallel build:esm build:cjs build:typedoc && npm run build:webpack",
     "build:declarations": "ts-node ./src/bin/generate.ts && tsc --declaration --emitDeclarationOnly --outdir dist/types",
