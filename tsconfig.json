@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "node12",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "skipLibCheck": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outDir": "./dist/cjs",
+        "declaration": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+    },
+    "include": [
+        "src/"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/vocab/*",
+    ]
+}
