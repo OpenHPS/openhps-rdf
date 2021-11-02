@@ -10,8 +10,8 @@ createRDFSerializable(AbsolutePosition, function (baseUri?) {
     const builder = RDFBuilder.create({
         url: this.uri || baseUri ? `${baseUri}${this.timestamp.toString()}` : undefined,
     })
-        .addIri(rdf.type, sosa.Observation)
         .addIri(rdf.type, openhps.AbsolutePosition)
+        .addIri(rdf.type, sosa.Observation)
         .addDatetime(dct.created, new Date(this.timestamp))
         .addDatetime(dqm.timeOfAssessment, new Date(this.timestamp));
     if (this.orientation) {

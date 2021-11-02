@@ -1,8 +1,8 @@
-import { AngleUnit, DataObject, GeographicalPosition, Orientation } from '@openhps/core';
+import { AngleUnit, DataObject, DataFrame, GeographicalPosition, Orientation } from '@openhps/core';
 import 'mocha';
 import { RDFDataset } from '../../src';
 
-describe('DataObject', () => {
+describe('DataFrame', () => {
 
     it('should convert to a Thing', async () => {
         const object = new DataObject("me");
@@ -16,8 +16,9 @@ describe('DataObject', () => {
         });
         object.position = position;
         const dataset = new RDFDataset("http://maximvdw.solidweb.org/public/position.ttl#");
-        const individual = object.toThing("http://maximvdw.solidweb.org/profile/card");
-        dataset.addThing(individual);
+        const frame = new DataFrame(object)
+        dataset.addThing(frame.toThing("http://maximvdw.solidweb.org/profile/card#"));
+        console.log(await dataset.write());
     });
 
 });

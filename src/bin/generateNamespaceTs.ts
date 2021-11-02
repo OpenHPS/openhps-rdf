@@ -33,7 +33,7 @@ export async function generateNamespaceTs(
 
     const schemaLocation = options.mirrors[namespace] || namespace;
     const schemaDoc = await fetchWithRetries(schemaLocation);
-
+    
     const entities = Object.values(entityTypes).reduce<TripleSubject[]>((entitiesSoFar, entityType) => {
         const entitiesOfThisType = schemaDoc.getSubjectsOfType(entityType);
         const newEntitiesOfThisType = entitiesOfThisType.filter((entityOfThisType) => {
