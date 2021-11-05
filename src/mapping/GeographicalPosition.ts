@@ -1,5 +1,5 @@
 import { SerializableObject, GeographicalPosition, SerializableMember } from '@openhps/core';
-import { geo, m3lite } from '../vocab';
+import { geo, m3lite, schema } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -8,12 +8,12 @@ SerializableObject({
 })(GeographicalPosition);
 SerializableMember({
     rdf: {
-        predicate: geo.lat
+        predicate: schema.latitude
     }
 })(GeographicalPosition.prototype, "latitude");
 SerializableMember({
     rdf: {
-        predicate: geo.long
+        predicate: schema.longitude
     }
 })(GeographicalPosition.prototype, "longitude");
 SerializableMember({

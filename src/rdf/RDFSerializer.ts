@@ -40,6 +40,7 @@ export class RDFSerializer extends DataSerializer {
                 this.serializableRDFTypes.set(typeIri, results);
             });
         }
+        console.log(this.serializableRDFTypes)
     }
 
    /**
