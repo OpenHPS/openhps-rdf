@@ -1,2 +1,2 @@
-// export * from './RDFDataset';
 export * from './RDFSerializer';
+export * from './types';

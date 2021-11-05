@@ -1,3 +1,4 @@
 export * from './rdf';
-import './decorators';
+export * from './decorators';
 export * from './vocab';
+import './mapping';

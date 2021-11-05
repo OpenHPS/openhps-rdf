@@ -2,17 +2,29 @@ import { SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs } from '../../src';
-import { xsd } from '../../src/decorators/SerializableMember';
+import { xsd } from '../../src/decorators';
 
 describe('RDFSerializer', () => {
-    describe('registration', () => {
-
-    });
 
     describe('serialization', () => {
         @SerializableObject({
             rdf: {
-                type: geo.Point
+                types: [schema.Game]
+            }
+        })
+        class InnerObject {
+            @SerializableMember({
+                rdf: {
+                    predicate: rdfs.label,
+                    language: "en"
+                }
+            })
+            name: string;
+        }
+
+        @SerializableObject({
+            rdf: {
+                types: [geo.Point]
             }
         })
         class SomeLocation {
@@ -50,6 +62,13 @@ describe('RDFSerializer', () => {
                 }
             })
             labelNL: string;
+
+            @SerializableMember({
+                rdf: {
+                    predicate: schema.game,
+                }
+            })
+            inner: InnerObject;
         }
 
         it('should not serialize an unconfigured member', () => {
@@ -57,7 +76,7 @@ describe('RDFSerializer', () => {
             obj.random = "test";
             const serialized = RDFSerializer.serialize(obj);
             expect(serialized['predicates']).to.not.be.undefined;
-            expect(Object.keys(serialized['predicates']).length).to.equal(0);
+            expect(Object.keys(serialized['predicates']).length).to.equal(1);
         });
 
         it('should serialize single predicates per property', () => {
@@ -84,9 +103,35 @@ describe('RDFSerializer', () => {
             obj.labelEN = "Some location";
             obj.labelNL = "Een lokatie";
             const serialized = RDFSerializer.serialize(obj);
-            console.log(JSON.stringify(serialized, undefined, 2));
             expect(serialized['predicates']).to.not.be.undefined;
             expect(serialized['predicates'][rdfs.label]).to.not.be.undefined;
+            expect(serialized['predicates'][rdfs.label].length).to.equal(2);
+            expect(serialized['predicates'][rdfs.label][0].value).to.equal(obj.labelEN);
+            expect(serialized['predicates'][rdfs.label][1].value).to.equal(obj.labelNL);
+        });
+
+        it('should serialize anonymous inner objects as blank nodes', () => {
+            const obj = new SomeLocation();
+            obj.inner = new InnerObject();
+            obj.inner.name = "Game";
+            const serialized = RDFSerializer.serialize(obj);
+            // console.log(JSON.stringify(serialized, undefined, 2))
+            // console.log(RDFSerializer.stringify(serialized))
+            expect(serialized['predicates']).to.not.be.undefined;
+            expect(serialized['predicates'][schema.game]).to.not.be.undefined;
+            expect((serialized['predicates'][schema.game][0] as any).predicates).to.eql(RDFSerializer.serialize(obj.inner).predicates);
+        });
+
+        it('should serialize anonymous inner objects as blank nodes', () => {
+            const obj = new SomeLocation();
+            obj.inner = new InnerObject();
+            obj.inner.name = "Game";
+            const serialized = RDFSerializer.serialize(obj);
+            // console.log(JSON.stringify(serialized, undefined, 2))
+            // console.log(RDFSerializer.stringify(serialized))
+            expect(serialized['predicates']).to.not.be.undefined;
+            expect(serialized['predicates'][schema.game]).to.not.be.undefined;
+            expect((serialized['predicates'][schema.game][0] as any).predicates).to.eql(RDFSerializer.serialize(obj.inner).predicates);
         });
     });
 

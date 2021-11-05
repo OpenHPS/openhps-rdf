@@ -44,7 +44,7 @@ export async function generateNamespaceTs(
         return entitiesSoFar.concat(newEntitiesOfThisType);
     }, []);
     const typeAliases = Object.keys(entityTypes)
-        .map((alias) => `type ${alias} = string;`)
+        .map((alias) => `type ${alias} = IriString;`)
         .join('\n');
     const entityTs = entities
         .filter((entity) => {
@@ -59,7 +59,7 @@ export async function generateNamespaceTs(
         })
         .map((entity) => getTs(entity, namespace, entityTypes))
         .join('');
-    const typescript = typeAliases + '\n' + entityTs;
+    const typescript = 'type IriString = `${\'http\' | \'https\'}://${string}`;\n' + typeAliases + '\n' + entityTs;
     return typescript;
 }
 
