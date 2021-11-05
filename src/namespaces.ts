@@ -8,7 +8,7 @@ export default {
     vcard: 'http://www.w3.org/2006/vcard/ns#',
     owl: 'http://www.w3.org/2002/07/owl#',
     time: 'http://www.w3.org/2006/time#',
-    dct: 'http://purl.org/dc/terms/',
+    dcterms: 'http://purl.org/dc/terms/',
     dcmi: 'http://purl.org/dc/terms/',
     dqm: 'http://purl.org/dqm-vocabulary/v1/dqm#',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
