@@ -9,7 +9,9 @@ describe('RDFSerializer', () => {
     describe('serialization', () => {
         @SerializableObject({
             rdf: {
-                types: [schema.Game]
+                predicates: {
+                    [rdf.type]: [schema.Game]
+                }
             }
         })
         class InnerObject {
@@ -24,7 +26,9 @@ describe('RDFSerializer', () => {
 
         @SerializableObject({
             rdf: {
-                types: [geo.Point]
+                predicates: {
+                    [rdf.type]: [geo.Point]
+                }
             }
         })
         class SomeLocation {

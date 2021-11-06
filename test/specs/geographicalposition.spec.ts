@@ -1,5 +1,5 @@
 import 'mocha';
-import { GeographicalPosition } from '@openhps/core';
+import { DataSerializer, AbsolutePosition, GeographicalPosition } from '@openhps/core';
 import { RDFSerializer } from '../../src';
 import { geo, openhps, rdf } from '../../src/vocab';
 import { expect } from 'chai';
@@ -9,7 +9,6 @@ describe('GeographicalPosition', () => {
 
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object);
-
         it('should have an absolute position rdf type', () => {
             expect(serialized.predicates[rdf.type]).to.not.be.undefined;
             expect(serialized.predicates[rdf.type][1].value).to.equal(openhps.AbsolutePosition);

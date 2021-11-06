@@ -1,5 +1,5 @@
 import { MemberOptionsBase, SerializableObjectOptions } from '@openhps/core'; // DO NOT REMOVE
-import { IriString } from '../rdf';
+import { IriString, Thing } from '../rdf';
 
 declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface SerializableObjectOptions<T> {
@@ -10,19 +10,36 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
          */
         rdf?: {
             /**
-             * RDF types to use for instances of this class.
-             * This is not required for serialization, but will be required for deserialization
-             * unless this is defined using a serializable member.
+             * RDF type of this class. This will be automatically added as a static predicate.
              *
              * @see {@link https://www.w3.org/TR/rdf-schema/#ch_type}
              */
-            types?: IriString[];
+            type?: IriString;
             /**
-             * Callback for retrieving the URI of the resource.
+             * Known RDF types of this class used for deserialization.
+             *
+             * @see {@link https://www.w3.org/TR/rdf-schema/#ch_type}
+             */
+            knownTypes?: IriString[];
+            /**
+             * Callback for retrieving the URI of the resource. If this URI does not
+             * start with 'http' it will use the base URI.
              * When returning undefined the object will be treated as a blank node.
              */
-            uri?: (object: T, baseUri: IriString) => IriString | undefined;
-            predicates?: Record<IriString, IriString>;
+            uri?: (object: T) => string | IriString | undefined;
+            /**
+             * Additional static predicates to add to this object that are not based
+             * on any properties inside the object.
+             */
+            predicates?: Record<IriString, IriString[]>;
+            /**
+             * Custom serializer for this object.
+             */
+            serializer?: (object: T) => Thing;
+            /**
+             * Custom deserializer for this object.
+             */
+            deserializer?: (thing: Thing) => T;
         };
     }
 
@@ -48,6 +65,9 @@ export interface RDFLiteralOptions {
      * By default it will try to detect the data type.
      */
     datatype?: XmlSchemaTypeIri;
+    /**
+     * Specify the language used.
+     */
     language?: string;
 }
 

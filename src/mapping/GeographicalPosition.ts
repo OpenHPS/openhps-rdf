@@ -1,23 +1,34 @@
 import { SerializableObject, GeographicalPosition, SerializableMember } from '@openhps/core';
-import { geo, m3lite, schema } from '../vocab';
+import { xsd } from '../decorators';
+import { geo, m3lite, rdf, schema } from '../vocab';
 
 SerializableObject({
     rdf: {
-        types: [geo.Point]
-    }
+        predicates: {
+            [rdf.type]: [geo.Point],
+        },
+    },
 })(GeographicalPosition);
 SerializableMember({
     rdf: {
-        predicate: schema.latitude
-    }
-})(GeographicalPosition.prototype, "latitude");
+        predicate: schema.latitude,
+        datatype: xsd.decimal,
+    },
+})(GeographicalPosition.prototype, 'latitude');
 SerializableMember({
     rdf: {
-        predicate: schema.longitude
-    }
-})(GeographicalPosition.prototype, "longitude");
+        predicate: schema.longitude,
+        datatype: xsd.decimal,
+    },
+})(GeographicalPosition.prototype, 'longitude');
 SerializableMember({
     rdf: {
-        predicate: m3lite.DirectionHeading // TODO: Temporary this is a class and not a property
-    }
-})(GeographicalPosition.prototype, "orientation");
+        predicate: schema.elevation,
+        datatype: xsd.decimal,
+    },
+})(GeographicalPosition.prototype, 'altitude');
+SerializableMember({
+    rdf: {
+        predicate: m3lite.DirectionHeading, // TODO: Temporary this is a class and not a property
+    },
+})(GeographicalPosition.prototype, 'orientation');

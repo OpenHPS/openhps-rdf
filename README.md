@@ -31,151 +31,19 @@ npm install @openhps/rdf --save
 
 ## Usage
 
-### Creating a new ```RDFSerializable```
-If you are creating a new serializable object that does not extend a serializable ```Thing``` you can implement
-the ```RDFSerializable``` interface.
-
+### Create a new RDF serializable object
 ```typescript
+import '@openhps/solid'; // Import to load type declarations
 import { SerializableObject, SerializableMember } from '@openhps/core';
-import { RDFSerializable, IriString, Thing } from '@openhps/rdf';
 
-@SerializableObject();
-export class MyNewClass implements RDFSerializable {
-    @SerializableMember();
-    uri: string;
-
-    toThing(baseUri?: IriString): Thing {
-        return undefined; // ...
+@SerializableObject({
+    rdf: {
+        type: 'http://myontology.org#SomeObject'
     }
+})
+class SomeObject {
+    
 }
-```
-
-This interface requires you to implement a ```uri``` string that has the ```@SerializableMember``` decorator, and
-a ```toThing``` method that is called to convert the object to an RDF resource.
-
-### Converting an object to ```Thing```
-In the ```toThing``` function of an ```RDFSerializable``` you can construct a new thing using the included ```RDFBuilder```.
-The baseUri that is included in the parameter is undefined whenever the thing should be a blank node.
-
-```typescript
-import { SerializableObject, SerializableMember } from '@openhps/core';
-import { RDFSerializable, IriString, Thing, RDFBuilder, rdf } from '@openhps/rdf';
-
-@SerializableObject();
-export class MyNewClass implements RDFSerializable {
-    @SerializableMember();
-    name: string;
-
-    @SerializableMember();
-    uri: string;
-
-    toThing(baseUri?: IriString): Thing {
-        const builder = RDFBuilder.create({ url: this.uri || baseUri ? `${baseUri}${this.name}` : undefined  })
-            .addIri(rdf.type, "http://myontology.org#SomeClass");
-        return builder.build();
-    }
-}
-```
-
-The builder is based on the [ThingBuilder by Inrupt](https://docs.inrupt.com/developer-tools/api/javascript/solid-client/modules/thing_build.html) with the main addition being an added function for adding blank nodes.
-
-### Creating an extended ```RDFSerializable```
-In most cases, you want to create an object that extends an existing ```RDFSerializable``` such as a data object or data frame.
-
-```typescript
-import { SerializableObject, SerializableMember } from '@openhps/core';
-import { RDFSerializable, IriString, Thing, RDFBuilder } from '@openhps/rdf';
-
-@SerializableObject();
-export class MyObject extends DataObject {
-    @SerializableMember()
-    someNewAttribute: string;
-
-    toThing(baseUri?: IriString): Thing {
-        // The RDFBuilder continues from whatever Thing is constructed by the super class
-        const builder = RDFBuilder.create(super.toThing(this, baseUri))
-            .addStringNoLocale("http://myontology.org#someNewAttribute", this.someNewAttribute);
-        return builder.build();
-    }
-}
-```
-
-### Making an existing class RDF serializable
-Making an existing class serializable is possible, we use module augmentation in TypeScript to
-add the new ```RDFSerializable``` interface to the existing class. Next, we create a new
-function for the ```toThing``` method and finally we make sure that the ```uri``` attribute is
-serializable.
-
-*For this example we will make the WLANObject of the @openhps/rf module serializable to RDF*
-```typescript
-// @see {@link https://github.com/OpenHPS/openhps-rf/blob/master/src/data/WLANObject.ts}
-
-@SerializableObject()
-export class WLANObject extends RFTransmitterObject {
-    /**
-     * WLAN Channel
-     */
-    @SerializableMember()
-    public channel: number;
-    @SerializableMember()
-    public capabilities: string;
-}
-```
-
-
-```typescript
-import type { DataObject, SerializableMember } from '@openhps/core';
-import type { RDFSerializable } from '@openhps/rdf';
-
-// 1. Always import the original file
-import { WLANObject } from '@openhps/rf';
-
-// 2. Make sure you know the directory of the types
-declare module '@openhps/rf/dist/types/data/WLANObject' {
-    // 3. Export a new interface that extends RDFSerializable (this is the augmentation)
-    export interface WLANObject extends RDFSerializable {}
-}
-
-// 4. Create the toThing function. Your IDE should not complain that toThing does not exist.
-// use function instead of lambda to be able to access 'this'
-WLANObject.prototype.toThing = function(buildUri?) {
-    // The RDFBuilder continues from whatever Thing is constructed by the super class
-    // 'super' can not be used in a prototype function so we use another trick
-    const superClass: DataObject = Object.getPrototypeOf(Object.getPrototypeOf(this));
-    const builder = RDFBuilder.create(superClass.toThing.call(this, baseUri));
-    // ... add the missing predicates ... //
-    return builder.build();
-};
-
-// 5. Make the uri attribute serializable (add the decorator from outside the class)
-WLANObject.prototype.uri = undefined;
-SerializableMember(String)(WLANObject.prototype, 'uri');
-```
-
-Alternatively, you can use the helper function to merge step 4. and 5.
-
-```typescript
-import type { DataObject, SerializableMember } from '@openhps/core';
-import { RDFSerializable, createRDFSerializable } from '@openhps/rdf';
-
-// 1. Always import the original file
-import { WLANObject } from '@openhps/rf';
-
-// 2. Make sure you know the directory of the types
-declare module '@openhps/rf/dist/types/data/WLANObject' {
-    // 3. Export a new interface that extends RDFSerializable (this is the augmentation)
-    export interface WLANObject extends RDFSerializable {}
-}
-
-// 4. and 5. merged
-createRDFSerializable(WLANObject, function(buildUri?) {
-    // The RDFBuilder continues from whatever Thing is constructed by the super class
-    // 'super' can not be used in a prototype function so we use another trick
-    const superClass: DataObject = Object.getPrototypeOf(Object.getPrototypeOf(this));
-    const builder = RDFBuilder.create(superClass.toThing.call(this, baseUri));
-    // ... add the missing predicates ... //
-    return builder.build();
-});
 ```
 
 ## Contributors

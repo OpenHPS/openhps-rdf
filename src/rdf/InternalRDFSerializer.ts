@@ -1,30 +1,35 @@
-import { 
+import {
+    ConcreteTypeDescriptor,
     DataSerializer,
     MemberOptionsBase,
+    ObjectMemberMetadata,
     ObjectMetadata,
-    SerializableMemberOptions, 
-    Serializer, 
-    SerializerFn, 
-    TypeDescriptor 
-} from "@openhps/core";
-import { IriString, Thing } from "./types";
+    Serializer,
+    SerializerFn,
+    TypeDescriptor,
+} from '@openhps/core';
+import { IriString, Thing } from './types';
 import * as N3 from 'n3';
 import { XmlSchemaTypeIri, xsd } from '../decorators/';
-import { rdf } from "../vocab";
+import { rdf } from '../vocab';
 
 export class InternalRDFSerializer extends Serializer {
     serializationStrategy = new Map<Function, SerializerFn<any, TypeDescriptor, any>>([
-        /* Literals */
-        [Number, this.serializeLiteral],
-        [String, this.serializeLiteral],
-        [Boolean, this.serializeLiteral]
+        [Number, this.serializeLiteral.bind(this)],
+        [String, this.serializeLiteral.bind(this)],
+        [Boolean, this.serializeLiteral.bind(this)],
+        [Date, this.serializeDate.bind(this)],
+        [Array, this.serializeArray.bind(this)],
+        // [Map, this.serializeArray.bind(this)],
+        // [Set, this.serializeArray.bind(this)],
     ]);
 
     convertSingleValue(
         sourceObject: any,
         typeDescriptor: TypeDescriptor,
-        memberName: string, 
-        memberOptions?: MemberOptionsBase,
+        memberName: string,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: any,
     ): Thing {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
@@ -39,7 +44,14 @@ export class InternalRDFSerializer extends Serializer {
         }
         // if not present in the strategy do property by property serialization
         if (typeof sourceObject === 'object') {
-            return this.serializeObject(sourceObject, typeDescriptor, memberName, this, memberOptions);
+            return this.serializeObject(
+                sourceObject,
+                typeDescriptor,
+                memberName,
+                this,
+                memberOptions,
+                serializerOptions,
+            );
         }
 
         let error = `Could not serialize '${memberName}'; don't know how to serialize type`;
@@ -56,52 +68,64 @@ export class InternalRDFSerializer extends Serializer {
         typeDescriptor: TD,
         memberName: string,
         serializer: Serializer,
-        memberOptions?: MemberOptionsBase,
+        memberOptions: ObjectMemberMetadata,
+        serializerOptions: any,
     ): Thing {
         let metadata: ObjectMetadata | undefined;
-    
-        if (sourceObject.constructor !== typeDescriptor.ctor
-            && sourceObject instanceof typeDescriptor.ctor) {
+        const rootMetadata = DataSerializer.getRootMetadata(sourceObject.constructor);
+
+        if (sourceObject.constructor !== typeDescriptor.ctor && sourceObject instanceof typeDescriptor.ctor) {
             metadata = DataSerializer.getMetadata(sourceObject.constructor);
         } else {
             metadata = DataSerializer.getMetadata(typeDescriptor.ctor);
         }
 
-        const options = metadata.options.rdf;
+        const options =
+            metadata.options && metadata.options.rdf
+                ? metadata.options.rdf
+                : rootMetadata.options && rootMetadata.options.rdf
+                ? rootMetadata.options.rdf
+                : undefined;
 
         if (!options) {
             return undefined;
         }
 
         // Get the URI if available
-        const uri = options.uri ? options.uri(sourceObject, "http://") : N3.DataFactory.blankNode().value;
+        let uri = options.uri ? options.uri(sourceObject) : undefined;
+        uri =
+            uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
+                ? serializerOptions.rdf.baseUri + uri
+                : N3.DataFactory.blankNode(uri).value;
         const thing: Thing = {
             value: uri,
-            predicates: {},
-            termType: uri.startsWith("http") ? 'NamedNode' : 'BlankNode'
+            predicates: options.predicates ?
+                Object.entries(options.predicates)
+                    .map(([k, v]) => {
+                        return { [k]: v.map(N3.DataFactory.namedNode) };
+                    })
+                    .reduce((a, b) => {
+                        return { ...a, ...b };
+                    }) : {},
+            termType: uri.startsWith('http') ? 'NamedNode' : 'BlankNode',
         };
-
-        // Set rdf:type of object
-        const types = options.types;
-        if (types) {
-            thing.predicates[rdf.type] = [...types.map(N3.DataFactory.namedNode)];       
-        } 
-    
-        metadata.dataMembers.forEach(member => {
+        
+        metadata.dataMembers.forEach((member) => {
             if (!member.options || !member.options.rdf) {
                 return;
             }
-            let object = serializer.convertSingleValue(
+            const object = serializer.convertSingleValue(
                 (sourceObject as any)[member.key],
                 member.type(),
                 `${member.name}`,
                 member as MemberOptionsBase,
+                serializerOptions,
             );
             if (object) {
                 const predicates = member.options.rdf.predicate;
-                [...Array.isArray(predicates) ? predicates : [predicates]].forEach((predicateIri: IriString) => {
+                [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
                     const predicate = thing.predicates[predicateIri] || [];
-                    predicate.push(object);
+                    predicate.push(...(Array.isArray(object) ? object : [object]).filter((s) => s));
                     thing.predicates[predicateIri] = predicate;
                 });
             }
@@ -109,21 +133,80 @@ export class InternalRDFSerializer extends Serializer {
         return thing;
     }
 
+    protected serializeArray(
+        sourceObject: Array<any>,
+        typeDescriptor?: TypeDescriptor,
+        memberName?: string,
+        serializer?: Serializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: any,
+    ): (N3.Literal | Thing)[] {
+        return sourceObject.map((obj) => {
+            return this.convertSingleValue(
+                obj,
+                (typeDescriptor as any).elementType,
+                memberName,
+                memberOptions,
+                serializerOptions,
+            );
+        });
+    }
+
     protected serializeLiteral(
         sourceObject: any,
         typeDescriptor?: TypeDescriptor,
         memberName?: string,
         serializer?: Serializer,
-        memberOptions?: SerializableMemberOptions): N3.Literal {
-        let xsdDatatype: XmlSchemaTypeIri = xsd.string;
-
-        switch (typeof sourceObject) {
-            case 'bigint':
-            case 'number':
-                xsdDatatype = xsd.decimal;
-                break;
+        memberOptions?: ObjectMemberMetadata,
+    ): N3.Literal {
+        let xsdDatatype: XmlSchemaTypeIri = undefined;
+        if (memberOptions.options.rdf && memberOptions.options.rdf.datatype) {
+            // Data type provided
+            xsdDatatype = memberOptions.options.rdf.datatype;
+            switch (memberOptions.options.rdf.datatype) {
+                case xsd.date:
+                case xsd.dateTime:
+                    return this.serializeDate(sourceObject, typeDescriptor, memberName, serializer, memberOptions);
+            }
+        } else {
+            // Data type is not provided or not detected
+            switch (typeof sourceObject) {
+                case 'bigint':
+                case 'number':
+                    xsdDatatype = xsd.decimal;
+                    break;
+                case 'boolean':
+                    xsdDatatype = xsd.boolean;
+                    break;
+                default:
+                    xsdDatatype = xsd.string;
+                    break;
+            }
         }
-    
-        return N3.DataFactory.literal(sourceObject, memberOptions.rdf ? memberOptions.rdf.language ?? xsdDatatype : xsdDatatype);
+        const dataTypeNode = this.iriToNode(xsdDatatype);
+        return N3.DataFactory.literal(
+            sourceObject,
+            memberOptions.options.rdf ? memberOptions.options.rdf.language ?? dataTypeNode : dataTypeNode,
+        );
+    }
+
+    protected serializeDate(
+        sourceObject: any,
+        typeDescriptor?: TypeDescriptor,
+        memberName?: string,
+        serializer?: Serializer,
+        memberOptions?: ObjectMemberMetadata,
+    ): N3.Literal {
+        const xsdDatatype: XmlSchemaTypeIri = xsd.dateTime;
+        const dateString = new Date(sourceObject).toISOString();
+        const dataTypeNode = this.iriToNode(xsdDatatype);
+        return N3.DataFactory.literal(
+            dateString,
+            memberOptions.options.rdf ? memberOptions.options.rdf.language ?? dataTypeNode : dataTypeNode,
+        );
+    }
+
+    protected iriToNode(iri: IriString): N3.NamedNode {
+        return N3.DataFactory.namedNode(iri);
     }
 }

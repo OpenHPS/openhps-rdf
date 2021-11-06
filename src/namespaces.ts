@@ -11,6 +11,7 @@ export default {
     dcterms: 'http://purl.org/dc/terms/',
     dcmi: 'http://purl.org/dc/terms/',
     dqm: 'http://purl.org/dqm-vocabulary/v1/dqm#',
+    foaf: 'http://xmlns.com/foaf/0.1/',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
     /**
      * Semantic Sensor Network Ontology
