@@ -1,5 +1,5 @@
 import { Accuracy, SerializableMember, SerializableObject } from '@openhps/core';
-import { dcterms, openhps, qu, rdf } from '../vocab';
+import { openhps, qu, rdf } from '../vocab';
 
 SerializableObject({
     rdf: {

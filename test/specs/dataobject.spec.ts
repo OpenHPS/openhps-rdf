@@ -18,18 +18,21 @@ describe('DataObject', () => {
     object.addRelativePosition(new RelativeDistance('object1', 10));
     object.addRelativePosition(new RelativeDistance('object2', 5));
 
-    describe('serialization', async () => {
+    describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
-        // console.log(await RDFSerializer.stringify(serialized, {
-        //     format: 'text/turtle',
-        //     prefixes: {
-        //         mypod: "https://maximvdw.solidweb.org/public/openhps.ttl#"
-        //     }
-        // }));
 
         it('should serialize the position of an object', () => {
             const positions = serialized.predicates[openhps.position];
             expect(positions.length).to.equal(3);
+        });
+    });
+
+    describe('deserialization', () => {
+        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const deserialized = RDFSerializer.deserialize(serialized);
+
+        it('should deserialize an object', () => {
+            console.log(deserialized)
         });
     });
 

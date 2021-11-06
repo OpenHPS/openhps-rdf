@@ -6,7 +6,7 @@ SerializableObject({
     rdf: {
         predicates: {
             [rdf.type]: [openhps.RelativePosition],
-        }
+        },
     },
 })(RelativePosition);
 SerializableMember({

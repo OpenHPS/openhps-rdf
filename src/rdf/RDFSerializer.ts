@@ -1,4 +1,11 @@
-import { DataSerializer, Serializable, MappedTypeConverters, Constructor, DataSerializerConfig } from '@openhps/core';
+import {
+    DataSerializer,
+    Serializable,
+    MappedTypeConverters,
+    Constructor,
+    DataSerializerConfig,
+    SerializableObjectOptions,
+} from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
 import { IriString, Thing } from './types';
@@ -7,9 +14,17 @@ import namespaces from '../namespaces';
 import { rdf } from '../vocab';
 
 export class RDFSerializer extends DataSerializer {
-    protected static readonly serializableRDFTypes: Map<IriString, string[]> = new Map();
+    protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
 
     static {
+        this.eventEmitter.on('updateSerializableObject', <T>(target: Serializable<T>) => {
+            const meta = this.getMetadata(target);
+            if (meta.options && meta.options.rdf && meta.options.rdf.type) {
+                meta.options.rdf.predicates = meta.options.rdf.predicates || {};
+                const types = meta.options.rdf.predicates[rdf.type] || [];
+                types.push(meta.options.rdf.type);
+            }
+        });
         this.eventEmitter.on('registerType', <T>(type: Serializable<T>, converters?: MappedTypeConverters<T>) => {
             RDFSerializer.registerRDFType(type, converters);
         });
@@ -35,9 +50,9 @@ export class RDFSerializer extends DataSerializer {
                 .map(([_, v]) => v.flat())
                 .flat()
                 .forEach((typeIri: IriString) => {
-                    const results = this.serializableRDFTypes.get(typeIri) ?? [];
+                    const results = this.knownRDFTypes.get(typeIri) ?? [];
                     results.push(type.name);
-                    this.serializableRDFTypes.set(typeIri, results);
+                    this.knownRDFTypes.set(typeIri, results);
                 });
         }
     }
@@ -83,18 +98,17 @@ export class RDFSerializer extends DataSerializer {
         ];
     }
 
-    static prefixes: Record<string, string> = {
-        xsd: 'http://www.w3.org/2001/XMLSchema#',
-        ...namespaces,
-    };
-
     static async stringify(thing: Thing, options?: N3.WriterOptions): Promise<string> {
         return new Promise((resolve, reject) => {
             const quads: N3.Quad[] = this.thingToQuads(thing);
             // Filter the prefixes to only include prefixes used
-            const namespaces = Object.keys(this.prefixes)
+            const prefixes: Record<string, string> = {
+                xsd: 'http://www.w3.org/2001/XMLSchema#',
+                ...namespaces,
+            };
+            const ns = Object.keys(prefixes)
                 .map((k) => {
-                    return { [this.prefixes[k]]: k };
+                    return { [prefixes[k]]: k };
                 })
                 .reduce((a, b) => {
                     return { ...a, ...b };
@@ -110,10 +124,10 @@ export class RDFSerializer extends DataSerializer {
                         ? quad.object.datatype.value
                         : quad.object.value,
                 ];
-                usedNamespacesInQuad.map((ns) => {
-                    Object.keys(namespaces).forEach((n) => {
-                        if (ns.includes(n)) {
-                            filteredPrefixes[namespaces[n]] = n;
+                usedNamespacesInQuad.map((namespace) => {
+                    Object.keys(ns).forEach((n) => {
+                        if (namespace.includes(n)) {
+                            filteredPrefixes[(ns as any)[n]] = n;
                         }
                     });
                 });
@@ -135,13 +149,30 @@ export class RDFSerializer extends DataSerializer {
         });
     }
 
+    static deserialize<T>(serializedData: Thing, dataType?: Constructor<T>): T | T[];
+    static deserialize<T>(serializedData: any[], dataType?: Constructor<T>): T | T[];
     /**
      * Deserialize data
      *
      * @param serializedData Data to deserialze
      * @param dataType Optional data type to specify deserialization type
      */
-    static deserialize<T>(serializedData: N3.Quad[], dataType?: Constructor<T>): T | T[] {
-        return super.deserialize(serializedData, dataType, this.options);
+    static deserialize<T>(serializedData: any, dataType?: Constructor<T>): T | T[] {
+        if (serializedData['predicates'] === undefined) {
+            return super.deserialize(serializedData, dataType);
+        }
+        const deserializer = new InternalRDFDeserializer();
+        const finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);
+        if (finalType === Object) {
+            return serializedData as unknown as T;
+        }
+        return deserializer.convertSingleValue(
+            serializedData,
+            this.ensureTypeDescriptor(finalType),
+            this.knownTypes,
+            undefined,
+            undefined,
+            {},
+        );
     }
 }

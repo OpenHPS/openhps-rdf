@@ -1,12 +1,10 @@
-import { DataFrame, SerializableMember, SerializableObject } from '@openhps/core';
+import { DataFrame, DataObject, SerializableMapMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, rdf } from '../vocab';
+import { dcterms, openhps } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.DataFrame],
-        },
+        type: openhps.DataFrame,
         uri: (obj: DataFrame) => `${obj.constructor.name.toLowerCase()}_${obj.uid}`,
     },
 })(DataFrame);
@@ -16,3 +14,13 @@ SerializableMember({
         datatype: xsd.dateTime,
     },
 })(DataFrame.prototype, 'createdTimestamp');
+SerializableMember({
+    rdf: {
+        predicate: dcterms.source,
+    },
+})(DataFrame.prototype, '_source');
+SerializableMapMember(String, DataObject, {
+    rdf: {
+        predicate: openhps.includesObject,
+    },
+})(DataFrame.prototype, '_objects');

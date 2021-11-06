@@ -5,10 +5,7 @@ import { dcterms, openhps, foaf, schema, rdf } from '../vocab';
 SerializableObject({
     rdf: {
         predicates: {
-            [rdf.type]: [
-                openhps.ReferenceSpace,
-                schema.Place
-            ],
+            [rdf.type]: [openhps.ReferenceSpace, schema.Place],
         },
     },
 })(ReferenceSpace);

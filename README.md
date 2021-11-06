@@ -42,7 +42,7 @@ import { SerializableObject, SerializableMember } from '@openhps/core';
     }
 })
 class SomeObject {
-    
+
 }
 ```
 

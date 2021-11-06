@@ -5,6 +5,6 @@ SerializableObject({
     rdf: {
         uri: (object: Unit) => {
             return m3lite.Metre;
-        }
+        },
     },
 })(Unit);

@@ -9,21 +9,35 @@ import {
     TypeDescriptor,
 } from '@openhps/core';
 import * as N3 from 'n3';
+import { rdf } from '../vocab';
+import { IriString } from './types';
 
 export class InternalRDFDeserializer extends Deserializer {
-    deserializationStrategy = new Map<Function, DeserializerFn<any, TypeDescriptor, any>>([
+    deserializationStrategy = new Map<Serializable<any>, DeserializerFn<any, TypeDescriptor, any>>([
         /* Literals */
         [Number, this.deserializeLiteral],
         [String, this.deserializeLiteral],
         [Boolean, this.deserializeLiteral],
     ]);
 
-    protected typeResolver(sourceObject: IndexedObject, knownTypes: Map<string, Serializable<any>>) {
+    rdfTypeResolver(
+        sourceObject: IndexedObject,
+        knownTypes: Map<string, Serializable<any>>,
+        knownRDFTypes: Map<IriString, string[]>,
+    ) {
         const result: Serializable<any> = Object;
-        if (sourceObject instanceof N3.Literal) {
-            // Determine type by literal datatype
-        } else if (sourceObject['predicates'] !== undefined) {
+        if (sourceObject['predicates'] !== undefined) {
             // Get type based on rdf:type predicate(s) if any
+            const rdfTypes: IriString[] = Object.entries(sourceObject['predicates'])
+                .filter(([k, _]) => k === rdf.type)
+                .map(([_, v]) => v)
+                .flat()
+                .map((v: N3.NamedNode) => v.id as IriString);
+            const mappedTypes = rdfTypes
+                .map((type) => knownRDFTypes.get(type))
+                .flat()
+                .map((type) => knownTypes.get(type));
+            return mappedTypes[0];
         }
         return result;
     }
@@ -63,7 +77,7 @@ export class InternalRDFDeserializer extends Deserializer {
     deserializeObject<T>(
         sourceObject: IndexedObject,
         typeDescriptor: TypeDescriptor,
-        knownTypes: Map<string, Function>,
+        knownTypes: Map<string, Serializable<any>>,
         memberName: string,
         deserializer: Deserializer,
     ): IndexedObject | T | undefined {

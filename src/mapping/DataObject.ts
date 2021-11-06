@@ -4,9 +4,7 @@ import { dcterms, openhps, foaf, schema, rdf } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.DataObject],
-        },
+        type: openhps.DataObject,
         uri: (obj: DataObject) => `${obj.constructor.name.toLowerCase()}_${obj.uid}`,
     },
 })(DataObject);

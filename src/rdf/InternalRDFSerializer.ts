@@ -1,26 +1,27 @@
 import {
-    ConcreteTypeDescriptor,
+    ArrayTypeDescriptor,
     DataSerializer,
+    MapTypeDescriptor,
     MemberOptionsBase,
     ObjectMemberMetadata,
     ObjectMetadata,
     Serializer,
     SerializerFn,
     TypeDescriptor,
+    Serializable,
 } from '@openhps/core';
 import { IriString, Thing } from './types';
 import * as N3 from 'n3';
 import { XmlSchemaTypeIri, xsd } from '../decorators/';
-import { rdf } from '../vocab';
 
 export class InternalRDFSerializer extends Serializer {
-    serializationStrategy = new Map<Function, SerializerFn<any, TypeDescriptor, any>>([
+    serializationStrategy = new Map<Serializable<any>, SerializerFn<any, TypeDescriptor, any>>([
         [Number, this.serializeLiteral.bind(this)],
         [String, this.serializeLiteral.bind(this)],
         [Boolean, this.serializeLiteral.bind(this)],
         [Date, this.serializeDate.bind(this)],
         [Array, this.serializeArray.bind(this)],
-        // [Map, this.serializeArray.bind(this)],
+        [Map, this.serializeMap.bind(this)],
         // [Set, this.serializeArray.bind(this)],
     ]);
 
@@ -40,7 +41,7 @@ export class InternalRDFSerializer extends Serializer {
 
         const serializer = this.serializationStrategy.get(typeDescriptor.ctor);
         if (serializer !== undefined) {
-            return serializer(sourceObject, typeDescriptor, memberName, this, memberOptions);
+            return serializer(sourceObject, typeDescriptor, memberName, this, memberOptions, serializerOptions);
         }
         // if not present in the strategy do property by property serialization
         if (typeof sourceObject === 'object') {
@@ -99,17 +100,18 @@ export class InternalRDFSerializer extends Serializer {
                 : N3.DataFactory.blankNode(uri).value;
         const thing: Thing = {
             value: uri,
-            predicates: options.predicates ?
-                Object.entries(options.predicates)
-                    .map(([k, v]) => {
-                        return { [k]: v.map(N3.DataFactory.namedNode) };
-                    })
-                    .reduce((a, b) => {
-                        return { ...a, ...b };
-                    }) : {},
+            predicates: options.predicates
+                ? Object.entries(options.predicates)
+                      .map(([k, v]) => {
+                          return { [k]: v.map(N3.DataFactory.namedNode) };
+                      })
+                      .reduce((a, b) => {
+                          return { ...a, ...b };
+                      })
+                : {},
             termType: uri.startsWith('http') ? 'NamedNode' : 'BlankNode',
         };
-        
+
         metadata.dataMembers.forEach((member) => {
             if (!member.options || !member.options.rdf) {
                 return;
@@ -135,7 +137,7 @@ export class InternalRDFSerializer extends Serializer {
 
     protected serializeArray(
         sourceObject: Array<any>,
-        typeDescriptor?: TypeDescriptor,
+        typeDescriptor?: ArrayTypeDescriptor,
         memberName?: string,
         serializer?: Serializer,
         memberOptions?: ObjectMemberMetadata,
@@ -144,11 +146,24 @@ export class InternalRDFSerializer extends Serializer {
         return sourceObject.map((obj) => {
             return this.convertSingleValue(
                 obj,
-                (typeDescriptor as any).elementType,
+                typeDescriptor.elementType,
                 memberName,
                 memberOptions,
                 serializerOptions,
             );
+        });
+    }
+
+    protected serializeMap(
+        sourceObject: Map<any, any>,
+        typeDescriptor?: MapTypeDescriptor,
+        memberName?: string,
+        serializer?: Serializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: any,
+    ): (N3.Literal | Thing)[] {
+        return Array.from(sourceObject.values()).map((obj) => {
+            return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
         });
     }
 

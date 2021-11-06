@@ -1,12 +1,10 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, qu, rdf } from '../vocab';
+import { dcterms, openhps, qu } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.AbsolutePosition],
-        },
+        type: openhps.AbsolutePosition,
     },
 })(AbsolutePosition);
 SerializableMember({
@@ -25,4 +23,3 @@ SerializableMember({
         predicate: openhps.accuracy,
     },
 })(AbsolutePosition.prototype, '_accuracy');
-

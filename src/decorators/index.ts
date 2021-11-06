@@ -1,5 +1,5 @@
 import { MemberOptionsBase, SerializableObjectOptions } from '@openhps/core'; // DO NOT REMOVE
-import { IriString, Thing } from '../rdf';
+import { IriString, Thing } from '../rdf/types';
 
 declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface SerializableObjectOptions<T> {
