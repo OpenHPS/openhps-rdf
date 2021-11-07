@@ -27,11 +27,11 @@ SerializableMember({
 })(DataObject.prototype, 'displayName');
 SerializableMember({
     rdf: {
-        predicate: openhps.position,
+        predicate: openhps.hasPosition,
     },
 })(DataObject.prototype, 'position');
 SerializableArrayMember(RelativePosition, {
     rdf: {
-        predicate: openhps.position,
+        predicate: openhps.hasPosition,
     },
 })(DataObject.prototype, 'relativePositions');

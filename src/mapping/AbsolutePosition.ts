@@ -20,6 +20,11 @@ SerializableMember({
 })(AbsolutePosition.prototype, 'unit');
 SerializableMember({
     rdf: {
-        predicate: openhps.accuracy,
+        predicate: openhps.hasAccuracy,
     },
 })(AbsolutePosition.prototype, '_accuracy');
+SerializableMember({
+    rdf: {
+        predicate: openhps.hasOrientation,
+    },
+})(AbsolutePosition.prototype, 'orientation');

@@ -26,7 +26,7 @@ describe('DataObject', () => {
         });
 
         it('should serialize the position of an object', () => {
-            const positions = serialized.predicates[openhps.position];
+            const positions = serialized.predicates[openhps.hasPosition];
             expect(positions.length).to.equal(3);
         });
     });
