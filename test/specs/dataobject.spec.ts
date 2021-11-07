@@ -1,6 +1,6 @@
 import 'mocha';
-import { DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { openhps, RDFSerializer } from '../../src';
+import { DataObject, DataSerializer, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
+import { openhps, rdf, RDFSerializer } from '../../src';
 import { expect } from 'chai';
 import { position } from '../../src/vocab/schema';
 
@@ -20,6 +20,10 @@ describe('DataObject', () => {
 
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+
+        it('should have a single rdf type', () => {
+            expect(serialized.predicates[rdf.type].length).to.equal(1);
+        });
 
         it('should serialize the position of an object', () => {
             const positions = serialized.predicates[openhps.position];

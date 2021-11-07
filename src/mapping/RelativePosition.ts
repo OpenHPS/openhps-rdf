@@ -1,12 +1,10 @@
 import { RelativePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, rdf } from '../vocab';
+import { dcterms, openhps } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.RelativePosition],
-        },
+        type: openhps.RelativePosition,
     },
 })(RelativePosition);
 SerializableMember({

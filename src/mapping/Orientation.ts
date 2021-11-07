@@ -4,9 +4,7 @@ import { dcterms, openhps, rdf } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.Orientation],
-        },
+        type: openhps.Orientation,
     },
 })(Orientation);
 SerializableMember({

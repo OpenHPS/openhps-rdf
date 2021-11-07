@@ -1,4 +1,10 @@
-import { DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
+import {
+    DataObject,
+    SerializableArrayMember,
+    SerializableMember,
+    SerializableObject,
+    RelativePosition,
+} from '@openhps/core';
 import { xsd } from '../decorators';
 import { dcterms, openhps, foaf, schema, rdf } from '../vocab';
 
@@ -24,7 +30,7 @@ SerializableMember({
         predicate: openhps.position,
     },
 })(DataObject.prototype, 'position');
-SerializableArrayMember(Object, {
+SerializableArrayMember(RelativePosition, {
     rdf: {
         predicate: openhps.position,
     },

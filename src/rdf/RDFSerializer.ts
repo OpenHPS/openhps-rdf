@@ -17,14 +17,17 @@ export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
 
     static {
-        this.eventEmitter.on('updateSerializableObject', <T>(target: Serializable<T>) => {
-            const meta = this.getMetadata(target);
-            if (meta.options && meta.options.rdf && meta.options.rdf.type) {
-                meta.options.rdf.predicates = meta.options.rdf.predicates || {};
-                const types = meta.options.rdf.predicates[rdf.type] || [];
-                types.push(meta.options.rdf.type);
-            }
-        });
+        this.eventEmitter.on(
+            'updateSerializableObject',
+            <T>(_: Serializable<T>, options: SerializableObjectOptions<T>) => {
+                if (options && options.rdf && options.rdf.type) {
+                    options.rdf.predicates = options.rdf.predicates || {};
+                    const types = options.rdf.predicates[rdf.type] || [];
+                    types.push(options.rdf.type);
+                    options.rdf.predicates[rdf.type] = types;
+                }
+            },
+        );
         this.eventEmitter.on('registerType', <T>(type: Serializable<T>, converters?: MappedTypeConverters<T>) => {
             RDFSerializer.registerRDFType(type, converters);
         });
@@ -172,7 +175,11 @@ export class RDFSerializer extends DataSerializer {
             this.knownTypes,
             undefined,
             undefined,
-            {},
+            {
+                rdf: {
+                    knownTypes: this.knownRDFTypes,
+                },
+            },
         );
     }
 }

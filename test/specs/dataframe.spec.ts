@@ -22,9 +22,9 @@ describe('DataFrame', () => {
         const serialized = RDFSerializer.serialize(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
 
         it('should serialize the position of a frame', async () => {
-            console.log(await RDFSerializer.stringify(serialized, {
-                format: 'text/turtle'
-            }))
+            // console.log(await RDFSerializer.stringify(serialized, {
+            //     format: 'text/turtle'
+            // }))
         });
     });
 

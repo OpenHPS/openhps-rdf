@@ -22,7 +22,7 @@ export class InternalRDFSerializer extends Serializer {
         [Date, this.serializeDate.bind(this)],
         [Array, this.serializeArray.bind(this)],
         [Map, this.serializeMap.bind(this)],
-        // [Set, this.serializeArray.bind(this)],
+        [Set, this.serializeSet.bind(this)],
     ]);
 
     convertSingleValue(
@@ -113,18 +113,25 @@ export class InternalRDFSerializer extends Serializer {
         };
 
         metadata.dataMembers.forEach((member) => {
-            if (!member.options || !member.options.rdf) {
+            const rootMember = rootMetadata.dataMembers.get(member.key);
+            const memberOptions =
+                member.options && member.options.rdf
+                    ? member
+                    : rootMember && rootMember.options && rootMember.options.rdf
+                    ? rootMember
+                    : undefined;
+            if (!memberOptions) {
                 return;
             }
             const object = serializer.convertSingleValue(
-                (sourceObject as any)[member.key],
-                member.type(),
-                `${member.name}`,
-                member as MemberOptionsBase,
+                (sourceObject as any)[memberOptions.key],
+                memberOptions.type(),
+                `${memberOptions.name}`,
+                memberOptions as MemberOptionsBase,
                 serializerOptions,
             );
             if (object) {
-                const predicates = member.options.rdf.predicate;
+                const predicates = memberOptions.options.rdf.predicate;
                 [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
                     const predicate = thing.predicates[predicateIri] || [];
                     predicate.push(...(Array.isArray(object) ? object : [object]).filter((s) => s));
@@ -155,6 +162,19 @@ export class InternalRDFSerializer extends Serializer {
     }
 
     protected serializeMap(
+        sourceObject: Map<any, any>,
+        typeDescriptor?: MapTypeDescriptor,
+        memberName?: string,
+        serializer?: Serializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: any,
+    ): (N3.Literal | Thing)[] {
+        return Array.from(sourceObject.values()).map((obj) => {
+            return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
+        });
+    }
+
+    protected serializeSet(
         sourceObject: Map<any, any>,
         typeDescriptor?: MapTypeDescriptor,
         memberName?: string,

@@ -1,11 +1,9 @@
 import { Accuracy, SerializableMember, SerializableObject } from '@openhps/core';
-import { openhps, qu, rdf } from '../vocab';
+import { openhps, qu } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [openhps.Accuracy],
-        },
+        type: openhps.Accuracy,
     },
 })(Accuracy);
 SerializableMember({

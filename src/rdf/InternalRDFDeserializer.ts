@@ -1,4 +1,6 @@
 import {
+    ArrayTypeDescriptor,
+    DataSerializer,
     DataSerializerConfig,
     Deserializer,
     DeserializerFn,
@@ -9,15 +11,19 @@ import {
     TypeDescriptor,
 } from '@openhps/core';
 import * as N3 from 'n3';
+import { xsd } from '../decorators';
 import { rdf } from '../vocab';
-import { IriString } from './types';
+import { IriString, RDFSerializerConfig, Thing } from './types';
 
 export class InternalRDFDeserializer extends Deserializer {
     deserializationStrategy = new Map<Serializable<any>, DeserializerFn<any, TypeDescriptor, any>>([
-        /* Literals */
-        [Number, this.deserializeLiteral],
-        [String, this.deserializeLiteral],
-        [Boolean, this.deserializeLiteral],
+        [Number, this.deserializeLiteral.bind(this)],
+        [String, this.deserializeLiteral.bind(this)],
+        [Boolean, this.deserializeLiteral.bind(this)],
+        [Date, this.deserializeLiteral.bind(this)],
+        [Array, this.deserializeArray.bind(this)],
+        [Map, this.deserializeMap.bind(this)],
+        [Set, this.deserializeSet.bind(this)],
     ]);
 
     rdfTypeResolver(
@@ -48,7 +54,7 @@ export class InternalRDFDeserializer extends Deserializer {
         knownTypes: Map<string, Serializable<any>>,
         memberName = 'object',
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: DataSerializerConfig,
+        serializerOptions?: RDFSerializerConfig,
     ): any {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
@@ -58,11 +64,26 @@ export class InternalRDFDeserializer extends Deserializer {
 
         const deserializer = this.deserializationStrategy.get(typeDescriptor.ctor);
         if (deserializer !== undefined) {
-            return deserializer(sourceObject, typeDescriptor, knownTypes, memberName, this, memberOptions);
+            return deserializer(
+                sourceObject,
+                typeDescriptor,
+                knownTypes,
+                memberName,
+                this,
+                memberOptions,
+                serializerOptions,
+            );
         }
 
         if (typeof sourceObject === 'object') {
-            return this.deserializeObject(sourceObject, typeDescriptor, knownTypes, memberName, this);
+            return this.deserializeObject(
+                sourceObject,
+                typeDescriptor,
+                knownTypes,
+                memberName,
+                this,
+                serializerOptions,
+            );
         }
 
         let error = `Could not deserialize '${memberName}'; don't know how to deserialize type`;
@@ -75,13 +96,66 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeObject<T>(
-        sourceObject: IndexedObject,
+        sourceObject: Thing,
         typeDescriptor: TypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
         deserializer: Deserializer,
+        serializerOptions?: RDFSerializerConfig,
     ): IndexedObject | T | undefined {
-        return undefined;
+        const expectedSelfType = typeDescriptor.ctor;
+        const typeFromRDF = this.rdfTypeResolver(sourceObject, knownTypes, serializerOptions.rdf.knownTypes);
+        const finalType = typeFromRDF || expectedSelfType;
+        const targetObject = this.instantiateType(finalType);
+        const metadata = DataSerializer.getMetadata(finalType);
+        const rootMetadata = DataSerializer.getRootMetadata(finalType);
+
+        // Deserialize predicates
+        metadata.dataMembers.forEach((member) => {
+            const rootMember = rootMetadata.dataMembers.get(member.key);
+            const memberOptions =
+                member.options && member.options.rdf
+                    ? member
+                    : rootMember && rootMember.options && rootMember.options.rdf
+                    ? rootMember
+                    : undefined;
+            if (!memberOptions) {
+                return;
+            }
+
+            const predicates = memberOptions.options.rdf.predicate;
+            [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
+                if (!sourceObject.predicates[predicateIri]) {
+                    return;
+                }
+
+                if (memberOptions.type().ctor === Array) {
+                    targetObject[memberOptions.key] = deserializer.convertSingleValue(
+                        sourceObject.predicates[predicateIri],
+                        memberOptions.type(),
+                        knownTypes,
+                        memberOptions.name,
+                        memberOptions,
+                        serializerOptions,
+                    );
+                } else {
+                    targetObject[memberOptions.key] = sourceObject.predicates[predicateIri]
+                        .map((object) => {
+                            return deserializer.convertSingleValue(
+                                object,
+                                memberOptions.type(),
+                                knownTypes,
+                                memberOptions.name,
+                                memberOptions,
+                                serializerOptions,
+                            );
+                        })
+                        .filter((item) => this.isInstanceOf(item, memberOptions.type().ctor))[0];
+                }
+            });
+        });
+
+        return targetObject;
     }
 
     deserializeLiteral<T, TD extends TypeDescriptor>(
@@ -91,7 +165,89 @@ export class InternalRDFDeserializer extends Deserializer {
         memberName: string,
         deserializer: Deserializer,
         memberOptions?: MemberOptionsBase,
+        serializerOptions?: DataSerializerConfig,
     ): any {
-        return sourceObject.value;
+        switch (sourceObject.datatype.id) {
+            case xsd.dateTime:
+                // Return timestamp
+                return new Date(sourceObject.value).getTime();
+            default:
+                return sourceObject.value;
+        }
+    }
+
+    deserializeDate<T, TD extends TypeDescriptor>(
+        sourceObject: N3.Literal,
+        typeDescriptor: TD,
+        knownTypes: Map<string, Serializable<any>>,
+        memberName: string,
+        deserializer: Deserializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: DataSerializerConfig,
+    ): any {
+        return new Date(sourceObject.value);
+    }
+
+    deserializeArray<T, TD extends TypeDescriptor>(
+        sourceObject: N3.Quad_Object[],
+        typeDescriptor: ArrayTypeDescriptor,
+        knownTypes: Map<string, Serializable<any>>,
+        memberName: string,
+        deserializer: Deserializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: RDFSerializerConfig,
+    ): any {
+        if (!sourceObject) {
+            return [];
+        }
+        return sourceObject
+            .map((object) => {
+                return deserializer.convertSingleValue(
+                    object,
+                    typeDescriptor.elementType,
+                    knownTypes,
+                    memberName,
+                    memberOptions,
+                    serializerOptions,
+                );
+            })
+            .filter((val) => this.isInstanceOf(val, typeDescriptor.elementType.ctor));
+    }
+
+    isInstanceOf<T>(value: any, constructor: any): boolean {
+        if (typeof value === 'number') {
+            return constructor === Number;
+        } else if (typeof value === 'string') {
+            return constructor === String;
+        } else if (typeof value === 'boolean') {
+            return constructor === Boolean;
+        } else if (typeof value === 'object') {
+            return value instanceof constructor;
+        }
+        return false;
+    }
+
+    deserializeMap<T, TD extends TypeDescriptor>(
+        sourceObject: N3.Literal,
+        typeDescriptor: TD,
+        knownTypes: Map<string, Serializable<any>>,
+        memberName: string,
+        deserializer: Deserializer,
+        memberOptions?: ObjectMemberMetadata,
+        serializerOptions?: DataSerializerConfig,
+    ): any {
+        return undefined;
+    }
+
+    deserializeSet<T, TD extends TypeDescriptor>(
+        sourceObject: N3.Quad_Object[],
+        typeDescriptor: TD,
+        knownTypes: Map<string, Serializable<any>>,
+        memberName: string,
+        deserializer: Deserializer,
+        memberOptions?: MemberOptionsBase,
+        serializerOptions?: DataSerializerConfig,
+    ): any {
+        return undefined;
     }
 }

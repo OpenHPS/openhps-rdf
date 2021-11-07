@@ -9,6 +9,7 @@ describe('GeographicalPosition', () => {
 
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object);
+
         it('should have an absolute position rdf type', () => {
             expect(serialized.predicates[rdf.type]).to.not.be.undefined;
             expect(serialized.predicates[rdf.type][1].value).to.equal(openhps.AbsolutePosition);

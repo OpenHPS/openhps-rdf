@@ -4,9 +4,7 @@ import { geo, m3lite, rdf, schema } from '../vocab';
 
 SerializableObject({
     rdf: {
-        predicates: {
-            [rdf.type]: [geo.Point],
-        },
+        type: geo.Point,
     },
 })(GeographicalPosition);
 SerializableMember({
