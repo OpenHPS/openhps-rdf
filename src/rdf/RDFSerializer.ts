@@ -76,7 +76,9 @@ export class RDFSerializer extends DataSerializer {
         } as any);
     }
 
-    protected static thingToQuads(thing: Thing): N3.Quad[] {
+    static serializeToQuads<T>(data: T, baseUri?: IriString): N3.Quad[] {
+        const thing =
+            (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, baseUri);
         const subject =
             thing.termType === 'BlankNode'
                 ? N3.DataFactory.blankNode(thing.value)
@@ -89,7 +91,7 @@ export class RDFSerializer extends DataSerializer {
                         if ((object as any)['predicates'] !== undefined) {
                             return [
                                 N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object),
-                                ...this.thingToQuads(object as Thing),
+                                ...this.serializeToQuads(object as Thing),
                             ];
                         } else {
                             return [N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object)];
@@ -101,9 +103,12 @@ export class RDFSerializer extends DataSerializer {
         ];
     }
 
-    static async stringify(thing: Thing, options?: N3.WriterOptions): Promise<string> {
+    static async stringify(
+        thing: Thing | any,
+        options: N3.WriterOptions & { baseUri?: IriString } = {},
+    ): Promise<string> {
         return new Promise((resolve, reject) => {
-            const quads: N3.Quad[] = this.thingToQuads(thing);
+            const quads: N3.Quad[] = this.serializeToQuads(thing, options.baseUri);
             // Filter the prefixes to only include prefixes used
             const prefixes: Record<string, string> = {
                 xsd: 'http://www.w3.org/2001/XMLSchema#',
