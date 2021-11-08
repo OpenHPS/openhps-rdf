@@ -1,7 +1,8 @@
 import 'mocha';
 import { AngleUnit, DataFrame, DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { openhps, RDFSerializer } from '../../src';
+import { openhps, RDFSerializer, Thing } from '../../src';
 import { expect } from 'chai';
+import { Parser } from 'n3';
 
 describe('DataFrame', () => {
     const object = new DataObject();
@@ -23,9 +24,15 @@ describe('DataFrame', () => {
         const serialized = RDFSerializer.serialize(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
 
         it('should serialize the position of a frame', async () => {
-            console.log(await RDFSerializer.stringify(serialized, {
-                format: 'text/turtle'
-            }))
+            const turtle = await RDFSerializer.stringify(serialized, {
+                format: 'text/turtle',
+                prettyPrint: true
+            });
+            expect(frame.getObjects().length).to.equal(1);
+            expect(frame['_objects'].size).to.equal(1);
+            expect(serialized.predicates[openhps.includesObject].length).to.equal(1);
+            expect((serialized.predicates[openhps.includesObject][0] as Thing).predicates[openhps.hasPosition].length).to.equal(3);
+            console.log(turtle);
         });
     });
 

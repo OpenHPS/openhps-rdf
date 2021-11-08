@@ -3,9 +3,12 @@
  * @see {@link https://gitlab.com/vincenttunru/rdf-namespaces}
  */
 
-import { fetchDocument, TripleSubject, TripleDocument } from 'tripledoc';
 import { Mirrors, namespaces } from '../namespaces';
 import { getTs } from './getTs';
+import axios from 'axios';
+import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
+import { RdfXmlParser } from "rdfxml-streaming-parser";
+import { parse } from 'uuid';
 
 /**
  * @param namespace
@@ -32,61 +35,58 @@ export async function generateNamespaceTs(
     };
 
     const schemaLocation = options.mirrors[namespace] || namespace;
-    const schemaDoc = await fetchWithRetries(schemaLocation);
+    const response = await axios.get(schemaLocation, {
+        headers: {
+            'Accept': 'text/turtle, application/rdf+xml'
+        }
+    });
+    const file = response.data;
+    let quads: Quad[] = [];
+    const contentType = response.headers['content-type'] ?? '';
+    if (contentType.includes("application/rdf+xml") || file.startsWith("<?xml version=")) {
+        const parser = new RdfXmlParser();
+        parser.on('data', (data: Quad) => {
+            quads.push(data);
+        });
+        parser.on('error', (err) => {
+            console.log(schemaLocation)
+            console.error(err);
+        });
+        parser.write(file);
+        parser.end();
+    } else {
+        const mimetype = contentType.substring(0, contentType.indexOf(";"));
+        const parser = new Parser({
+            format: mimetype
+        });
+        quads = parser.parse(file);
+    }
+    const store = new Store(quads);
 
-    const entities = Object.values(entityTypes).reduce<TripleSubject[]>((entitiesSoFar, entityType) => {
-        const entitiesOfThisType = schemaDoc.getSubjectsOfType(entityType);
+    const entities: NamedNode[] = Object.values(entityTypes).reduce((entitiesSoFar, entityType) => {
+        const entitiesOfThisType = store.getSubjects(null, DataFactory.namedNode(entityType), null);
         const newEntitiesOfThisType = entitiesOfThisType.filter((entityOfThisType) => {
             // Only include this entity if it is not present in the list yet:
-            return entitiesSoFar.findIndex((entity) => entity.asNodeRef() === entityOfThisType.asNodeRef()) === -1;
+            return entitiesSoFar.findIndex((entity) => entity.id === entityOfThisType.id) === -1;
         });
-
         return entitiesSoFar.concat(newEntitiesOfThisType);
     }, []);
     const typeAliases = Object.keys(entityTypes)
         .map((alias) => `type ${alias} = IriString;`)
         .join('\n');
     const entityTs = entities
-        .filter((entity) => {
-            const entityName = entity.asNodeRef().substring(namespace.length);
+        .filter((entity: NamedNode) => {
+            const entityName = entity.id.substring(namespace.length);
             return (
                 // Only include names that are valid Javascript identifiers (i.e. alphanumeric characters,
                 // underscores and dollar signs allowed, but shouldn't start with a digit)...
                 /^[A-Za-z_$](\w|\$)*$/.test(entityName) &&
                 // ...and are actually in this namespace:
-                entity.asNodeRef().substring(0, namespace.length) === namespace
+                entity.id.substring(0, namespace.length) === namespace
             );
         })
-        .map((entity) => getTs(entity, namespace, entityTypes))
+        .map((entity) => getTs(entity, store, namespace, entityTypes))
         .join('');
     const typescript = 'type IriString = `${\'http\' | \'https\'}://${string}`;\n' + typeAliases + '\n' + entityTs;
     return typescript;
-}
-
-const fetchWithRetries: typeof fetchDocument = async (url) => {
-    let fetchedDoc: TripleDocument | undefined = undefined;
-    let error = undefined;
-    const maxTries = 5;
-    for (let tries = 0; tries < maxTries && typeof fetchedDoc === 'undefined'; tries++) {
-        try {
-            fetchedDoc = await fetchDocument(url);
-        } catch (e) {
-            console.error(`Fetching ${url} failed (attempt ${tries}).`);
-            error = e;
-            await timeoutPromise(5000);
-        }
-    }
-    if (typeof fetchedDoc === 'undefined') {
-        console.error(`Fetching ${url} failed ${maxTries} times; no longer retrying.`);
-        throw error;
-    }
-
-    return fetchedDoc;
-};
-
-/**
- * @param ms
- */
-async function timeoutPromise(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }

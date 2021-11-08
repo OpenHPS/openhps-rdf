@@ -40,6 +40,17 @@ export class InternalRDFSerializer extends Serializer {
             return;
         }
 
+        // Custom serializer
+        if (
+            memberOptions &&
+            memberOptions.options &&
+            memberOptions.options.rdf &&
+            memberOptions.options.rdf.serializer
+        ) {
+            return memberOptions.options.rdf.serializer(sourceObject) as any;
+        }
+
+        // Existing serialization strategy
         const serializer = this.serializationStrategy.get(typeDescriptor.ctor);
         if (serializer !== undefined) {
             return serializer(sourceObject, typeDescriptor, memberName, this, memberOptions, serializerOptions);
@@ -112,9 +123,9 @@ export class InternalRDFSerializer extends Serializer {
                 : {},
             termType: uri.startsWith('http') ? 'NamedNode' : 'BlankNode',
         };
-        
+
         if (options.serializer) {
-            thing = mergeDeep(thing, options.serializer(sourceObject));
+            thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
         }
 
         metadata.dataMembers.forEach((member) => {

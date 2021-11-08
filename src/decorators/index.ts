@@ -1,4 +1,5 @@
-import { MemberOptionsBase, SerializableObjectOptions } from '@openhps/core'; // DO NOT REMOVE
+import { MemberOptionsBase, SerializableObjectOptions, SerializableMapMemberOptions } from '@openhps/core'; // DO NOT REMOVE
+import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 
 declare module '@openhps/core/dist/types/data/decorators/options' {
@@ -35,11 +36,16 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this object.
              */
-            serializer?: (object: T) => Partial<Thing>;
+            serializer?: (object: T, baseUri?: IriString) => Partial<Thing>;
             /**
              * Custom (partial) deserializer for this object.
              */
             deserializer?: (thing: Thing) => Partial<T>;
+            /**
+             * Type resolver for deserialized thing. Return true
+             * if the type matches and false if the type does not match.
+             */
+            typeResolver?: (thing: Thing) => boolean;
         };
     }
 
@@ -55,6 +61,14 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              * When not provided, the member can not be serialized.
              */
             predicate: IriString | IriString[];
+            /**
+             * Custom (partial) serializer for this member.
+             */
+            serializer?: (object: any, baseUri?: IriString) => Partial<Quad_Object>;
+            /**
+             * Custom (partial) deserializer for this member.
+             */
+            deserializer?: (thing: Thing) => any;
         } & RDFLiteralOptions;
     }
 }

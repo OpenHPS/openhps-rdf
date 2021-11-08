@@ -35,11 +35,12 @@ const namespaces: Namespaces = {
      *
      * @see {@link https://github.com/opengeospatial/ogc-geosparql/tree/master/1.1}
      */
-    geosparql: 'http://www.opengis.net/ont/geosparql#',
+    ogc: 'http://www.opengis.net/ont/geosparql#',
 };
 
 const mirrors: Mirrors = {
-    'http://www.opengis.net/ont/geosparql#': 'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
+    'http://www.opengis.net/ont/geosparql#':
+        'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
     'http://purl.org/dc/terms/':
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
@@ -48,7 +49,7 @@ const mirrors: Mirrors = {
         'https://raw.githubusercontent.com/HajoRijgersberg/OM/master/om-2-ucum.ttl',
     'http://purl.org/iot/vocab/m3-lite#': 'http://smart-ics.ee.surrey.ac.uk/ontology/m3-lite.owl#',
     'http://openhps.org/terms#': 'https://cdn.jsdelivr.net/gh/OpenHPS/openhps-rdf@master/ontology/v1/openhps.ttl',
-    'http://purl.oclc.org/NET/ssnx/qu/qu#': 'https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu.owl'
+    'http://purl.oclc.org/NET/ssnx/qu/qu#': 'https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu.owl',
 };
 
 export { namespaces, mirrors };

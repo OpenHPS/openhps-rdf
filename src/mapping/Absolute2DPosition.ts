@@ -1,17 +1,17 @@
 import { SerializableObject, Absolute2DPosition, SerializableMember } from '@openhps/core';
 import { DataFactory } from 'n3';
 import { xsd } from '../decorators';
-import { geo, geosparql } from '../vocab';
+import { geo, ogc } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: geo.Point,
         serializer: (pos: Absolute2DPosition) => {
             return {
                 predicates: {
-                    [geosparql.wktLiteral]: [DataFactory.literal(`POINT(${pos.x} ${pos.y})`, geosparql.wktLiteral)]
-                }
-            }
-        }
+                    [ogc.wktLiteral]: [DataFactory.literal(`POINT(${pos.x} ${pos.y})`, ogc.wktLiteral)],
+                    [ogc.coordinateDimension]: [DataFactory.literal(2)],
+                },
+            };
+        },
     },
 })(Absolute2DPosition);

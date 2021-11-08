@@ -6,7 +6,7 @@ import { position } from '../../src/vocab/schema';
 
 describe('DataObject', () => {
     const object = new DataObject();
-    object.displayName = "Maxim Van de Wynckel";
+    object.displayName = "Beat Signer";
     object.position = new GeographicalPosition(50.40, 10.20, 15);
     object.position.unit = LengthUnit.METER;
     object.position.accuracy = new GeographicalAccuracy(1, 1, 1, LengthUnit.KILOMETER);
@@ -21,8 +21,13 @@ describe('DataObject', () => {
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
 
-        it('should have a single rdf type', () => {
+        
+        it('should have a single rdf type', async () => {
             expect(serialized.predicates[rdf.type].length).to.equal(1);
+            const turtle = await RDFSerializer.stringify(serialized, {
+                format: 'text/turtle',
+                prettyPrint: false
+            });
         });
 
         it('should serialize the position of an object', () => {

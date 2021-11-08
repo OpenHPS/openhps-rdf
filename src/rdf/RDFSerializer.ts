@@ -10,6 +10,7 @@ import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
 import { IriString, Thing } from './types';
 import * as N3 from 'n3';
+import { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 
@@ -83,32 +84,28 @@ export class RDFSerializer extends DataSerializer {
             thing.termType === 'BlankNode'
                 ? N3.DataFactory.blankNode(thing.value)
                 : N3.DataFactory.namedNode(thing.value);
-        return [
-            ...Object.keys(thing.predicates)
-                .map((predicateIri) => {
-                    const predicate = N3.DataFactory.namedNode(predicateIri);
-                    return thing.predicates[predicateIri].map((object) => {
-                        if ((object as any)['predicates'] !== undefined) {
-                            return [
-                                N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object),
-                                ...this.serializeToQuads(object as Thing),
-                            ];
-                        } else {
-                            return [N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object)];
-                        }
-                    });
-                })
-                .flat()
-                .flat(),
-        ];
+        return Object.keys(thing.predicates)
+            .map((predicateIri) => {
+                const predicate = N3.DataFactory.namedNode(predicateIri);
+                return thing.predicates[predicateIri].map((object) => {
+                    if ((object as any)['predicates'] !== undefined) {
+                        return [
+                            N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object),
+                            ...this.serializeToQuads(object as Thing),
+                        ];
+                    } else {
+                        return [N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object)];
+                    }
+                });
+            })
+            .flat()
+            .flat();
     }
 
-    static async stringify(
-        thing: Thing | any,
-        options: N3.WriterOptions & { baseUri?: IriString } = {},
-    ): Promise<string> {
+    static async stringify(thing: Thing | any, options: WriterOptions = {}): Promise<string> {
         return new Promise((resolve, reject) => {
             const quads: N3.Quad[] = this.serializeToQuads(thing, options.baseUri);
+            const store = new N3.Store(quads);
             // Filter the prefixes to only include prefixes used
             const prefixes: Record<string, string> = {
                 xsd: 'http://www.w3.org/2001/XMLSchema#',
@@ -145,9 +142,26 @@ export class RDFSerializer extends DataSerializer {
                 ...options.prefixes,
             };
             const writer = new N3.Writer(options);
-            quads.forEach((quad) => {
-                writer.addQuad(quad);
-            });
+            if (options.prettyPrint) {
+                store.getSubjects(null, null, null).forEach((subject) => {
+                    if (subject.termType === 'BlankNode') {
+                        // Ignore blank nodes
+                        return;
+                    } else {
+                        store.getPredicates(subject, null, null).forEach((predicate) => {
+                            store.getObjects(subject, predicate, null).forEach((object) => {
+                                if (object.termType === 'BlankNode') {
+                                    writer.addQuad(subject, predicate, this.writeBlankNode(writer, object, store));
+                                } else {
+                                    writer.addQuad(subject, predicate, object);
+                                }
+                            });
+                        });
+                    }
+                });
+            } else {
+                writer.addQuads(quads);
+            }
             writer.end((err, result) => {
                 if (err) {
                     return reject(err);
@@ -155,6 +169,30 @@ export class RDFSerializer extends DataSerializer {
                 resolve(result);
             });
         });
+    }
+
+    private static writeBlankNode(writer: N3.Writer, object: N3.Quad_Object, store: N3.Store): N3.BlankNode {
+        const blankNodePredicates = store.getPredicates(object, null, null);
+        return writer.blank(
+            blankNodePredicates
+                .map((predicate) => {
+                    const blankNodeObjects = store.getObjects(object, predicate, null);
+                    return blankNodeObjects.map((object) => {
+                        if (object.termType === 'BlankNode') {
+                            return {
+                                predicate,
+                                object: this.writeBlankNode(writer, object, store),
+                            };
+                        } else {
+                            return {
+                                predicate,
+                                object,
+                            };
+                        }
+                    });
+                })
+                .flat(),
+        );
     }
 
     static deserialize<T>(serializedData: Thing, dataType?: Constructor<T>): T;
@@ -187,4 +225,14 @@ export class RDFSerializer extends DataSerializer {
             },
         );
     }
+}
+
+export interface WriterOptions extends N3WriterOptions {
+    baseUri?: IriString;
+    /**
+     * Pretty print the output. Merge blank nodes in the [] notation.
+     *
+     * @default false
+     */
+    prettyPrint?: boolean;
 }

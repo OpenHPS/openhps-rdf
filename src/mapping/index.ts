@@ -11,3 +11,4 @@ import './ReferenceSpace';
 import './Orientation';
 
 import './Unit';
+import './SensorValue';

@@ -23,4 +23,5 @@ SerializableMapMember(String, DataObject, {
     rdf: {
         predicate: openhps.includesObject,
     },
+    name: 'objects',
 })(DataFrame.prototype, '_objects');

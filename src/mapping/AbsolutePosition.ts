@@ -1,17 +1,15 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, geosparql, openhps, qu } from '../vocab';
+import { dcterms, ogc, openhps, qu } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.AbsolutePosition,
+        type: ogc.Geometry,
         serializer: (pos: AbsolutePosition) => {
             return {
-                predicates: {
-
-                }
-            }
-        }
+                predicates: {},
+            };
+        },
     },
 })(AbsolutePosition);
 SerializableMember({
@@ -29,6 +27,7 @@ SerializableMember({
     rdf: {
         predicate: openhps.hasAccuracy,
     },
+    name: 'accuracy',
 })(AbsolutePosition.prototype, '_accuracy');
 SerializableMember({
     rdf: {
