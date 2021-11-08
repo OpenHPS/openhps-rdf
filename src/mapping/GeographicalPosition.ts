@@ -25,8 +25,3 @@ SerializableMember({
         datatype: xsd.decimal,
     },
 })(GeographicalPosition.prototype, 'altitude');
-SerializableMember({
-    rdf: {
-        predicate: m3lite.DirectionHeading, // TODO: Temporary this is a class and not a property
-    },
-})(GeographicalPosition.prototype, 'orientation');

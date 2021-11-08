@@ -1,5 +1,5 @@
 import 'mocha';
-import { DataFrame, DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
+import { AngleUnit, DataFrame, DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
 import { openhps, RDFSerializer } from '../../src';
 import { expect } from 'chai';
 
@@ -10,9 +10,10 @@ describe('DataFrame', () => {
     object.position.unit = LengthUnit.METER;
     object.position.accuracy = new GeographicalAccuracy(1, 1, 1, LengthUnit.KILOMETER);
     object.position.orientation = Orientation.fromEuler({
-        yaw: 0,
+        yaw: 90,
         roll: 0,
-        pitch: 0
+        pitch: 0,
+        unit: AngleUnit.DEGREE
     });
     object.addRelativePosition(new RelativeDistance('object1', 10));
     object.addRelativePosition(new RelativeDistance('object2', 5));

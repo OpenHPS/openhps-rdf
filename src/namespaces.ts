@@ -1,6 +1,10 @@
 export type Namespaces = { [alias: string]: string };
+export type Mirrors = { [namespace: string]: string };
 
-export default {
+const namespaces: Namespaces = {
+    /**
+     * W3C Geo
+     */
     geo: 'http://www.w3.org/2003/01/geo/wgs84_pos#',
     schema: 'http://schema.org/',
     rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -26,4 +30,25 @@ export default {
      */
     qu: 'http://purl.oclc.org/NET/ssnx/qu/qu#',
     openhps: 'http://openhps.org/terms#',
-} as Namespaces;
+    /**
+     * OGC GeoSparql 1.1
+     *
+     * @see {@link https://github.com/opengeospatial/ogc-geosparql/tree/master/1.1}
+     */
+    geosparql: 'http://www.opengis.net/ont/geosparql#',
+};
+
+const mirrors: Mirrors = {
+    'http://www.opengis.net/ont/geosparql#': 'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
+    'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
+    'http://purl.org/dc/terms/':
+        'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
+    'http://purl.org/dqm-vocabulary/v1/dqm#': 'http://semwebquality.org/dqm-vocabulary/v1/dqm.owl',
+    'http://www.ontology-of-units-of-measure.org/resource/om-2-ucum':
+        'https://raw.githubusercontent.com/HajoRijgersberg/OM/master/om-2-ucum.ttl',
+    'http://purl.org/iot/vocab/m3-lite#': 'http://smart-ics.ee.surrey.ac.uk/ontology/m3-lite.owl#',
+    'http://openhps.org/terms#': 'https://cdn.jsdelivr.net/gh/OpenHPS/openhps-rdf@master/ontology/v1/openhps.ttl',
+    'http://purl.oclc.org/NET/ssnx/qu/qu#': 'https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu.owl'
+};
+
+export { namespaces, mirrors };

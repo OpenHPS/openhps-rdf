@@ -1,10 +1,17 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, qu } from '../vocab';
+import { dcterms, geosparql, openhps, qu } from '../vocab';
 
 SerializableObject({
     rdf: {
         type: openhps.AbsolutePosition,
+        serializer: (pos: AbsolutePosition) => {
+            return {
+                predicates: {
+
+                }
+            }
+        }
     },
 })(AbsolutePosition);
 SerializableMember({

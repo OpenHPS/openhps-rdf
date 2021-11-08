@@ -18,3 +18,8 @@ SerializableMember({
         predicate: openhps.relativeTo,
     },
 })(RelativePosition.prototype, 'referenceObjectUID');
+SerializableMember({
+    rdf: {
+        predicate: openhps.hasAccuracy,
+    },
+})(RelativePosition.prototype, '_accuracy');

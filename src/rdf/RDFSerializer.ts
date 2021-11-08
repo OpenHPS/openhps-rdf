@@ -10,7 +10,7 @@ import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
 import { IriString, Thing } from './types';
 import * as N3 from 'n3';
-import namespaces from '../namespaces';
+import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 
 export class RDFSerializer extends DataSerializer {
@@ -157,7 +157,7 @@ export class RDFSerializer extends DataSerializer {
         });
     }
 
-    static deserialize<T>(serializedData: Thing, dataType?: Constructor<T>): T | T[];
+    static deserialize<T>(serializedData: Thing, dataType?: Constructor<T>): T;
     static deserialize<T>(serializedData: any[], dataType?: Constructor<T>): T | T[];
     /**
      * Deserialize data

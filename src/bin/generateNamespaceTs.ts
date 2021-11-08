@@ -4,9 +4,9 @@
  */
 
 import { fetchDocument, TripleSubject, TripleDocument } from 'tripledoc';
+import { Mirrors, namespaces } from '../namespaces';
 import { getTs } from './getTs';
 
-export type Mirrors = { [namespace: string]: string };
 /**
  * @param namespace
  * @param options
@@ -33,7 +33,7 @@ export async function generateNamespaceTs(
 
     const schemaLocation = options.mirrors[namespace] || namespace;
     const schemaDoc = await fetchWithRetries(schemaLocation);
-    
+
     const entities = Object.values(entityTypes).reduce<TripleSubject[]>((entitiesSoFar, entityType) => {
         const entitiesOfThisType = schemaDoc.getSubjectsOfType(entityType);
         const newEntitiesOfThisType = entitiesOfThisType.filter((entityOfThisType) => {

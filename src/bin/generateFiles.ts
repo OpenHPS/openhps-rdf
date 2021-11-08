@@ -5,9 +5,9 @@
 
 import { promisify } from 'util';
 import { writeFile, mkdir, exists } from 'fs';
-import { generateNamespaceTs, Mirrors } from './generateNamespaceTs';
+import { generateNamespaceTs } from './generateNamespaceTs';
 import { resolve } from 'path';
-import { Namespaces } from '../namespaces';
+import { Mirrors, Namespaces } from '../namespaces';
 
 const fsWriteFile = promisify(writeFile);
 const fsExists = promisify(exists);

@@ -33,13 +33,13 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              */
             predicates?: Record<IriString, IriString[]>;
             /**
-             * Custom serializer for this object.
+             * Custom (partial) serializer for this object.
              */
-            serializer?: (object: T) => Thing;
+            serializer?: (object: T) => Partial<Thing>;
             /**
-             * Custom deserializer for this object.
+             * Custom (partial) deserializer for this object.
              */
-            deserializer?: (thing: Thing) => T;
+            deserializer?: (thing: Thing) => Partial<T>;
         };
     }
 

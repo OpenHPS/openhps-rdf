@@ -13,6 +13,7 @@ import {
 import { IriString, Thing } from './types';
 import * as N3 from 'n3';
 import { XmlSchemaTypeIri, xsd } from '../decorators/';
+import { mergeDeep } from './utils';
 
 export class InternalRDFSerializer extends Serializer {
     serializationStrategy = new Map<Serializable<any>, SerializerFn<any, TypeDescriptor, any>>([
@@ -98,7 +99,7 @@ export class InternalRDFSerializer extends Serializer {
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
                 ? serializerOptions.rdf.baseUri + uri
                 : N3.DataFactory.blankNode(uri).value;
-        const thing: Thing = {
+        let thing: Thing = {
             value: uri,
             predicates: options.predicates
                 ? Object.entries(options.predicates)
@@ -111,6 +112,10 @@ export class InternalRDFSerializer extends Serializer {
                 : {},
             termType: uri.startsWith('http') ? 'NamedNode' : 'BlankNode',
         };
+        
+        if (options.serializer) {
+            thing = mergeDeep(thing, options.serializer(sourceObject));
+        }
 
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
