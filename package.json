@@ -22,9 +22,19 @@
       "types": "./dist/types/index.d.ts"
     },
     "./vocab": {
-      "require": "./dist/cjs/vocab/index.js",
-      "import": "./dist/esm/vocab/index.js",
-      "types": "./dist/types/vocab/index.d.ts"
+      "require": "./dist/cjs/index.vocab.js",
+      "import": "./dist/esm/index.vocab.js",
+      "types": "./dist/types/index.vocab.d.ts"
+    },
+    "./sparql": {
+      "require": "./dist/cjs/index.sparql.js",
+      "import": "./dist/esm/index.sparql.js",
+      "types": "./dist/types/index.sparql.d.ts"
+    },
+    "./serialization": {
+      "require": "./dist/cjs/index.serialization.js",
+      "import": "./dist/esm/index.serialization.js",
+      "types": "./dist/types/index.serialization.d.ts"
     }
   },
   "unpkg": "dist/web/openhps-rdf.min.js",
@@ -57,6 +67,7 @@
   "dependencies": {
     "@types/n3": "^1.10.3",
     "n3": ">=0.4.1",
+    "sparql-http-client": "^2.4.0",
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
