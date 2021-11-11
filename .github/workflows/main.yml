@@ -9,13 +9,13 @@ on:
 
 jobs:
   build_and_test:
-    env:
-      ADMIN_PASSWORD: test
-      FUSEKI_DATASET_1: openhps-rdf
     runs-on: ubuntu-latest
     services:
       jena-fuseki:
         image: 'stain/jena-fuseki:jena4'
+        env:
+          ADMIN_PASSWORD: test
+          FUSEKI_DATASET_1: openhps-rdf
         ports:
           - 3030:3030
     steps:
