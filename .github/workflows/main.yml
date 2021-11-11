@@ -10,8 +10,16 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    container:
+       image: 'stain/jena-fuseki:jena4'
     steps:
       - uses: actions/checkout@v2
+      - name: Start Test Server
+        env:
+          ADMIN_PASSWORD: 'test'
+          FUSEKI_DATASET_1: 'openhps-rdf'
+        run: |
+          sh /docker-entrypoint.sh
       - name: Build
         run: |
           npm install
