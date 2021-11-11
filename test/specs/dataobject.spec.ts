@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { position } from '../../src/vocab/schema';
 
 describe('DataObject', () => {
-    const object = new DataObject();
+    const object = new DataObject("bsigner");
     object.displayName = "Beat Signer";
     object.position = new GeographicalPosition(50.40, 10.20, 15);
     object.position.unit = LengthUnit.METER;
@@ -38,10 +38,11 @@ describe('DataObject', () => {
 
     describe('deserialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
-        const deserialized = RDFSerializer.deserialize(serialized);
+        const deserialized: DataObject = RDFSerializer.deserialize(serialized);
 
         it('should deserialize an object', () => {
-            
+            expect(deserialized.displayName).to.equal("Beat Signer");
+            expect(deserialized.uid).to.equal("bsigner");
         });
     });
 

@@ -7,7 +7,9 @@ SerializableObject({
         serializer: (pos: Absolute2DPosition) => {
             return {
                 predicates: {
-                    [ogc.wktLiteral]: [DataFactory.literal(`POINT(${pos.x} ${pos.y})`, ogc.wktLiteral)],
+                    [ogc.asWKT]: [
+                        DataFactory.literal(`POINT(${pos.x} ${pos.y})`, DataFactory.namedNode(ogc.wktLiteral)),
+                    ],
                     [ogc.coordinateDimension]: [DataFactory.literal(2)],
                 },
             };

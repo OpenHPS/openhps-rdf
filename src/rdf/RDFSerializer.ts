@@ -1,7 +1,6 @@
 import {
     DataSerializer,
     Serializable,
-    MappedTypeConverters,
     Constructor,
     DataSerializerConfig,
     SerializableObjectOptions,
@@ -29,8 +28,8 @@ export class RDFSerializer extends DataSerializer {
                 }
             },
         );
-        this.eventEmitter.on('registerType', <T>(type: Serializable<T>, converters?: MappedTypeConverters<T>) => {
-            RDFSerializer.registerRDFType(type, converters);
+        this.eventEmitter.on('registerType', <T>(type: Serializable<T>) => {
+            RDFSerializer.registerRDFType(type);
         });
     }
 
@@ -41,7 +40,7 @@ export class RDFSerializer extends DataSerializer {
         };
     }
 
-    protected static registerRDFType<T>(type: Serializable<T>, converters?: MappedTypeConverters<T>): void {
+    protected static registerRDFType<T>(type: Serializable<T>): void {
         // Map RDF types
         const meta = this.getMetadata(type);
         if (!meta.options || !meta.options.rdf) {
@@ -75,6 +74,40 @@ export class RDFSerializer extends DataSerializer {
             },
             ...this.options,
         } as any);
+    }
+
+    static deserializeFromStore<T>(subject: N3.NamedNode | N3.BlankNode, store: N3.Store): T {
+        /**
+         * @param subject
+         * @param store
+         */
+        function quadsToThing(subject: N3.NamedNode | N3.BlankNode, store: N3.Store): Thing {
+            return {
+                termType: subject.termType,
+                value: subject.value,
+                predicates: {
+                    ...store
+                        .getPredicates(subject, null, null)
+                        .map((predicate) => {
+                            return {
+                                [predicate.value]: store.getObjects(subject, predicate, null).map((object) => {
+                                    if (
+                                        object.constructor.name === 'BlankNode' ||
+                                        object.constructor.name === 'NamedNode'
+                                    ) {
+                                        return quadsToThing(object as any, store);
+                                    } else {
+                                        return object;
+                                    }
+                                }),
+                            };
+                        })
+                        .reduce((a, b) => ({ ...a, ...b }), {}),
+                },
+            };
+        }
+        const thing = quadsToThing(subject, store);
+        return this.deserialize(thing);
     }
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): N3.Quad[] {

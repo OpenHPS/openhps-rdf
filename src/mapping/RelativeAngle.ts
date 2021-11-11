@@ -1,4 +1,4 @@
-import { RelativeAngle, SerializableMember, SerializableObject } from '@openhps/core';
+import { RelativeAngle, SerializableObject } from '@openhps/core';
 import { openhps } from '../vocab';
 
 SerializableObject({
