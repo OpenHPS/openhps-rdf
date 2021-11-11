@@ -41,7 +41,7 @@ describe('DataObject', () => {
         const deserialized = RDFSerializer.deserialize(serialized);
 
         it('should deserialize an object', () => {
-            console.log(deserialized)
+            
         });
     });
 

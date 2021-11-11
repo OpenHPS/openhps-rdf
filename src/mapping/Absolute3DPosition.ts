@@ -1,8 +1,7 @@
-import { SerializableObject, Absolute3DPosition, SerializableMember } from '@openhps/core';
+import { SerializableObject, Absolute3DPosition } from '@openhps/core';
 import { DataFactory } from 'n3';
-import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { geo, ogc } from '../vocab';
+import { ogc } from '../vocab';
 
 SerializableObject({
     rdf: {

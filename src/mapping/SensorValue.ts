@@ -1,6 +1,6 @@
-import { AngleUnit, SensorValue, SerializableMember, SerializableObject } from '@openhps/core';
+import { SensorValue, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, m3lite, openhps, qu, sosa } from '../vocab';
+import { dcterms, openhps, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {

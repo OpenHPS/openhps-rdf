@@ -1,1 +1,1 @@
-export * from './RDFDataDriver';
+export * from './SPARQLDataDriver';

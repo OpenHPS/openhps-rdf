@@ -6,7 +6,7 @@ import {
     RelativePosition,
 } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, foaf, schema, rdf } from '../vocab';
+import { dcterms, openhps, foaf } from '../vocab';
 
 SerializableObject({
     rdf: {

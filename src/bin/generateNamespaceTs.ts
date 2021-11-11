@@ -37,7 +37,7 @@ export async function generateNamespaceTs(
     const schemaLocation = options.mirrors[namespace] || namespace;
     const response = await axios.get(schemaLocation, {
         headers: {
-            'Accept': 'text/turtle, application/rdf+xml'
+            'Accept': 'text/turtle, application/rdf+xml, text/html'
         }
     });
     const file = response.data;
@@ -49,7 +49,6 @@ export async function generateNamespaceTs(
             quads.push(data);
         });
         parser.on('error', (err) => {
-            console.log(schemaLocation)
             console.error(err);
         });
         parser.write(file);

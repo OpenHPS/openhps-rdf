@@ -32,7 +32,6 @@ describe('DataFrame', () => {
             expect(frame['_objects'].size).to.equal(1);
             expect(serialized.predicates[openhps.includesObject].length).to.equal(1);
             expect((serialized.predicates[openhps.includesObject][0] as Thing).predicates[openhps.hasPosition].length).to.equal(3);
-            console.log(turtle);
         });
     });
 
