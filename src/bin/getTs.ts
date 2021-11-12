@@ -3,21 +3,36 @@
  * @see {@link https://gitlab.com/vincenttunru/rdf-namespaces}
  */
 
-import { TripleSubject } from 'tripledoc';
+import { NamedNode, Store } from 'n3';
+
+function getComment(node: NamedNode, store: Store): string {
+    const rdfComments = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null);
+    const skosDefinitions = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null);
+    const comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : undefined;
+    return comment;
+}
+
+function getLabel(node: NamedNode, store: Store): string {
+    const rdfLabels = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#label', null);
+    const skosLabels = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null);
+    const label = rdfLabels.length > 0 ? rdfLabels[0].value : skosLabels.length > 0 ? skosLabels[0].value : undefined;
+    return label;
+}
 
 /**
  * @param entity
  * @param namespace
  */
-export function getTs(entity: TripleSubject, namespace: string, entityTypes: { [alias: string]: string }): string {
-    const entityType = Object.entries(entityTypes).find(
-        ([_alias, type]) => type === entity.getNodeRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
-    );
+export function getTs(node: NamedNode, store: Store, namespace: string, entityTypes: { [alias: string]: string }): string {
+    const types = store.getObjects(node, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', null);
+    const entityType = types.length > 0 ? Object.entries(entityTypes).find(
+        ([_alias, type]) => type === types[0].id,
+    ) : undefined;
     const typeAlias = entityType ? entityType[0] : 'string';
-    const comment = entity.getLiteral('http://www.w3.org/2000/01/rdf-schema#comment');
+    const comment = getComment(node, store);
     let formattedComment = typeof comment === 'string' ? comment.replace(/\n/g, '\n * ') : comment;
 
-    let identifier = entity.asNodeRef().substring(namespace.length);
+    let identifier = node.id.substring(namespace.length);
     if (reservedKeywords.includes(identifier)) {
         formattedComment =
             formattedComment +
@@ -28,15 +43,16 @@ export function getTs(entity: TripleSubject, namespace: string, entityTypes: { [
         identifier = identifier + '__workaround';
     }
 
+    const label = getLabel(node, store);
     return `
 /**
- * ${entity.getLiteral('http://www.w3.org/2000/01/rdf-schema#label') || ''}
+ * ${label ?? ''}
  * 
  * ${formattedComment || ''}
  *
- * ${entity.asNodeRef()}
+ * ${node.id}
  */
-export const ${identifier}: ${typeAlias} = '${entity.asNodeRef()}';
+export const ${identifier}: ${typeAlias} = '${node.id}';
 `;
 }
 

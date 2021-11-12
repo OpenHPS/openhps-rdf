@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "node12",
+        "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": true,
         "removeComments": true,
@@ -11,6 +11,7 @@
         "outDir": "./dist/cjs",
         "declaration": true,
         "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
         "experimentalDecorators": true,
     },
     "include": [

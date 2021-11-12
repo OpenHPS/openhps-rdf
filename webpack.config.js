@@ -46,13 +46,13 @@ const defaultConfig = env => ({
   },
 });
 
-const bundle = (env, module) => ({
+const bundle = (env, module, entry = 'index', suffix = '') => ({
   name: PROJECT_NAME,
-  entry: `./dist/${module ? "esm" : "cjs"}/index.js`,
+  entry: `./dist/esm/${entry}.js`,
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: `web/${PROJECT_NAME}${module ? ".es" : ""}${env.prod ? ".min" : ""}.js`,
-    library: module ? undefined : LIBRARY_NAME,
+    filename: `web/${PROJECT_NAME}${suffix}${module ? ".es" : ""}${env.prod ? ".min" : ""}.js`,
+    library: module ? undefined : ['OpenHPS', LIBRARY_NAME.substring(LIBRARY_NAME.indexOf("/") + 1)],
     libraryTarget: module ? "module" : "umd",
     umdNamedDefine: !module,
     globalObject: module ? undefined : `(typeof self !== 'undefined' ? self : this)`,
@@ -63,7 +63,12 @@ const bundle = (env, module) => ({
   },
   externalsType: module ? "module" : undefined,
   externals: {
-    '@openhps/core': "./" + (module ? "openhps-core.es" : "openhps-core") + (env.prod ? ".min" : "") + ".js"
+    '@openhps/core': module ? "./openhps-core.es" + (env.prod ? ".min" : "") + ".js" : {
+      commonjs: '@openhps/core',
+      commonjs2: '@openhps/core',
+      amd: 'core',
+      root: ['OpenHPS', 'core']
+    }
   },
   devtool: 'source-map',
   plugins: [],
@@ -71,6 +76,12 @@ const bundle = (env, module) => ({
 });
 
 module.exports = env => [
-  bundle(env, true),
-  bundle(env, false),
+  bundle(env, true, 'index', '.all'),
+  bundle(env, false, 'index', '.all'),
+  bundle(env, true, 'index.sparql', '.sparql'),
+  bundle(env, false, 'index.sparql', '.sparql'),
+  bundle(env, true, 'index.serialization', '.serialization'),
+  bundle(env, false, 'index.serialization', '.serialization'),
+  bundle(env, true, 'index.vocab', '.vocab'),
+  bundle(env, false, 'index.vocab', '.vocab'),
 ];

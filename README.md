@@ -31,9 +31,57 @@ npm install @openhps/rdf --save
 
 ## Usage
 
-### Create a new RDF serializable object
+### `RDFSerializer`
+The `RDFSerializer` is a similar utility as the `DataSerializer` from [@openhps/core](https://openhps.org/docs/core/classes/dataserializer). Instead of serializing and deserializing to JSON, it converts to RDF triples.
+
+#### to thing
+Serialize a serializable object to an RDF thing.
 ```typescript
-import '@openhps/solid'; // Import to load type declarations
+import { RDFSerializer, Thing } from '@openhps/rdf';
+
+const thing: Thing = RDFSerializer.serialize(new DataObject(/* ... */));
+```
+When storing a named object, a base URI should be provided.
+
+#### to quads
+Serialize a serializable object to [RdfJS Quads](https://rdf.js.org/data-model-spec/).
+```typescript
+import { RDFSerializer } from '@openhps/rdf';
+import { Quad } from 'rdfjs';
+
+const quads: Quad[] = RDFSerializer.serializeToQuads(new DataObject(/* ... */));
+```
+When storing a named object, a base URI should be provided.
+
+#### to string
+Serializing to a string is possible. We use N3 for exporting the serializable objects to
+turtle, Notation-3 or [other supported formats](https://github.com/rdfjs/N3.js/#writing).
+```typescript
+import { RDFSerializer } from '@openhps/rdf';
+
+const turtle: string = RDFSerializer.stringify(new DataObject(/* ... */), {
+    format: 'text/turtle',
+    prettyPrint: true
+});
+```
+
+#### from thing
+Deserialize a serializable object from a thing.
+```typescript
+import { RDFSerializer, Thing } from '@openhps/rdf';
+
+const thing: Thing
+
+/* ... */
+
+const object: DataObject = RDFSerializer.deserialize(thing);
+```
+
+### Create a new RDF serializable object
+
+#### `SerializableObject`
+```typescript
+import '@openhps/rdf'; // Import to load type declarations
 import { SerializableObject, SerializableMember } from '@openhps/core';
 
 @SerializableObject({
@@ -43,6 +91,28 @@ import { SerializableObject, SerializableMember } from '@openhps/core';
 })
 class SomeObject {
 
+}
+```
+
+#### `SerializableMember`
+API documentation for literal: https://openhps.org/docs/rdf/interfaces/rdfliteraloptions
+
+```typescript
+import { SerializableMember, SerializableObject } from "@openhps/core";
+import { foaf } from "@openhps/rdf";
+
+@SerializableObject({
+    rdf: {
+        type: foaf.Project
+    }
+})
+export class Project {
+    @SerializableMember({
+        rdf: {
+            predicate: foaf.name
+        }
+    })
+    name: string;
 }
 ```
 

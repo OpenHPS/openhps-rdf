@@ -1,6 +1,6 @@
 import { SerializableObject, GeographicalPosition, SerializableMember } from '@openhps/core';
 import { xsd } from '../decorators';
-import { geo, m3lite, rdf, schema } from '../vocab';
+import { geo, schema } from '../vocab';
 
 SerializableObject({
     rdf: {

@@ -12,7 +12,7 @@ import {
 } from '@openhps/core';
 import { IriString, Thing } from './types';
 import * as N3 from 'n3';
-import { XmlSchemaTypeIri, xsd } from '../decorators/';
+import { RDFIdentifierOptions, RDFLiteralOptions, XmlSchemaTypeIri, xsd } from '../decorators/';
 import { mergeDeep } from './utils';
 
 export class InternalRDFSerializer extends Serializer {
@@ -40,6 +40,17 @@ export class InternalRDFSerializer extends Serializer {
             return;
         }
 
+        // Custom serializer
+        if (
+            memberOptions &&
+            memberOptions.options &&
+            memberOptions.options.rdf &&
+            memberOptions.options.rdf.serializer
+        ) {
+            return memberOptions.options.rdf.serializer(sourceObject) as any;
+        }
+
+        // Existing serialization strategy
         const serializer = this.serializationStrategy.get(typeDescriptor.ctor);
         if (serializer !== undefined) {
             return serializer(sourceObject, typeDescriptor, memberName, this, memberOptions, serializerOptions);
@@ -94,7 +105,21 @@ export class InternalRDFSerializer extends Serializer {
         }
 
         // Get the URI if available
-        let uri = options.uri ? options.uri(sourceObject) : undefined;
+        const identifierMember = Array.from(metadata.dataMembers.values()).filter((member) => {
+            return (
+                member &&
+                member.options &&
+                member.options.rdf &&
+                (member.options.rdf as RDFIdentifierOptions).identifier
+            );
+        })[0];
+        let uri: string = undefined;
+        if (identifierMember) {
+            const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
+            uri = rdfOptions.serializer
+                ? rdfOptions.serializer((sourceObject as any)[identifierMember.key] as string, sourceObject.constructor)
+                : ((sourceObject as any)[identifierMember.key] as string);
+        }
         uri =
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
                 ? serializerOptions.rdf.baseUri + uri
@@ -110,12 +135,12 @@ export class InternalRDFSerializer extends Serializer {
                           return { ...a, ...b };
                       })
                 : {},
-            termType: uri.startsWith('http') ? 'NamedNode' : 'BlankNode',
         };
-        
+
         if (options.serializer) {
-            thing = mergeDeep(thing, options.serializer(sourceObject));
+            thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
         }
+        thing.termType = thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
 
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
@@ -125,7 +150,7 @@ export class InternalRDFSerializer extends Serializer {
                     : rootMember && rootMember.options && rootMember.options.rdf
                     ? rootMember
                     : undefined;
-            if (!memberOptions) {
+            if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
                 return;
             }
             const object = serializer.convertSingleValue(
@@ -136,7 +161,7 @@ export class InternalRDFSerializer extends Serializer {
                 serializerOptions,
             );
             if (object) {
-                const predicates = memberOptions.options.rdf.predicate;
+                const predicates = (memberOptions.options.rdf as RDFLiteralOptions).predicate;
                 [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
                     const predicate = thing.predicates[predicateIri] || [];
                     predicate.push(...(Array.isArray(object) ? object : [object]).filter((s) => s));
@@ -151,7 +176,7 @@ export class InternalRDFSerializer extends Serializer {
         sourceObject: Array<any>,
         typeDescriptor?: ArrayTypeDescriptor,
         memberName?: string,
-        serializer?: Serializer,
+        _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
     ): (N3.Literal | Thing)[] {
@@ -170,7 +195,7 @@ export class InternalRDFSerializer extends Serializer {
         sourceObject: Map<any, any>,
         typeDescriptor?: MapTypeDescriptor,
         memberName?: string,
-        serializer?: Serializer,
+        _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
     ): (N3.Literal | Thing)[] {
@@ -183,7 +208,7 @@ export class InternalRDFSerializer extends Serializer {
         sourceObject: Map<any, any>,
         typeDescriptor?: MapTypeDescriptor,
         memberName?: string,
-        serializer?: Serializer,
+        _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
     ): (N3.Literal | Thing)[] {
@@ -200,10 +225,11 @@ export class InternalRDFSerializer extends Serializer {
         memberOptions?: ObjectMemberMetadata,
     ): N3.Literal {
         let xsdDatatype: XmlSchemaTypeIri = undefined;
-        if (memberOptions.options.rdf && memberOptions.options.rdf.datatype) {
+        const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
+        if (rdfOptions && rdfOptions.datatype) {
             // Data type provided
-            xsdDatatype = memberOptions.options.rdf.datatype;
-            switch (memberOptions.options.rdf.datatype) {
+            xsdDatatype = rdfOptions.datatype;
+            switch (rdfOptions.datatype) {
                 case xsd.date:
                 case xsd.dateTime:
                     return this.serializeDate(sourceObject, typeDescriptor, memberName, serializer, memberOptions);
@@ -224,10 +250,7 @@ export class InternalRDFSerializer extends Serializer {
             }
         }
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return N3.DataFactory.literal(
-            sourceObject,
-            memberOptions.options.rdf ? memberOptions.options.rdf.language ?? dataTypeNode : dataTypeNode,
-        );
+        return N3.DataFactory.literal(sourceObject, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
     }
 
     protected serializeDate(
@@ -237,13 +260,11 @@ export class InternalRDFSerializer extends Serializer {
         serializer?: Serializer,
         memberOptions?: ObjectMemberMetadata,
     ): N3.Literal {
+        const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
         const xsdDatatype: XmlSchemaTypeIri = xsd.dateTime;
         const dateString = new Date(sourceObject).toISOString();
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return N3.DataFactory.literal(
-            dateString,
-            memberOptions.options.rdf ? memberOptions.options.rdf.language ?? dataTypeNode : dataTypeNode,
-        );
+        return N3.DataFactory.literal(dateString, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
     }
 
     protected iriToNode(iri: IriString): N3.NamedNode {

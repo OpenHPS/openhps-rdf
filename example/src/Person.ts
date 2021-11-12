@@ -6,7 +6,11 @@ import { Project } from './Project';
 @SerializableObject({
     rdf: {
         type: foaf.Person,
-        uri: (object: Person) => `${object.firstName}_${object.familyName}`.replace(/\s/g, "_")
+        serializer: (object: Person, baseUri?: string) => {
+            return {
+                value: `${object.firstName}_${object.familyName}`.replace(/\s/g, "_")
+            }
+        }
     }
 })
 export class Person extends DataObject {

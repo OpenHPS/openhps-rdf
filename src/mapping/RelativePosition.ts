@@ -22,4 +22,5 @@ SerializableMember({
     rdf: {
         predicate: openhps.hasAccuracy,
     },
+    name: 'accuracy',
 })(RelativePosition.prototype, '_accuracy');

@@ -1,4 +1,3 @@
-export * from './rdf';
-export * from './decorators';
-export * from './vocab';
-import './mapping';
+export * from './index.serialization';
+export * from './index.sparql';
+export * from './index.vocab';

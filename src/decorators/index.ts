@@ -1,4 +1,5 @@
-import { MemberOptionsBase, SerializableObjectOptions } from '@openhps/core'; // DO NOT REMOVE
+import { Serializable } from '@openhps/core'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 
 declare module '@openhps/core/dist/types/data/decorators/options' {
@@ -16,18 +17,6 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              */
             type?: IriString;
             /**
-             * Known RDF types of this class used for deserialization.
-             *
-             * @see {@link https://www.w3.org/TR/rdf-schema/#ch_type}
-             */
-            knownTypes?: IriString[];
-            /**
-             * Callback for retrieving the URI of the resource. If this URI does not
-             * start with 'http' it will use the base URI.
-             * When returning undefined the object will be treated as a blank node.
-             */
-            uri?: (object: T) => string | IriString | undefined;
-            /**
              * Additional static predicates to add to this object that are not based
              * on any properties inside the object.
              */
@@ -35,11 +24,16 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this object.
              */
-            serializer?: (object: T) => Partial<Thing>;
+            serializer?: (object: T, baseUri?: IriString) => Partial<Thing>;
             /**
              * Custom (partial) deserializer for this object.
              */
             deserializer?: (thing: Thing) => Partial<T>;
+            /**
+             * Type resolver for deserialized thing. Return true
+             * if the type matches and false if the type does not match.
+             */
+            typeResolver?: (thing: Thing) => boolean;
         };
     }
 
@@ -51,15 +45,43 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
          */
         rdf?: {
             /**
-             * Predicate or list of predicate URIs to use for this member.
-             * When not provided, the member can not be serialized.
+             * Specify if the member is an identifier
              */
-            predicate: IriString | IriString[];
-        } & RDFLiteralOptions;
+            identifier?: boolean;
+            /**
+             * Custom (partial) serializer for this member.
+             */
+            serializer?: (object: any, dataType?: Serializable<any>) => Partial<Quad_Object>;
+            /**
+             * Custom (partial) deserializer for this member.
+             */
+            deserializer?: (thing: Thing, dataType?: Serializable<any>) => any;
+        } & (RDFLiteralOptions | RDFIdentifierOptions);
     }
 }
 
-export interface RDFLiteralOptions {
+export interface RDFIdentifierOptions {
+    identifier: true;
+    /**
+     * Custom (partial) serializer for this member.
+     */
+    serializer: (value: any, dataType?: Serializable<any>) => string;
+    /**
+     * Custom (partial) deserializer for this member.
+     */
+    deserializer: (thing: Thing, dataType?: Serializable<any>) => any;
+}
+
+export interface RDFObjectOptions {
+    identifier?: false;
+    /**
+     * Predicate or list of predicate URIs to use for this member.
+     * When not provided, the member can not be serialized.
+     */
+    predicate: IriString | IriString[];
+}
+
+export interface RDFLiteralOptions extends RDFObjectOptions {
     /**
      * Specify the XSD data type used for this member.
      * By default it will try to detect the data type.

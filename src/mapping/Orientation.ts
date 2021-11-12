@@ -15,7 +15,7 @@ SerializableObject({
                     [openhps.pitch]: [DataFactory.literal(euler.pitch, DataFactory.namedNode(xsd.decimal))],
                     [openhps.roll]: [DataFactory.literal(euler.roll, DataFactory.namedNode(xsd.decimal))],
                     [qu.unit]: [DataFactory.namedNode(m3lite.Degree)],
-                }
+                },
             };
         },
         deserializer: (thing: Thing) => {
@@ -40,9 +40,12 @@ SerializableObject({
                 }
             }
             return Orientation.fromEuler({
-                yaw, pitch, roll, unit
+                yaw,
+                pitch,
+                roll,
+                unit,
             });
-        }
+        },
     },
 })(Orientation);
 SerializableMember({
