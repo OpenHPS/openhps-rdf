@@ -15,7 +15,8 @@ jobs:
         image: 'stain/jena-fuseki:jena4'
         env:
           ADMIN_PASSWORD: test
-          FUSEKI_DATASET_1: openhps-rdf
+          FUSEKI_DATASET_1: openhps-rdf-1
+          FUSEKI_DATASET_2: openhps-rdf-2
         ports:
           - 3030:3030
     steps:

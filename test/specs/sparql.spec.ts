@@ -4,7 +4,9 @@ import {
     GeographicalPosition, 
     Absolute2DPosition, 
     Orientation, 
-    AngleUnit 
+    AngleUnit, 
+    DataFrameService,
+    DataFrame
 } from '@openhps/core';
 import 'mocha';
 import { SPARQLDataDriver } from '../../src';
@@ -12,18 +14,38 @@ import { expect } from 'chai';
 
 describe('SPARQLDataDriver', () => {
     let service: DataObjectService<DataObject>;
+    let frameService: DataFrameService<DataFrame>;
+    const object1 = new DataObject('mvdewync', 'Maxim');
+    const object2 = new DataObject('bsigner', 'Beat');
+    const object3 = new DataObject('mvdewync2', 'Maxim');
+    const frame1 = new DataFrame();
+    frame1.addObject(object1);
+    frame1.addObject(object2);
+    frame1.addObject(object3);
+    const frame2 = new DataFrame();
+    frame2.addObject(object3);
+    const frame3 = new DataFrame();
+    frame3.addObject(object1);
 
     before((done) => {
         service = new DataObjectService(new SPARQLDataDriver(DataObject, {
-            endpointUrl: "http://localhost:3030/openhps-rdf/query",
-            updateUrl: "http://localhost:3030/openhps-rdf/update",
-            storeUrl: "http://localhost:3030/openhps-rdf/data",
+            endpointUrl: "http://localhost:3030/openhps-rdf-1/query",
+            updateUrl: "http://localhost:3030/openhps-rdf-1/update",
+            storeUrl: "http://localhost:3030/openhps-rdf-1/data",
             user: "admin",
             password: "test",
             baseUri: "http://openhps.org/terms#"
         }));
-        service.emitAsync('build').then(() => {
-            return service.deleteAll();
+        frameService = new DataFrameService(new SPARQLDataDriver(DataFrame, {
+            endpointUrl: "http://localhost:3030/openhps-rdf-2/query",
+            updateUrl: "http://localhost:3030/openhps-rdf-2/update",
+            storeUrl: "http://localhost:3030/openhps-rdf-2/data",
+            user: "admin",
+            password: "test",
+            baseUri: "http://openhps.org/terms#"
+        }));
+        Promise.all([service.emitAsync('build'), frameService.emitAsync('build')]).then(() => {
+            return Promise.all([service.deleteAll(), frameService.deleteAll()]);
         }).then(() => {
             done();
         }).catch(done);
@@ -31,13 +53,30 @@ describe('SPARQLDataDriver', () => {
 
     describe('insert', () => {
         it('should support inserting new dataobjects', (done) => {
+            const pos = new GeographicalPosition(50.20, 30.10);
+            pos.orientation = Orientation.fromEuler({
+                yaw: 90,
+                pitch: 0,
+                roll: 0,
+                unit: AngleUnit.DEGREE
+            });
             Promise.all([
                 service.insertObject(new DataObject("mvdewync", "Maxim Van de Wynckel")
                     .setPosition(new Absolute2DPosition(5, 1))),
                 service.insertObject(new DataObject("bsigner", "Beat Signer")
                     .setPosition(new Absolute2DPosition(5, 2))),
                 service.insertObject(new DataObject("johndoe", "John Doe")
-                    .setPosition(new GeographicalPosition(50.20, 30.10))),
+                    .setPosition(pos)),
+            ]).then(() => {
+                done()
+            }).catch(done);
+        });
+
+        it('should support inserting new dataframes', (done) => {
+            Promise.all([
+                frameService.insertFrame(frame1),
+                frameService.insertFrame(frame2),
+                frameService.insertFrame(frame3),
             ]).then(() => {
                 done()
             }).catch(done);
@@ -138,7 +177,7 @@ describe('SPARQLDataDriver', () => {
                 ]
             }).then(data => {
                 expect(data.length).to.equal(3);
-                expect(data[0].displayName).to.equal("Maxim Van de Wynckel");
+                expect(data[0].displayName).to.equal("John Doe");
                 done();
             }).catch(done);
         });
@@ -153,6 +192,96 @@ describe('SPARQLDataDriver', () => {
                 expect(data[0].displayName).to.equal("Beat Signer");
                 done();
             }).catch(done);
+        });
+
+        describe('expressions', () => {
+            it('should check greater then: >', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $gt: 50.10,
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should check lesser then: <', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $lt: 50.30
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should check greater then and lesser then', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $gt: 50.10,
+                        $lt: 50.30
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should check equality: =', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $eq: 50.20,
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should check gte: >=', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $gte: 50.20,
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should check lte: <=', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $lte: 50.20,
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
+
+            it('should support combinations of expressions', (done) => {
+                service.findAll({
+                    "position.latitude": {
+                        $lte: 50.20,
+                    }, 
+                    "position.longitude": {
+                        $lte: 50.20,
+                    }
+                }).then(data => {
+                    expect(data.length).to.equal(1);
+                    expect(data[0].displayName).to.equal("John Doe");
+                    done();
+                }).catch(done);
+            });
         });
 
         it('should support combinations of queries', (done) => {
@@ -203,6 +332,21 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
     });
+
+    // describe('array query', () => {
+    //     it('should support $elemMatch', (done) => {
+    //         frameService.findAll({
+    //             _objects: {
+    //                 $elemMatch: {
+    //                     uid: 'mvdewync',
+    //                 },
+    //             },
+    //         }).then(data => {
+    //             expect(data.length).to.equal(1);
+    //             console.log(data)
+    //         }).catch(done);
+    //     });
+    // });
 
     describe('delete', () => {
         it('should support deleting one identifier', (done) => {

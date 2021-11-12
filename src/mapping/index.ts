@@ -15,3 +15,5 @@ import './Orientation';
 import './Unit';
 import './SensorValue';
 import './Accuracy';
+import './LinearVelocity';
+import './AngularVelocity';

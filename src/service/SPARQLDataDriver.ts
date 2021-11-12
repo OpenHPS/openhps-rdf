@@ -62,6 +62,7 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 
     protected findAllSerialized(query?: FilterQuery<T>): Promise<Store> {
         return new Promise((resolve, reject) => {
+            // console.log(this.generator.createFindAll(query))
             this.client.query
                 .construct(this.generator.createFindAll(query))
                 .then((stream) => {

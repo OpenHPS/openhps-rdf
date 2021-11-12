@@ -17,6 +17,7 @@ const namespaces: Namespaces = {
     dqm: 'http://purl.org/dqm-vocabulary/v1/dqm#',
     foaf: 'http://xmlns.com/foaf/0.1/',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
+    qudt: 'http://qudt.org/schema/qudt/',
     om2: 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     /**
      * Semantic Sensor Network Ontology
@@ -40,6 +41,7 @@ const namespaces: Namespaces = {
 };
 
 const mirrors: Mirrors = {
+    'http://qudt.org/schema/qudt/': 'http://qudt.org/schema/qudt/#',
     'http://www.opengis.net/ont/geosparql#':
         'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',

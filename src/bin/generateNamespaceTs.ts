@@ -3,12 +3,11 @@
  * @see {@link https://gitlab.com/vincenttunru/rdf-namespaces}
  */
 
-import { Mirrors, namespaces } from '../namespaces';
+import { Mirrors } from '../namespaces';
 import { getTs } from './getTs';
 import axios from 'axios';
 import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
 import { RdfXmlParser } from "rdfxml-streaming-parser";
-import { parse } from 'uuid';
 
 /**
  * @param namespace

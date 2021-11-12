@@ -22,22 +22,25 @@ SerializableObject({
             let yaw = 0;
             let roll = 0;
             let pitch = 0;
-            let unit = AngleUnit.DEGREE;
-            if (thing.predicates[openhps.yaw]) {
+            let unit: AngleUnit;
+
+            if (thing.predicates[openhps.yaw] && thing.predicates[openhps.pitch] && thing.predicates[openhps.roll]) {
+                // Euler
                 yaw = Number(thing.predicates[openhps.yaw][0].value);
-            }
-            if (thing.predicates[openhps.pitch]) {
                 pitch = Number(thing.predicates[openhps.pitch][0].value);
-            }
-            if (thing.predicates[openhps.roll]) {
                 roll = Number(thing.predicates[openhps.roll][0].value);
+            } else {
+                // Other orientation
             }
+
             if (thing.predicates[qu.unit]) {
                 if (thing.predicates[qu.unit][0].value === m3lite.Degree) {
                     unit = AngleUnit.DEGREE;
                 } else if (thing.predicates[qu.unit][0].value === m3lite.Radian) {
                     unit = AngleUnit.RADIAN;
                 }
+            } else {
+                unit = AngleUnit.DEGREE;
             }
             return Orientation.fromEuler({
                 yaw,

@@ -1,14 +1,5 @@
-import { DataSerializer, FilterQuery, ObjectMemberMetadata, Serializable } from '@openhps/core';
-import {
-    BgpPattern,
-    FilterPattern,
-    GroupPattern,
-    Pattern,
-    UnionPattern,
-    Generator,
-    SparqlQuery,
-    ConstructQuery,
-} from 'sparqljs';
+import { DataSerializer, FilterQuery, ObjectMemberMetadata, QuerySelector, Serializable } from '@openhps/core';
+import { FilterPattern, GroupPattern, Pattern, UnionPattern, Generator, SparqlQuery, ConstructQuery } from 'sparqljs';
 import { DataFactory } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { IriString, RDFSerializer } from '../rdf';
@@ -16,10 +7,15 @@ import { IriString, RDFSerializer } from '../rdf';
 export class SPARQLGenerator<T> {
     protected dataType: Serializable<T>;
     protected baseUri: IriString;
+    private _counter = 0;
 
     constructor(dataType: Serializable<T>, baseUri: IriString) {
         this.dataType = dataType;
         this.baseUri = baseUri;
+    }
+
+    protected get next(): number {
+        return this._counter++;
     }
 
     createInsert(object: T): string {
@@ -217,12 +213,13 @@ export class SPARQLGenerator<T> {
         return Object.prototype.toString.call(query) === '[object RegExp]';
     }
 
-    protected generatePath(path: string, query: any): Pattern[] {
+    protected generatePath(path: string, query: any, dataType: Serializable<any>): Pattern[] {
         return this.createQuery(
             path
                 .split('.')
                 .reverse()
                 .reduce((res, key) => ({ [key]: res }), query),
+            dataType,
         );
     }
 
@@ -255,17 +252,20 @@ export class SPARQLGenerator<T> {
         if (key.startsWith('$')) {
             patterns.push(...this.generateOp(key, query));
         } else if (key.includes('.')) {
-            patterns.push(...this.generatePath(key, query));
+            patterns.push(...this.generatePath(key, query, dataType));
         } else {
             const rootMetadata = DataSerializer.getRootMetadata(dataType);
             let member: ObjectMemberMetadata;
             rootMetadata.knownTypes.forEach((knownType) => {
-                const metadata = DataSerializer.getMetadata(knownType);
-                if (metadata && metadata.dataMembers.has(key)) {
-                    member = metadata.dataMembers.get(key);
-                    return;
+                if (!member) {
+                    const metadata = DataSerializer.getMetadata(knownType);
+                    member = Array.from(metadata.dataMembers.values()).filter((member) => member.key === key)[0];
+                    if (member) {
+                        return;
+                    }
                 }
             });
+
             const rootMember = rootMetadata.dataMembers.get(key);
             const memberOptions =
                 member.options && member.options.rdf
@@ -344,25 +344,44 @@ export class SPARQLGenerator<T> {
                     ],
                 });
             } else if (typeof query === 'object') {
-                const blankNode = DataFactory.blankNode();
-                const pattern: Pattern = {
-                    type: 'bgp',
-                    triples: [
-                        {
-                            subject: DataFactory.variable('subject'),
-                            predicate: DataFactory.namedNode(predicate),
-                            object: blankNode,
-                        },
+                const selectorPatterns = this.generateSelector(query, predicate, dataType);
+                if (selectorPatterns.length > 0) {
+                    patterns.push(...selectorPatterns);
+                } else {
+                    const blankNode = DataFactory.blankNode();
+                    const pattern: GroupPattern = {
+                        type: 'group',
+                        patterns: [
+                            {
+                                type: 'bgp',
+                                triples: [
+                                    {
+                                        subject: DataFactory.variable('subject'),
+                                        predicate: DataFactory.namedNode(predicate),
+                                        object: blankNode,
+                                    },
+                                ],
+                            },
+                        ],
+                    };
+                    pattern.patterns.push(
                         ...this.createQuery(query, member.type().ctor)
-                            .map((p: BgpPattern) => p.triples)
+                            .map((x) => (x.type === 'bgp' ? [x] : x.type === 'group' ? x.patterns : []))
                             .flat()
-                            .map((triple) => {
-                                triple.subject = blankNode;
-                                return triple;
+                            .map((x) => {
+                                if (x.type === 'bgp') {
+                                    x.triples.map((triple) => {
+                                        triple.subject = blankNode;
+                                        return triple;
+                                    });
+                                    return x;
+                                } else {
+                                    return x;
+                                }
                             }),
-                    ],
-                };
-                patterns.push(pattern);
+                    );
+                    patterns.push(pattern);
+                }
             } else {
                 const rdfLiteralOptions = rdf as RDFLiteralOptions;
                 const pattern: Pattern = {
@@ -384,6 +403,96 @@ export class SPARQLGenerator<T> {
                 };
                 patterns.push(pattern);
             }
+        }
+        return patterns;
+    }
+
+    protected generateSelector<T>(
+        subquery: QuerySelector<T>,
+        predicate: IriString,
+        dataType: Serializable<T>,
+    ): Pattern[] {
+        const patterns: Pattern[] = [];
+        for (const selector of Object.keys(subquery)) {
+            patterns.push(...this.generateComparisonSelector(selector, subquery, predicate, dataType));
+            patterns.push(...this.generateArraySelector(selector, subquery, predicate, dataType));
+        }
+        return patterns;
+    }
+
+    protected generateComparisonSelector<T>(
+        selector: string,
+        subquery: QuerySelector<T>,
+        predicate: IriString,
+        dataType: Serializable<any>,
+    ): Pattern[] {
+        const patterns: Pattern[] = [];
+        let operator = undefined;
+        switch (selector) {
+            case '$gt':
+                operator = '>';
+                break;
+            case '$gte':
+                operator = '>=';
+                break;
+            case '$lt':
+                operator = '<';
+                break;
+            case '$lte':
+                operator = '<=';
+                break;
+            case '$eq':
+                operator = '=';
+                break;
+        }
+
+        if (operator) {
+            const subject = DataFactory.variable(`s${this.next}`);
+            const object = DataFactory.variable(`o${this.next}`);
+            patterns.push({
+                type: 'group',
+                patterns: [
+                    {
+                        type: 'bgp',
+                        triples: [
+                            {
+                                subject,
+                                predicate: DataFactory.namedNode(predicate),
+                                object,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'filter',
+                        expression: {
+                            type: 'operation',
+                            operator,
+                            args: [object, DataFactory.literal((subquery as any)[selector])],
+                        },
+                    } as FilterPattern,
+                ],
+            });
+        }
+        return patterns;
+    }
+
+    protected generateArraySelector<T>(
+        selector: string,
+        subquery: QuerySelector<T>,
+        predicate: IriString,
+        dataType: Serializable<any>,
+    ): Pattern[] {
+        const patterns: Pattern[] = [];
+        switch (selector) {
+            case '$in':
+                // result = result && Array.from(value).includes(subquery[selector]);
+                break;
+            case '$nin':
+                // result = result && !Array.from(value).includes(subquery[selector]);
+                break;
+            case '$elemMatch':
+                patterns.push(...this.createQuery(subquery[selector], dataType));
+                break;
         }
         return patterns;
     }
