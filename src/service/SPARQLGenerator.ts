@@ -1,13 +1,216 @@
 import { DataSerializer, FilterQuery, ObjectMemberMetadata, Serializable } from '@openhps/core';
-import { BgpPattern, FilterPattern, GroupPattern, Pattern, UnionPattern } from 'sparqljs';
+import {
+    BgpPattern,
+    FilterPattern,
+    GroupPattern,
+    Pattern,
+    UnionPattern,
+    Generator,
+    SparqlQuery,
+    ConstructQuery,
+} from 'sparqljs';
 import { DataFactory } from 'n3';
-import { RDFLiteralOptions, RDFObjectOptions } from '../decorators';
+import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
+import { IriString, RDFSerializer } from '../rdf';
 
 export class SPARQLGenerator<T> {
     protected dataType: Serializable<T>;
+    protected baseUri: IriString;
 
-    constructor(dataType: Serializable<T>) {
+    constructor(dataType: Serializable<T>, baseUri: IriString) {
         this.dataType = dataType;
+        this.baseUri = baseUri;
+    }
+
+    createInsert(object: T): string {
+        const quads = RDFSerializer.serializeToQuads(object, this.baseUri);
+        const generator = new Generator();
+        const query: SparqlQuery = {
+            type: 'update',
+            prefixes: {
+                '': this.baseUri,
+            },
+            updates: [
+                {
+                    updateType: 'insert',
+                    insert: [
+                        {
+                            type: 'bgp',
+                            triples: quads,
+                        },
+                    ],
+                },
+            ],
+        };
+        return generator.stringify(query);
+    }
+
+    createDelete(id: IriString): string {
+        const generator = new Generator();
+        const identifierMember = RDFSerializer.getUriMetadata(this.dataType);
+        const query: SparqlQuery = {
+            type: 'update',
+            prefixes: {
+                '': this.baseUri,
+            },
+            updates: [
+                {
+                    updateType: 'insertdelete',
+                    insert: [],
+                    delete: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject: DataFactory.variable('subject'),
+                                    predicate: DataFactory.variable('predicate'),
+                                    object: DataFactory.variable('object'),
+                                },
+                            ],
+                        },
+                    ],
+                    where: this.createQuery({
+                        [identifierMember.key]: id,
+                    }),
+                },
+            ],
+        };
+        return generator.stringify(query);
+    }
+
+    createDeleteAll(query: FilterQuery<T>): string {
+        const generator = new Generator();
+        const sparqlQuery: SparqlQuery = {
+            type: 'update',
+            prefixes: {
+                '': this.baseUri,
+            },
+            updates: [
+                {
+                    updateType: 'insertdelete',
+                    insert: [],
+                    delete: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject: DataFactory.variable('subject'),
+                                    predicate: DataFactory.variable('predicate'),
+                                    object: DataFactory.variable('object'),
+                                },
+                            ],
+                        },
+                    ],
+                    where: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject: DataFactory.variable('subject'),
+                                    predicate: DataFactory.variable('predicate'),
+                                    object: DataFactory.variable('object'),
+                                },
+                            ],
+                        },
+                        ...this.createQuery(query),
+                    ],
+                },
+            ],
+        };
+        return generator.stringify(sparqlQuery);
+    }
+
+    createFindAll(query: FilterQuery<T>): string {
+        const generator = new Generator();
+        return generator.stringify(this.createConstruct(query));
+    }
+
+    protected createConstruct(query: FilterQuery): ConstructQuery {
+        const patterns = this.createQuery(query);
+        // Variables
+        const subjectVar = DataFactory.variable('subject');
+        const propVar = DataFactory.variable('prop');
+        const valVar = DataFactory.variable('val');
+        const childVar = DataFactory.variable('child');
+        const childPropVar = DataFactory.variable('childProp');
+        const childPropValVar = DataFactory.variable('childPropVal');
+        const someSubjVar = DataFactory.variable('someSubj');
+        const incomingChildProp = DataFactory.variable('incomingChildProp');
+        const dummyPredicate = DataFactory.namedNode('http://example.org#overrides');
+
+        const constructQuery: ConstructQuery = {
+            queryType: 'CONSTRUCT',
+            template: [
+                {
+                    subject: subjectVar,
+                    predicate: propVar,
+                    object: valVar,
+                },
+                {
+                    subject: childVar,
+                    predicate: childPropVar,
+                    object: childPropValVar,
+                },
+                {
+                    subject: someSubjVar,
+                    predicate: incomingChildProp,
+                    object: childVar,
+                },
+            ],
+            where: [
+                {
+                    type: 'bgp',
+                    triples: [
+                        {
+                            subject: subjectVar,
+                            predicate: propVar,
+                            object: valVar,
+                        },
+                        {
+                            subject: subjectVar,
+                            predicate: {
+                                type: 'path',
+                                pathType: '+',
+                                items: [
+                                    {
+                                        type: 'path',
+                                        pathType: '|',
+                                        items: [
+                                            dummyPredicate,
+                                            {
+                                                type: 'path',
+                                                pathType: '!',
+                                                items: [dummyPredicate],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                            object: childVar,
+                        },
+                        {
+                            subject: childVar,
+                            predicate: childPropVar,
+                            object: childPropValVar,
+                        },
+                        {
+                            subject: someSubjVar,
+                            predicate: incomingChildProp,
+                            object: childVar,
+                        },
+                    ],
+                },
+                {
+                    type: 'group',
+                    patterns,
+                },
+            ],
+            type: 'query',
+            prefixes: {
+                '': this.baseUri,
+            },
+        };
+        return constructQuery;
     }
 
     protected isRegexQuery(query: any): boolean {
@@ -75,6 +278,37 @@ export class SPARQLGenerator<T> {
                 return;
             }
 
+            if (memberOptions.options.rdf.identifier) {
+                const rdf: RDFIdentifierOptions = memberOptions.options.rdf;
+                const pattern: Pattern = {
+                    type: 'group',
+                    patterns: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject: DataFactory.variable('subject'),
+                                    predicate: DataFactory.variable('predicate'),
+                                    object: DataFactory.variable('object'),
+                                },
+                            ],
+                        },
+                        {
+                            type: 'filter',
+                            expression: {
+                                type: 'operation',
+                                operator: '=',
+                                args: [
+                                    DataFactory.variable('subject'),
+                                    DataFactory.namedNode(this.baseUri + rdf.serializer(query, dataType)),
+                                ],
+                            },
+                        } as FilterPattern,
+                    ],
+                };
+                patterns.push(pattern);
+                return patterns;
+            }
             const rdf: RDFObjectOptions = memberOptions.options.rdf as RDFObjectOptions;
             const predicate = Array.isArray(rdf.predicate) ? rdf.predicate[0] : rdf.predicate;
 

@@ -1,6 +1,5 @@
 import { SerializableObject, Absolute3DPosition } from '@openhps/core';
 import { DataFactory } from 'n3';
-import { Thing } from '../rdf';
 import { ogc } from '../vocab';
 
 SerializableObject({
@@ -14,11 +13,6 @@ SerializableObject({
                     [ogc.coordinateDimension]: [DataFactory.literal(3)],
                 },
             };
-        },
-        deserializer: (thing: Thing) => {
-            const pos = new Absolute3DPosition();
-
-            return pos;
         },
     },
 })(Absolute3DPosition);

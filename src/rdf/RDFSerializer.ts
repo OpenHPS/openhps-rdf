@@ -4,6 +4,7 @@ import {
     Constructor,
     DataSerializerConfig,
     SerializableObjectOptions,
+    ObjectMemberMetadata,
 } from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
@@ -12,6 +13,7 @@ import * as N3 from 'n3';
 import { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
+import { RDFIdentifierOptions } from '../decorators';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -257,6 +259,45 @@ export class RDFSerializer extends DataSerializer {
                 },
             },
         );
+    }
+
+    static getUriMetadata<T>(dataType: Serializable<T>): ObjectMemberMetadata {
+        // Get metadata
+        const metadata = DataSerializer.getMetadata(dataType);
+        const rootMetadata = DataSerializer.getRootMetadata(dataType);
+
+        const options =
+            metadata.options && metadata.options.rdf
+                ? metadata.options.rdf
+                : rootMetadata.options && rootMetadata.options.rdf
+                ? rootMetadata.options.rdf
+                : undefined;
+
+        if (!options) {
+            return undefined;
+        }
+
+        const identifierMember = Array.from(metadata.dataMembers.values()).filter((member) => {
+            return (
+                member &&
+                member.options &&
+                member.options.rdf &&
+                (member.options.rdf as RDFIdentifierOptions).identifier
+            );
+        })[0];
+        return identifierMember;
+    }
+
+    static normalizeUri<T>(dataType: Serializable<T>, identifier: any, baseUri: IriString): IriString {
+        const identifierMember = this.getUriMetadata(dataType);
+        let uri: string = undefined;
+        if (identifierMember) {
+            const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
+            uri = rdfOptions.serializer ? rdfOptions.serializer(identifier, dataType) : identifier;
+            uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : N3.DataFactory.blankNode(uri).value;
+        } else {
+            return baseUri;
+        }
     }
 }
 

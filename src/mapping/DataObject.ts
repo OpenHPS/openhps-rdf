@@ -4,6 +4,7 @@ import {
     SerializableMember,
     SerializableObject,
     RelativePosition,
+    Serializable,
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
@@ -17,7 +18,7 @@ SerializableObject({
 SerializableMember({
     rdf: {
         identifier: true,
-        serializer: (obj: DataObject) => `${obj.constructor.name.toLowerCase()}_${obj.uid}`,
+        serializer: (uid: string, dataType: Serializable<any>) => `${dataType.name.toLowerCase()}_${uid}`,
         deserializer: (thing: Thing) => thing.value.substring(thing.value.lastIndexOf('_') + 1),
     },
 })(DataObject.prototype, 'uid');

@@ -117,7 +117,7 @@ export class InternalRDFSerializer extends Serializer {
         if (identifierMember) {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             uri = rdfOptions.serializer
-                ? rdfOptions.serializer(sourceObject)
+                ? rdfOptions.serializer((sourceObject as any)[identifierMember.key] as string, sourceObject.constructor)
                 : ((sourceObject as any)[identifierMember.key] as string);
         }
         uri =

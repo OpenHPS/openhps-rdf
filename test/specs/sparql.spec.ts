@@ -1,7 +1,13 @@
-import { DataObject, DataObjectService, GeographicalPosition, Absolute2DPosition, Orientation, AngleUnit, LengthUnit } from '@openhps/core';
+import { 
+    DataObject, 
+    DataObjectService, 
+    GeographicalPosition, 
+    Absolute2DPosition, 
+    Orientation, 
+    AngleUnit 
+} from '@openhps/core';
 import 'mocha';
-import { m3lite, SPARQLDataDriver } from '../../src';
-import axios from 'axios';
+import { SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 
 describe('SPARQLDataDriver', () => {
@@ -54,7 +60,23 @@ describe('SPARQLDataDriver', () => {
 
     describe('find', () => {
         it('should find by uid', (done) => {
-            service.findByUID("http://openhps.org/terms#dataobject_mvdewync").then(data => {
+            service.findByUID("mvdewync").then(data => {
+                done();
+            }).catch(done);
+        });
+
+        it('should find one item', (done) => {
+            service.findOne({
+                uid: "mvdewync"
+            }).then(data => {
+                expect(data.displayName).to.equal("Maxim Van de Wynckel");
+                done();
+            }).catch(done);
+        });
+
+        it('should find all items', (done) => {
+            service.findAll().then(data => {
+                expect(data.length).to.equal(3);
                 done();
             }).catch(done);
         });
@@ -87,7 +109,7 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
 
-        it('it should support regex queries', (done) => {
+        it('should support regex queries', (done) => {
             service.findAll({
                 displayName: /John/g
             }).then(data => {
@@ -97,7 +119,7 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
 
-        it('it should support explicit path querying', (done) => {
+        it('should support explicit path querying', (done) => {
             service.findAll({
                 position: {
                     latitude: 50.20
@@ -109,7 +131,31 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
 
-        it('it should support combinations of queries', (done) => {
+        it('should support sorting by number', (done) => {
+            service.findAll({}, {
+                sort: [
+                    ["createdTimestamp", -1]
+                ]
+            }).then(data => {
+                expect(data.length).to.equal(3);
+                expect(data[0].displayName).to.equal("Maxim Van de Wynckel");
+                done();
+            }).catch(done);
+        });
+
+        it('should support sorting by name', (done) => {
+            service.findAll({}, {
+                sort: [
+                    ["displayName", 1]
+                ]
+            }).then(data => {
+                expect(data.length).to.equal(3);
+                expect(data[0].displayName).to.equal("Beat Signer");
+                done();
+            }).catch(done);
+        });
+
+        it('should support combinations of queries', (done) => {
             service.findAll({
                 $or: [
                     {
@@ -129,7 +175,7 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
 
-        it('it should support implicit path querying', (done) => {
+        it('should support implicit path querying', (done) => {
             service.findAll({
                 "position.latitude": 50.20
             }).then(data => {
@@ -140,12 +186,46 @@ describe('SPARQLDataDriver', () => {
         });
     });
 
+    describe('count', () => {
+        it('should count all objects', (done) => {
+            service.count().then(num => {
+                expect(num).to.equal(3);
+                done();
+            }).catch(done);
+        });
+
+        it('should count specific objects', (done) => {
+            service.count({
+                uid: "mvdewync"
+            }).then(num => {
+                expect(num).to.equal(1);
+                done();
+            }).catch(done);
+        });
+    });
+
     describe('delete', () => {
-        // it('should support deleting all tuples', (done) => {
-        //     service.deleteAll().then(() => {
-        //         done()
-        //     }).catch(done);
-        // });
+        it('should support deleting one identifier', (done) => {
+            let total = 0;
+            service.findAll().then(data => {
+                total = data.length;
+                return service.delete("mvdewync");
+            }).then(() => {
+                return service.findAll();
+            }).then(data => {
+                expect(data.length).to.equal(total - 1);
+                done()
+            }).catch(done);
+        });
+
+        it('should support deleting all tuples', (done) => {
+            service.deleteAll().then(() => {
+                return service.count();
+            }).then(data => {
+                expect(data).to.equal(0);
+                done()
+            }).catch(done);
+        });
     });
 
 });

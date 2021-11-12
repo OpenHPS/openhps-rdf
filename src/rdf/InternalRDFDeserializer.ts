@@ -139,7 +139,7 @@ export class InternalRDFDeserializer extends Deserializer {
         if (identifierMember) {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             targetObject[identifierMember.key] = rdfOptions.deserializer
-                ? rdfOptions.deserializer(sourceObject)
+                ? rdfOptions.deserializer(sourceObject, finalType)
                 : sourceObject.value;
         }
 

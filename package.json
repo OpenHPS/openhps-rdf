@@ -62,14 +62,14 @@
   },
   "keywords": [
     "openhps",
-    "rdf"
+    "rdf",
+    "linked data"
   ],
   "dependencies": {
     "@types/n3": "^1.10.3",
     "n3": ">=0.4.1",
     "sparql-http-client": "^2.4.0",
-    "sparqljs": "^3.5.1",
-    "uuid": "^8.3.2"
+    "sparqljs": "^3.5.1"
   },
   "peerDependencies": {
     "@openhps/core": ">=0.3.8",
@@ -125,7 +125,8 @@
       "src"
     ],
     "exclude": [
-      "test"
+      "test",
+      "src/bin"
     ],
     "extension": [
       ".ts"

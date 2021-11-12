@@ -1,4 +1,4 @@
-import { MemberOptionsBase, SerializableObjectOptions, SerializableMapMemberOptions } from '@openhps/core'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { Serializable } from '@openhps/core'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 
@@ -51,11 +51,11 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this member.
              */
-            serializer?: (object: any, baseUri?: IriString) => Partial<Quad_Object>;
+            serializer?: (object: any, dataType?: Serializable<any>) => Partial<Quad_Object>;
             /**
              * Custom (partial) deserializer for this member.
              */
-            deserializer?: (thing: Thing) => any;
+            deserializer?: (thing: Thing, dataType?: Serializable<any>) => any;
         } & (RDFLiteralOptions | RDFIdentifierOptions);
     }
 }
@@ -65,11 +65,11 @@ export interface RDFIdentifierOptions {
     /**
      * Custom (partial) serializer for this member.
      */
-    serializer: (object: any, baseUri?: IriString) => string;
+    serializer: (value: any, dataType?: Serializable<any>) => string;
     /**
      * Custom (partial) deserializer for this member.
      */
-    deserializer: (thing: Thing) => any;
+    deserializer: (thing: Thing, dataType?: Serializable<any>) => any;
 }
 
 export interface RDFObjectOptions {
