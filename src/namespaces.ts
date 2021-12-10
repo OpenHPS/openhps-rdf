@@ -26,6 +26,13 @@ const namespaces: Namespaces = {
      */
     sosa: 'http://www.w3.org/ns/sosa/',
     /**
+     * Semantic Sensor Network Ontology
+     *
+     * @see {@link https://www.w3.org/TR/vocab-ssn/}
+     */
+    ssn: 'http://www.w3.org/ns/ssn/',
+    ssn_system: 'http://www.w3.org/ns/ssn/systems/',
+    /**
      * Library for Quantity Kinds and Units: schema, based on QUDV model
      *
      * @see {@link https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu}
