@@ -16,9 +16,14 @@ const namespaces: Namespaces = {
     dcmi: 'http://purl.org/dc/terms/',
     dqm: 'http://purl.org/dqm-vocabulary/v1/dqm#',
     foaf: 'http://xmlns.com/foaf/0.1/',
-    m3lite: 'http://purl.org/iot/vocab/m3-lite#',
+    /**
+     * Quantity Kinds, Dimensions and Data Types
+     *
+     * @see {@link https://qudt.org}
+     */
     qudt: 'http://qudt.org/schema/qudt/',
-    om2: 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
+    qudt_unit: 'http://qudt.org/vocab/unit/',
+    quantitykind: 'http://qudt.org/vocab/quantitykind/',
     /**
      * Semantic Sensor Network Ontology
      *
@@ -32,12 +37,6 @@ const namespaces: Namespaces = {
      */
     ssn: 'http://www.w3.org/ns/ssn/',
     ssn_system: 'http://www.w3.org/ns/ssn/systems/',
-    /**
-     * Library for Quantity Kinds and Units: schema, based on QUDV model
-     *
-     * @see {@link https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu}
-     */
-    qu: 'http://purl.oclc.org/NET/ssnx/qu/qu#',
     openhps: 'http://openhps.org/terms#',
     /**
      * OGC GeoSparql 1.1
@@ -48,20 +47,13 @@ const namespaces: Namespaces = {
 };
 
 const mirrors: Mirrors = {
-    'http://qudt.org/schema/qudt/': 'http://qudt.org/schema/qudt/#',
     'http://www.opengis.net/ont/geosparql#':
         'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
     'http://purl.org/dc/terms/':
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
     'http://purl.org/dqm-vocabulary/v1/dqm#': 'http://semwebquality.org/dqm-vocabulary/v1/dqm.owl',
-    'http://www.ontology-of-units-of-measure.org/resource/om-2-ucum':
-        'https://raw.githubusercontent.com/HajoRijgersberg/OM/master/om-2-ucum.ttl',
-    'http://purl.org/iot/vocab/m3-lite#': 'http://smart-ics.ee.surrey.ac.uk/ontology/m3-lite.owl#',
     'http://openhps.org/terms#': 'https://cdn.jsdelivr.net/gh/OpenHPS/openhps-rdf@master/ontology/v1/openhps.ttl',
-    'http://purl.oclc.org/NET/ssnx/qu/qu#': 'https://www.w3.org/2005/Incubator/ssn/ssnx/qu/qu.owl',
-    'http://www.ontology-of-units-of-measure.org/resource/om-2/':
-        'http://www.ontology-of-units-of-measure.org/data/om-2.ttl',
 };
 
 export { namespaces, mirrors };

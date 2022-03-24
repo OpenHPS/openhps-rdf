@@ -1,17 +1,17 @@
 import { AngleUnit, LengthUnit, SerializableObject, Unit } from '@openhps/core';
 import { IriString, Thing } from '../rdf';
-import { m3lite } from '../vocab';
+import { qudt, qudt_unit } from '../vocab';
 
 const UNIT_MAP = new Map<string, IriString>([
     /* Length units */
-    [LengthUnit.METER.name, m3lite.Metre],
-    [LengthUnit.KILOMETER.name, m3lite.Kilometre],
-    [LengthUnit.CENTIMETER.name, m3lite.Centimetre],
-    [LengthUnit.MILLIMETER.name, m3lite.Millimetre],
-    [LengthUnit.MILE.name, m3lite.Miles],
+    [LengthUnit.METER.name, qudt_unit.M],
+    [LengthUnit.KILOMETER.name, qudt_unit.KiloM],
+    [LengthUnit.CENTIMETER.name, qudt_unit.CentiM],
+    [LengthUnit.MILLIMETER.name, qudt_unit.MilliM],
+    [LengthUnit.MILE.name, qudt_unit.MI],
     /* Angle units */
-    [AngleUnit.DEGREE.name, m3lite.Degree],
-    [AngleUnit.RADIAN.name, m3lite.Radian],
+    [AngleUnit.DEGREE.name, qudt_unit.DEG],
+    [AngleUnit.RADIAN.name, qudt_unit.RAD],
 ]);
 
 const REVERSE_UNIT_MAP = new Map<string, string>([
@@ -22,6 +22,7 @@ const REVERSE_UNIT_MAP = new Map<string, string>([
 
 SerializableObject({
     rdf: {
+        type: qudt.Unit,
         serializer: (object: Unit) => {
             const unit = UNIT_MAP.get(object.name);
             return {

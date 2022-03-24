@@ -1,19 +1,27 @@
 import { Accuracy, SerializableMember, SerializableObject } from '@openhps/core';
-import { openhps, qu } from '../vocab';
+import { DataFactory } from 'n3';
+import { Thing } from '../rdf';
+import { qudt, ssn_system, schema, qudt_unit } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.Accuracy,
+        type: ssn_system.Accuracy,
+        serializer: (object: Accuracy) => {
+            return {
+                predicates: {
+                    [schema.minValue]: [DataFactory.literal(-object.value)],
+                    [schema.maxValue]: [DataFactory.literal(object.value)],
+                },
+            };
+        },
+        deserializer: (thing: Thing) => {
+            return undefined;
+        },
     },
 })(Accuracy);
 SerializableMember({
     rdf: {
-        predicate: qu.unit,
+        predicate: schema.unitCode,
     },
     name: 'unit',
 })(Accuracy.prototype, '_unit');
-// SerializableMember({
-//     rdf: {
-//         predicate: qu.numericalValue,
-//     },
-// })(Accuracy.prototype, 'value');

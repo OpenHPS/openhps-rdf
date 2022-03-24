@@ -1,6 +1,6 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, ogc, openhps, qu } from '../vocab';
+import { dcterms, ogc, openhps, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -20,7 +20,7 @@ SerializableMember({
 })(AbsolutePosition.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: qu.unit,
+        predicate: qudt.unit,
     },
 })(AbsolutePosition.prototype, 'unit');
 SerializableMember({

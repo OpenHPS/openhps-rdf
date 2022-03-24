@@ -1,8 +1,7 @@
 import 'mocha';
-import { DataObject, DataSerializer, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
+import { DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
 import { openhps, rdf, RDFSerializer } from '../../src';
 import { expect } from 'chai';
-import { position } from '../../src/vocab/schema';
 
 describe('DataObject', () => {
     const object = new DataObject("bsigner");

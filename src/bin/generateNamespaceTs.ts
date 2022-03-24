@@ -31,6 +31,7 @@ export async function generateNamespaceTs(
         HydraLink: 'http://www.w3.org/ns/hydra/core#Link',
         HydraTemplatedLink: 'http://www.w3.org/ns/hydra/core#TemplatedLink',
         HydraVariableRepresentation: 'http://www.w3.org/ns/hydra/core#VariableRepresentation',
+        OtherIndividual: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
     };
 
     const schemaLocation = options.mirrors[namespace] || namespace;
@@ -61,7 +62,7 @@ export async function generateNamespaceTs(
     }
     const store = new Store(quads);
 
-    const entities: NamedNode[] = Object.values(entityTypes).reduce((entitiesSoFar, entityType) => {
+    let entities: NamedNode[] = Object.values(entityTypes).reduce((entitiesSoFar, entityType) => {
         const entitiesOfThisType = store.getSubjects(null, DataFactory.namedNode(entityType), null);
         const newEntitiesOfThisType = entitiesOfThisType.filter((entityOfThisType) => {
             // Only include this entity if it is not present in the list yet:
@@ -69,6 +70,11 @@ export async function generateNamespaceTs(
         });
         return entitiesSoFar.concat(newEntitiesOfThisType);
     }, []);
+    const individuals: NamedNode[] = store.getSubjects(DataFactory.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), null, null) as NamedNode[];
+    entities = entities.concat(individuals.filter((entityOfThisType) => {
+        // Only include this entity if it is not present in the list yet:
+        return entities.findIndex((entity) => entity.id === entityOfThisType.id) === -1;
+    }));
     const typeAliases = Object.keys(entityTypes)
         .map((alias) => `type ${alias} = IriString;`)
         .join('\n');

@@ -1,6 +1,6 @@
 import 'mocha';
 import { Absolute3DPosition, AngleUnit, DataFrame, DataObject, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { m3lite, openhps, qu, RDFSerializer, Thing } from '../../src';
+import { openhps, qudt, qudt_unit, RDFSerializer, Thing } from '../../src';
 import { expect } from 'chai';
 import { DataFactory, Parser } from 'n3';
 
@@ -41,7 +41,7 @@ describe('DataFrame', () => {
         const serializedObject = serialized.predicates[openhps.includesObject][0] as Thing;
         const serializedPosition = serializedObject.predicates[openhps.hasPosition][0] as Thing;
         const serializedOrientation = serializedPosition.predicates[openhps.hasOrientation][0] as Thing;
-        serializedOrientation.predicates[qu.unit][0] = DataFactory.namedNode(m3lite.Radian);
+        serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
         const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
 
         it('should deserialize a data frame', () => {

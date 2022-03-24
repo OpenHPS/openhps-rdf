@@ -1,10 +1,10 @@
 import { AngularVelocity, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, om2, openhps } from '../vocab';
+import { dcterms, openhps, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: om2.AngularVelocity,
+        type: qudt.QuantityValue,
     },
 })(AngularVelocity);
 SerializableMember({
