@@ -1,9 +1,9 @@
 import { Accuracy, SerializableMember, SerializableObject } from '@openhps/core';
-import { openhps, qu } from '../vocab';
+import { openhps, qu, sosa, ssns } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.Accuracy,
+        type: ssns.Accuracy,
     },
 })(Accuracy);
 SerializableMember({

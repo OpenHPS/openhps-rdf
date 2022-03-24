@@ -18,6 +18,7 @@ const namespaces: Namespaces = {
     foaf: 'http://xmlns.com/foaf/0.1/',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
     qudt: 'http://qudt.org/schema/qudt/',
+    qudt_unit: 'http://qudt.org/vocab/unit/',
     om2: 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     /**
      * Semantic Sensor Network Ontology
@@ -25,6 +26,8 @@ const namespaces: Namespaces = {
      * @see {@link https://www.w3.org/TR/vocab-ssn/}
      */
     sosa: 'http://www.w3.org/ns/sosa/',
+    ssn: 'http://www.w3.org/ns/ssn/',
+    ssns: 'http://www.w3.org/ns/ssn/systems/',
     /**
      * Library for Quantity Kinds and Units: schema, based on QUDV model
      *
@@ -41,7 +44,6 @@ const namespaces: Namespaces = {
 };
 
 const mirrors: Mirrors = {
-    'http://qudt.org/schema/qudt/': 'http://qudt.org/schema/qudt/#',
     'http://www.opengis.net/ont/geosparql#':
         'https://cdn.jsdelivr.net/gh/opengeospatial/ogc-geosparql@master/1.1/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',

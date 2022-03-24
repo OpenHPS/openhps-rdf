@@ -74,7 +74,7 @@ export async function generateNamespaceTs(
         .join('\n');
     const entityTs = entities
         .filter((entity: NamedNode) => {
-            const entityName = entity.id.substring(namespace.length);
+            let entityName = entity.id.substring(namespace.length);
             return (
                 // Only include names that are valid Javascript identifiers (i.e. alphanumeric characters,
                 // underscores and dollar signs allowed, but shouldn't start with a digit)...

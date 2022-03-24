@@ -8,11 +8,18 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, openhps, foaf } from '../vocab';
+import { dcterms, openhps, foaf, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.DataObject,
+        /**
+         * Feature Of Interest
+         * 
+         * The thing whose property is being estimated or calculated in the course of an Observation to arrive at a Result or whose property is being manipulated by an Actuator, or which is being sampled or transformed in an act of Sampling.
+         *
+         * http://www.w3.org/ns/sosa/FeatureOfInterest
+         */
+        type: sosa.FeatureOfInterest,
     },
 })(DataObject);
 SerializableMember({

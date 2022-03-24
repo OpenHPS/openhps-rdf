@@ -19,6 +19,10 @@ function getLabel(node: NamedNode, store: Store): string {
     return label;
 }
 
+const reservedWords = [
+    'implements'
+];
+
 /**
  * @param entity
  * @param namespace
@@ -33,6 +37,9 @@ export function getTs(node: NamedNode, store: Store, namespace: string, entityTy
     let formattedComment = typeof comment === 'string' ? comment.replace(/\n/g, '\n * ') : comment;
 
     let identifier = node.id.substring(namespace.length);
+    if (reservedWords.includes(identifier)) {
+        identifier = "_" + identifier;
+    }
     if (reservedKeywords.includes(identifier)) {
         formattedComment =
             formattedComment +
