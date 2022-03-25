@@ -102,6 +102,7 @@ export const xsd = {
     anyURI: 'http://www.w3.org/2001/XMLSchema#anyURI',
     integer: 'http://www.w3.org/2001/XMLSchema#integer',
     string: 'http://www.w3.org/2001/XMLSchema#string',
+    double: 'http://www.w3.org/2001/XMLSchema#double',
     langString: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
 } as const;
 
