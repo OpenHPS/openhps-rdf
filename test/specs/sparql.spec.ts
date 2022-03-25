@@ -100,6 +100,7 @@ describe('SPARQLDataDriver', () => {
     describe('find', () => {
         it('should find by uid', (done) => {
             service.findByUID("mvdewync").then(data => {
+                expect(data.displayName).to.equal("Maxim Van de Wynckel");
                 done();
             }).catch(done);
         });
@@ -342,8 +343,8 @@ describe('SPARQLDataDriver', () => {
     //                 },
     //             },
     //         }).then(data => {
-    //             expect(data.length).to.equal(1);
     //             console.log(data)
+    //             expect(data.length).to.equal(1);
     //         }).catch(done);
     //     });
     // });
