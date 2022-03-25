@@ -491,7 +491,21 @@ export class SPARQLGenerator<T> {
                 // result = result && !Array.from(value).includes(subquery[selector]);
                 break;
             case '$elemMatch':
-                patterns.push(...this.createQuery(subquery[selector], dataType));
+                patterns.push({
+                    type: 'group',
+                    patterns: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject: DataFactory.variable('subject'),
+                                    predicate: DataFactory.namedNode(predicate),
+                                    object: DataFactory.namedNode(this.baseUri + 'dataobject_mvdewync'),
+                                },
+                            ],
+                        },
+                    ],
+                });
                 break;
         }
         return patterns;
