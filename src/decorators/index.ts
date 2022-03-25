@@ -99,6 +99,7 @@ export const xsd = {
     date: 'http://www.w3.org/2001/XMLSchema#date',
     time: 'http://www.w3.org/2001/XMLSchema#time',
     decimal: 'http://www.w3.org/2001/XMLSchema#decimal',
+    anyURI: 'http://www.w3.org/2001/XMLSchema#anyURI',
     integer: 'http://www.w3.org/2001/XMLSchema#integer',
     string: 'http://www.w3.org/2001/XMLSchema#string',
     langString: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',

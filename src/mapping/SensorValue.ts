@@ -1,15 +1,18 @@
 import { SensorValue, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, sosa } from '../vocab';
+import { openhps, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {
         type: sosa.Observation,
+        predicates: {
+            [sosa.hasResult]: [],
+        },
     },
 })(SensorValue);
 SerializableMember({
     rdf: {
-        predicate: dcterms.created,
+        predicate: sosa.phenomenonTime,
         datatype: xsd.dateTime,
     },
 })(SensorValue.prototype, 'timestamp');

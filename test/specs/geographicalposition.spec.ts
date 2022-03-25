@@ -1,7 +1,7 @@
 import 'mocha';
-import { DataSerializer, AbsolutePosition, GeographicalPosition } from '@openhps/core';
+import { GeographicalPosition } from '@openhps/core';
 import { RDFSerializer } from '../../src';
-import { geo, ogc, openhps, rdf } from '../../src/vocab';
+import { geo, ogc, rdf } from '../../src/vocab';
 import { expect } from 'chai';
 
 describe('GeographicalPosition', () => {

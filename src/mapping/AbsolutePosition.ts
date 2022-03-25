@@ -1,6 +1,6 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, ogc, openhps, qu, qudt } from '../vocab';
+import { dcterms, ogc, openhps, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {

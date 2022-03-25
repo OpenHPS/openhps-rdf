@@ -1,10 +1,13 @@
 import { LinearVelocity, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, om2, openhps } from '../vocab';
+import { dcterms, openhps, quantitykind, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: om2.Velocity,
+        type: qudt.QuantityValue,
+        predicates: {
+            [qudt.hasQuantityKind]: [quantitykind.LinearVelocity],
+        },
     },
 })(LinearVelocity);
 SerializableMember({

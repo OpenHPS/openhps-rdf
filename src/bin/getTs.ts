@@ -8,7 +8,8 @@ import { NamedNode, Store } from 'n3';
 function getComment(node: NamedNode, store: Store): string {
     const rdfComments = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null);
     const skosDefinitions = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null);
-    const comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : undefined;
+    const dctermsDescription = store.getObjects(node, 'http://purl.org/dc/terms/description', null);
+    const comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : dctermsDescription.length > 0 ? dctermsDescription[0].value : undefined;
     return comment;
 }
 
@@ -32,7 +33,7 @@ export function getTs(node: NamedNode, store: Store, namespace: string, entityTy
     const entityType = types.length > 0 ? Object.entries(entityTypes).find(
         ([_alias, type]) => type === types[0].id,
     ) : undefined;
-    const typeAlias = entityType ? entityType[0] : 'string';
+    const typeAlias = entityType ? entityType[0] : 'OtherIndividual';
     const comment = getComment(node, store);
     let formattedComment = typeof comment === 'string' ? comment.replace(/\n/g, '\n * ') : comment;
 
@@ -83,6 +84,7 @@ const reservedKeywords = [
     'function',
     'if',
     'import',
+    'implements',
     'in',
     'instanceof',
     'new',

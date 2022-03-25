@@ -1,15 +1,14 @@
 import 'mocha';
-import { DataObject, DataSerializer, GeographicalAccuracy, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
+import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
 import { openhps, rdf, RDFSerializer } from '../../src';
 import { expect } from 'chai';
-import { position } from '../../src/vocab/schema';
 
 describe('DataObject', () => {
     const object = new DataObject("bsigner");
     object.displayName = "Beat Signer";
     object.position = new GeographicalPosition(50.40, 10.20, 15);
     object.position.unit = LengthUnit.METER;
-    object.position.accuracy = new GeographicalAccuracy(1, 1, 1, LengthUnit.KILOMETER);
+    object.position.accuracy = new Accuracy3D(1, 1, 1, LengthUnit.KILOMETER);
     object.position.orientation = Orientation.fromEuler({
         yaw: 0,
         roll: 0,

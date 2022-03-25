@@ -1,6 +1,6 @@
 import { AngleUnit, Orientation, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, m3lite, openhps, qu } from '../vocab';
+import { dcterms, openhps, qudt, qudt_unit } from '../vocab';
 import { DataFactory } from 'n3';
 import { Thing } from '../rdf';
 
@@ -14,7 +14,7 @@ SerializableObject({
                     [openhps.yaw]: [DataFactory.literal(euler.yaw, DataFactory.namedNode(xsd.decimal))],
                     [openhps.pitch]: [DataFactory.literal(euler.pitch, DataFactory.namedNode(xsd.decimal))],
                     [openhps.roll]: [DataFactory.literal(euler.roll, DataFactory.namedNode(xsd.decimal))],
-                    [qu.unit]: [DataFactory.namedNode(m3lite.Degree)],
+                    [qudt.unit]: [DataFactory.namedNode(qudt_unit.DEG)],
                 },
             };
         },
@@ -33,10 +33,10 @@ SerializableObject({
                 // Other orientation
             }
 
-            if (thing.predicates[qu.unit]) {
-                if (thing.predicates[qu.unit][0].value === m3lite.Degree) {
+            if (thing.predicates[qudt.Unit]) {
+                if (thing.predicates[qudt.Unit][0].value === qudt_unit.DEG) {
                     unit = AngleUnit.DEGREE;
-                } else if (thing.predicates[qu.unit][0].value === m3lite.Radian) {
+                } else if (thing.predicates[qudt.Unit][0].value === qudt_unit.RAD) {
                     unit = AngleUnit.RADIAN;
                 }
             } else {
