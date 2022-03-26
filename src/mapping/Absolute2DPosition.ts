@@ -11,6 +11,8 @@ SerializableObject({
                         DataFactory.literal(`POINT(${pos.x} ${pos.y})`, DataFactory.namedNode(ogc.wktLiteral)),
                     ],
                     [ogc.coordinateDimension]: [DataFactory.literal(2)],
+                    [ogc.spatialDimension]: [DataFactory.literal(2)],
+                    [ogc.dimension]: [DataFactory.literal(2)],
                 },
             };
         },
