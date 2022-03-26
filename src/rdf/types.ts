@@ -8,6 +8,19 @@ export type Thing = {
     value: string;
     predicates?: Record<string, (Quad_Object | Thing)[]>;
 };
+export type Subject = {
+    type: 'Subject';
+    url: string;
+    predicates: Record<
+        IriString,
+        Partial<{
+            literals: Record<string, string[]>;
+            langStrings: Record<LocaleString, string[]>;
+            namedNodes: Array<string>;
+            blankNodes: Array<any | string>;
+        }>
+    >;
+};
 export type LocaleString = 'en';
 
 export interface RDFSerializerConfig extends DataSerializerConfig {

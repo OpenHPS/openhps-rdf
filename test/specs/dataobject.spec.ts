@@ -33,6 +33,12 @@ describe('DataObject', () => {
             const positions = serialized.predicates[openhps.hasPosition];
             expect(positions.length).to.equal(3);
         });
+
+        it('should serialize to subjects', async () => {
+            const subjects = RDFSerializer.serializeToSubjects(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+            
+        });
+
     });
 
     describe('deserialization', () => {

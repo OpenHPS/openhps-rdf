@@ -1,6 +1,6 @@
 import { SerializableObject } from '@openhps/core';
 import * as N3 from 'n3';
-import { IriString, Thing } from './types';
+import { Thing } from './types';
 
 @SerializableObject({
     rdf: {
@@ -10,12 +10,8 @@ import { IriString, Thing } from './types';
             };
         },
         deserializer: (thing: Thing) => {
-            return new SerializableNamedNode(thing.value as IriString);
+            return new SerializableNamedNode(thing.value);
         },
     },
 })
-export class SerializableNamedNode extends N3.NamedNode {
-    constructor(uri: IriString) {
-        super(uri);
-    }
-}
+export class SerializableNamedNode extends N3.NamedNode {}

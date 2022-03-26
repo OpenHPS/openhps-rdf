@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
-import { IriString, Thing } from './types';
+import { IriString, Thing, Subject } from './types';
 import * as N3 from 'n3';
 import { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
@@ -110,6 +110,58 @@ export class RDFSerializer extends DataSerializer {
         }
         const thing = quadsToThing(subject, store);
         return this.deserialize(thing);
+    }
+
+    static serializeToSubjects<T>(data: T, baseUri?: IriString): Subject[] {
+        const quads: N3.Quad[] = RDFSerializer.serializeToQuads(data, baseUri);
+        const store = new N3.Store(quads);
+        const quadSubjects: N3.Quad_Subject[] = store.getSubjects(null, null, null);
+        /**
+         *
+         * @param quadSubject
+         */
+        function serializePredicates(quadSubject: N3.Quad_Subject) {
+            const quadPredicates: N3.Quad_Predicate[] = store.getPredicates(quadSubject, null, null);
+            return quadPredicates
+                .map((quadPredicate) => {
+                    const quadObjects: N3.Quad_Object[] = store.getObjects(quadSubject, quadPredicate, null);
+                    const literals: Record<string, string[]> = quadObjects
+                        .filter((obj) => obj instanceof N3.Literal)
+                        .filter((obj: N3.Literal) => obj.language === '')
+                        .map((obj: N3.Literal) => ({ [obj.datatype.value]: [obj.value] }))
+                        .reduce((a, b) => ({ ...a, ...b }), {});
+                    const langStrings: Record<string, string[]> = quadObjects
+                        .filter((obj) => obj instanceof N3.Literal)
+                        .filter((obj: N3.Literal) => obj.language !== '')
+                        .map((obj: N3.Literal) => ({ [obj.language]: [obj.value] }))
+                        .reduce((a, b) => ({ ...a, ...b }), {});
+                    const namedNodes: Array<string> = quadObjects
+                        .filter((obj) => obj instanceof N3.NamedNode)
+                        .map((obj) => obj.value);
+                    const blankNodes: Array<any | string> = quadObjects
+                        .filter((obj) => obj instanceof N3.BlankNode)
+                        .map((obj: N3.BlankNode) => serializePredicates(N3.DataFactory.blankNode(obj.value)));
+                    return {
+                        [quadPredicate.value]: {
+                            namedNodes,
+                            blankNodes,
+                            literals,
+                            langStrings,
+                        },
+                    };
+                })
+                .reduce((a, b) => ({ ...a, ...b }), {});
+        }
+        const subjects: Subject[] = quadSubjects
+            .filter((quadSubject) => quadSubject instanceof N3.NamedNode)
+            .map((quadSubject) => {
+                return {
+                    type: 'Subject',
+                    url: quadSubject.value,
+                    predicates: serializePredicates(quadSubject),
+                };
+            });
+        return subjects;
     }
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): N3.Quad[] {
