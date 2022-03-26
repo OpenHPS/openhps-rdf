@@ -60,13 +60,20 @@ describe('SPARQLDataDriver', () => {
                 roll: 0,
                 unit: AngleUnit.DEGREE
             });
+            const now = Date.now();
+            const obj1 = new DataObject("mvdewync", "Maxim Van de Wynckel")
+                .setPosition(new Absolute2DPosition(5, 1));
+            obj1.createdTimestamp = now + 1;
+            const obj2 = new DataObject("bsigner", "Beat Signer")
+                .setPosition(new Absolute2DPosition(5, 2));
+            obj2.createdTimestamp = now + 2;
+            const obj3 = new DataObject("johndoe", "John Doe")
+                .setPosition(pos);
+            obj3.createdTimestamp = now + 3;
             Promise.all([
-                service.insertObject(new DataObject("mvdewync", "Maxim Van de Wynckel")
-                    .setPosition(new Absolute2DPosition(5, 1))),
-                service.insertObject(new DataObject("bsigner", "Beat Signer")
-                    .setPosition(new Absolute2DPosition(5, 2))),
-                service.insertObject(new DataObject("johndoe", "John Doe")
-                    .setPosition(pos)),
+                service.insertObject(obj1),
+                service.insertObject(obj2),
+                service.insertObject(obj3),
             ]).then(() => {
                 done()
             }).catch(done);
@@ -171,14 +178,30 @@ describe('SPARQLDataDriver', () => {
             }).catch(done);
         });
 
-        it('should support sorting by number', (done) => {
+        it('should support sorting by number ascending', (done) => {
+            service.findAll({}, {
+                sort: [
+                    ["createdTimestamp", 1]
+                ]
+            }).then(data => {
+                expect(data.length).to.equal(3);
+                expect(data[0].displayName).to.equal("Beat Signer");
+                expect(data[1].displayName).to.equal("John Doe");
+                expect(data[2].displayName).to.equal("Maxim Van de Wynckel");
+                done();
+            }).catch(done);
+        });
+
+        it('should support sorting by number descending', (done) => {
             service.findAll({}, {
                 sort: [
                     ["createdTimestamp", -1]
                 ]
             }).then(data => {
                 expect(data.length).to.equal(3);
-                expect(data[0].displayName).to.equal("John Doe");
+                expect(data[0].displayName).to.equal("Maxim Van de Wynckel"); // Updated
+                expect(data[1].displayName).to.equal("John Doe");
+                expect(data[2].displayName).to.equal("Beat Signer");
                 done();
             }).catch(done);
         });
