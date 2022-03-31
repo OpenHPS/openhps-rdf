@@ -41,7 +41,9 @@
   "jsdelivr": "dist/web/openhps-rdf.min.js",
   "files": [
     "dist/**/*",
-    "src/**/*"
+    "src/**/*",
+    "*.js",
+    "*.d.ts"
   ],
   "scripts": {
     "test": "mocha --config test/.mocharc.json",
