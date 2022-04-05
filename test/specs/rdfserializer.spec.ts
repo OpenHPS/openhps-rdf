@@ -1,7 +1,7 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { RDFSerializer, geo, schema, rdf, rdfs } from '../../src';
+import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode } from '../../src';
 import { xsd } from '../../src/decorators';
 
 describe('RDFSerializer', () => {
@@ -75,6 +75,34 @@ describe('RDFSerializer', () => {
             inner: InnerObject;
         }
 
+        @SerializableObject({
+            rdf: {
+                type: sosa.FeatureOfInterest
+            }
+        })
+        class FeatureOfInterest extends SerializableNamedNode { 
+            @SerializableArrayMember(() => ObservableProperty, {
+                rdf: {
+                    predicate: ssn.hasProperty
+                }
+            })
+            properties?: ObservableProperty[] = [];
+        }
+
+        @SerializableObject({
+            rdf: {
+                type: sosa.ObservableProperty
+            }
+        })
+        class ObservableProperty extends SerializableNamedNode {
+            @SerializableMember({
+                rdf: {
+                    predicate: ssn.isPropertyOf,
+                }
+            })
+            featureOfInterest: FeatureOfInterest;
+        }     
+        
         it('should not serialize an unconfigured member', () => {
             const obj = new SomeLocation();
             obj.random = "test";
@@ -136,6 +164,22 @@ describe('RDFSerializer', () => {
             expect(serialized['predicates']).to.not.be.undefined;
             expect(serialized['predicates'][schema.game]).to.not.be.undefined;
             expect((serialized['predicates'][schema.game][0] as any).predicates).to.eql(RDFSerializer.serialize(obj.inner).predicates);
+        });
+
+        it('should serialize named nodes', async () => {
+            const feature = new FeatureOfInterest("http://example.com/me");
+            const serialized = RDFSerializer.serialize(feature);
+            expect(serialized.value).to.equal("http://example.com/me");
+        });
+
+        it('should serialize circular members', async () => {
+            const feature = new FeatureOfInterest("http://example.com/me");
+            const property = new ObservableProperty("http://example.com/me/position");
+            property.featureOfInterest = feature;
+            feature.properties.push(property);
+
+            const serialized = RDFSerializer.serialize(feature);
+            console.log(await RDFSerializer.stringify(serialized))
         });
     });
 

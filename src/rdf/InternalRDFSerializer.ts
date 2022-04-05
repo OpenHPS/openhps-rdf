@@ -31,7 +31,7 @@ export class InternalRDFSerializer extends Serializer {
         typeDescriptor: TypeDescriptor,
         memberName: string,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: any,
+        serializerOptions: any = {},
     ): Thing {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
@@ -141,6 +141,13 @@ export class InternalRDFSerializer extends Serializer {
             thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
         }
         thing.termType = thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
+
+        // Check for circular serialization
+        if (serializerOptions.root === undefined) {
+            serializerOptions.root = thing;
+        } else if (serializerOptions.root.value === thing.value) {
+            return undefined;
+        }
 
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);

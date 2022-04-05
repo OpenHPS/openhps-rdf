@@ -19,7 +19,6 @@ describe('DataObject', () => {
 
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
-
         
         it('should have a single rdf type', async () => {
             expect(serialized.predicates[rdf.type].length).to.equal(1);
