@@ -68,6 +68,7 @@
     "linked data"
   ],
   "dependencies": {
+    "@comunica/query-sparql-rdfjs": "^2.0.6",
     "@types/n3": "^1.10.4",
     "n3": ">=1.16.0",
     "sparql-http-client": "^2.4.0",

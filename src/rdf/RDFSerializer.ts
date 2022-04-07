@@ -189,10 +189,26 @@ export class RDFSerializer extends DataSerializer {
             .flat();
     }
 
-    static async stringify(thing: Thing | any, options: WriterOptions = {}): Promise<string> {
+    /**
+     * Stringify a thing to RDF graph construct
+     *
+     * @param {Thing | N3.Store} thing Thing to serialize
+     * @param {WriterOptions} [options] Writer options
+     * @returns {Promise<string>} Promise of a stringified graph
+     */
+    static async stringify(thing: Thing | N3.Store | any, options: WriterOptions = {}): Promise<string> {
         return new Promise((resolve, reject) => {
-            const quads: N3.Quad[] = this.serializeToQuads(thing, options.baseUri);
-            const store = new N3.Store(quads);
+            let store: N3.Store;
+            let quads: N3.Quad[];
+
+            if (thing instanceof N3.Store) {
+                store = thing;
+                quads = store.getQuads(null, null, null, null);
+            } else {
+                quads = this.serializeToQuads(thing, options.baseUri);
+                store = new N3.Store(quads);
+            }
+
             // Filter the prefixes to only include prefixes used
             const prefixes: Record<string, string> = {
                 xsd: 'http://www.w3.org/2001/XMLSchema#',
