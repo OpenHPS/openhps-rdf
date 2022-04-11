@@ -20,10 +20,10 @@ export class SPARQLStoreDriver<T> extends SPARQLDriverBase<T> {
         });
     }
 
-    protected findAllSerialized(query?: FilterQuery<T>): Promise<Store> {
+    protected query(query: string): Promise<Store> {
         return new Promise((resolve, reject) => {
             this.client
-                .queryQuads(this.generator.createFindAll(query), {
+                .queryQuads(query, {
                     sources: [this.options.store],
                 })
                 .then((stream) => {
@@ -37,6 +37,10 @@ export class SPARQLStoreDriver<T> extends SPARQLDriverBase<T> {
                 })
                 .catch(reject);
         });
+    }
+
+    protected findAllSerialized(query?: FilterQuery<T>): Promise<Store> {
+        return this.query(this.generator.createFindAll(query));
     }
 
     insert(_: IriString, object: T): Promise<T> {

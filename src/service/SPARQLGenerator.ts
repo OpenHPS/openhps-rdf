@@ -65,9 +65,26 @@ export class SPARQLGenerator<T> {
                             ],
                         },
                     ],
-                    where: this.createQuery({
-                        [identifierMember.key]: id,
-                    }),
+                    where: [
+                        {
+                            type: 'group',
+                            patterns: [
+                                {
+                                    type: 'bgp',
+                                    triples: [
+                                        {
+                                            subject: DataFactory.variable('subject'),
+                                            predicate: DataFactory.variable('predicate'),
+                                            object: DataFactory.variable('object'),
+                                        },
+                                    ],
+                                },
+                                ...this.createQuery({
+                                    [identifierMember.key]: id,
+                                }),
+                            ],
+                        },
+                    ],
                 },
             ],
         };
@@ -196,10 +213,7 @@ export class SPARQLGenerator<T> {
                         },
                     ],
                 },
-                {
-                    type: 'group',
-                    patterns,
-                },
+                ...patterns,
             ],
             type: 'query',
             prefixes: {
@@ -281,31 +295,16 @@ export class SPARQLGenerator<T> {
             if (memberOptions.options.rdf.identifier) {
                 const rdf: RDFIdentifierOptions = memberOptions.options.rdf;
                 const pattern: Pattern = {
-                    type: 'group',
-                    patterns: [
-                        {
-                            type: 'bgp',
-                            triples: [
-                                {
-                                    subject: DataFactory.variable('subject'),
-                                    predicate: DataFactory.variable('predicate'),
-                                    object: DataFactory.variable('object'),
-                                },
-                            ],
-                        },
-                        {
-                            type: 'filter',
-                            expression: {
-                                type: 'operation',
-                                operator: '=',
-                                args: [
-                                    DataFactory.variable('subject'),
-                                    DataFactory.namedNode(this.baseUri + rdf.serializer(query, dataType)),
-                                ],
-                            },
-                        } as FilterPattern,
-                    ],
-                };
+                    type: 'filter',
+                    expression: {
+                        type: 'operation',
+                        operator: '=',
+                        args: [
+                            DataFactory.variable('subject'),
+                            DataFactory.namedNode(this.baseUri + rdf.serializer(query, dataType)),
+                        ],
+                    },
+                } as FilterPattern;
                 patterns.push(pattern);
                 return patterns;
             }
@@ -450,28 +449,23 @@ export class SPARQLGenerator<T> {
             const subject = DataFactory.variable(`s${this.next}`);
             const object = DataFactory.variable(`o${this.next}`);
             patterns.push({
-                type: 'group',
-                patterns: [
+                type: 'bgp',
+                triples: [
                     {
-                        type: 'bgp',
-                        triples: [
-                            {
-                                subject,
-                                predicate: DataFactory.namedNode(predicate),
-                                object,
-                            },
-                        ],
+                        subject,
+                        predicate: DataFactory.namedNode(predicate),
+                        object,
                     },
-                    {
-                        type: 'filter',
-                        expression: {
-                            type: 'operation',
-                            operator,
-                            args: [object, DataFactory.literal((subquery as any)[selector])],
-                        },
-                    } as FilterPattern,
                 ],
             });
+            patterns.push({
+                type: 'filter',
+                expression: {
+                    type: 'operation',
+                    operator,
+                    args: [object, DataFactory.literal((subquery as any)[selector])],
+                },
+            } as FilterPattern);
         }
         return patterns;
     }

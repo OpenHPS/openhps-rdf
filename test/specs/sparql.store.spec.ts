@@ -11,7 +11,6 @@ import {
 import 'mocha';
 import { N3, SPARQLStoreDriver } from '../../src';
 import { expect } from 'chai';
-import { Parser } from 'sparqljs';
 
 describe('SPARQLStoreDriver', () => {
     let service: DataObjectService<DataObject>;
@@ -98,22 +97,45 @@ describe('SPARQLStoreDriver', () => {
     });
 
     describe('find', () => {
+        // it('should perform a raw query', (done) => {
+        //     (service['driver'] as any).query(`
+        //     PREFIX : <http://openhps.org/terms#>
+        //     CONSTRUCT {
+        //         ?subject ?prop ?val.
+        //         ?child ?childProp ?childPropVal.
+        //         ?someSubj ?incomingChildProp ?child.
+        //     } WHERE {
+        //         ?subject ?prop ?val;
+        //             ((<http://example.org#overrides>|!<http://example.org#overrides>)+) ?child.
+        //         ?child ?childProp ?childPropVal.
+        //         ?someSubj ?incomingChildProp ?child.
+        //         {
+        //             {
+        //                 ?subject ?predicate ?object.
+        //                 FILTER(?subject = :dataobject_mvdewync)
+        //             }
+        //         }
+        //     }
+        //     `).then(data => {
+        //         expect(data.displayName).to.equal("Maxim Van de Wynckel");
+        //         done();
+        //     }).catch(done);
+        // });
+
         it('should find by uid', (done) => {
-            // service.findByUID("mvdewync").then(data => {
-            //     expect(data.displayName).to.equal("Maxim Van de Wynckel");
-            //     done();
-            // }).catch(done);
-            done();
+            service.findByUID("mvdewync").then(data => {
+                expect(data.displayName).to.equal("Maxim Van de Wynckel");
+                done();
+            }).catch(done);
         });
 
         it('should find one item', (done) => {
-            // service.findOne({
-            //     uid: "mvdewync"
-            // }).then(data => {
-            //     expect(data.displayName).to.equal("Maxim Van de Wynckel");
-            //     done();
-            // }).catch(done);
-            done();
+            service.findOne({
+                uid: "mvdewync"
+            }).then(data => {
+                expect(data.displayName).to.equal("Maxim Van de Wynckel");
+                done();
+            }).catch(done);
         });
 
         it('should find one item by a display name', (done) => {
@@ -356,13 +378,12 @@ describe('SPARQLStoreDriver', () => {
         });
 
         it('should count specific objects', (done) => {
-            // service.count({
-            //     uid: "mvdewync"
-            // }).then(num => {
-            //     expect(num).to.equal(1);
-            //     done();
-            // }).catch(done);
-            done();
+            service.count({
+                uid: "mvdewync"
+            }).then(num => {
+                expect(num).to.equal(1);
+                done();
+            }).catch(done);
         });
     });
 
