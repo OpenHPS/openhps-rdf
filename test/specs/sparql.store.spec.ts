@@ -12,6 +12,7 @@ import 'mocha';
 import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 const wkt = require('wkt');
+import { QueryEngine } from '@comunica/query-sparql-link-traversal';
 
 describe('SPARQLDataDriver (N3 store)', () => {
     let service: DataObjectService<DataObject>;
@@ -134,7 +135,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
             }).catch(done);
         });
 
-        it('should perform a raw query2', (done) => {
+        it('should perform a raw query from multiple sources', (done) => {
             const store = new Store(new Parser().parse(`
             @prefix : <http://example.com/> .
             @prefix qudt: <http://qudt.org/schema/qudt/> .
@@ -209,6 +210,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 stream.on('error', done);
             }).catch(done);
         });
+        
     });
 
     describe('find', () => {

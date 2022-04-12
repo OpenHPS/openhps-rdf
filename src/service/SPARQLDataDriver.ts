@@ -7,28 +7,24 @@ import {
     MemoryQueryEvaluator,
     DataServiceDriver,
 } from '@openhps/core';
-import { DataFactory, Quad, Store, Term } from 'n3';
+import { DataFactory, Quad, Store } from 'n3';
 import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
 import { SPARQLGenerator } from './SPARQLGenerator';
-import type { QueryStringContext } from '@comunica/types';
+import type { QueryStringContext, IQueryEngine } from '@comunica/types';
 
 export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
     protected generator: SPARQLGenerator<T>;
     protected options: SPARQLDriverOptions;
-    protected client: QueryEngine;
 
     constructor(dataType?: Constructor<T>, options?: SPARQLDriverOptions) {
         super(dataType, options);
         this.generator = new SPARQLGenerator(this.dataType, this.options.baseUri);
-        this.once('build', this._onBuild.bind(this));
+        this.options.engine = this.options.engine ?? new QueryEngine();
     }
 
-    private _onBuild(): Promise<void> {
-        return new Promise((resolve) => {
-            this.client = new QueryEngine();
-            resolve();
-        });
+    protected get client(): IQueryEngine {
+        return this.options.engine;
     }
 
     queryBinding(query: string): Promise<any[]> {
@@ -179,4 +175,10 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringContext {
     baseUri?: IriString;
     httpAuth?: `${string}:${string}`;
+    /**
+     * Comunica query engine
+     *
+     * @default @comunica/query-sparql QueryEngine
+     */
+    engine?: IQueryEngine;
 }
