@@ -11,7 +11,7 @@ import {
     Serializable,
 } from '@openhps/core';
 import { IriString, Thing } from './types';
-import * as N3 from 'n3';
+import { DataFactory, Literal, NamedNode } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, XmlSchemaTypeIri, xsd } from '../decorators/';
 import { mergeDeep } from './utils';
 
@@ -123,13 +123,13 @@ export class InternalRDFSerializer extends Serializer {
         uri =
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
                 ? serializerOptions.rdf.baseUri + uri
-                : N3.DataFactory.blankNode(uri).value;
+                : DataFactory.blankNode(uri).value;
         let thing: Thing = {
             value: uri,
             predicates: options.predicates
                 ? Object.entries(options.predicates)
                       .map(([k, v]) => {
-                          return { [k]: v.map(N3.DataFactory.namedNode) };
+                          return { [k]: v.map(DataFactory.namedNode) };
                       })
                       .reduce((a, b) => {
                           return { ...a, ...b };
@@ -186,7 +186,7 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
-    ): (N3.Literal | Thing)[] {
+    ): (Literal | Thing)[] {
         return sourceObject.map((obj) => {
             return this.convertSingleValue(
                 obj,
@@ -205,7 +205,7 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
-    ): (N3.Literal | Thing)[] {
+    ): (Literal | Thing)[] {
         return Array.from(sourceObject.values()).map((obj) => {
             return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
         });
@@ -218,7 +218,7 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
-    ): (N3.Literal | Thing)[] {
+    ): (Literal | Thing)[] {
         return Array.from(sourceObject.values()).map((obj) => {
             return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
         });
@@ -230,7 +230,7 @@ export class InternalRDFSerializer extends Serializer {
         memberName?: string,
         serializer?: Serializer,
         memberOptions?: ObjectMemberMetadata,
-    ): N3.Literal {
+    ): Literal {
         let xsdDatatype: XmlSchemaTypeIri = undefined;
         const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
         if (rdfOptions && rdfOptions.datatype) {
@@ -257,7 +257,7 @@ export class InternalRDFSerializer extends Serializer {
             }
         }
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return N3.DataFactory.literal(sourceObject, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
+        return DataFactory.literal(sourceObject, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
     }
 
     protected serializeDate(
@@ -266,15 +266,15 @@ export class InternalRDFSerializer extends Serializer {
         memberName?: string,
         serializer?: Serializer,
         memberOptions?: ObjectMemberMetadata,
-    ): N3.Literal {
+    ): Literal {
         const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
         const xsdDatatype: XmlSchemaTypeIri = xsd.dateTime;
         const dateString = new Date(sourceObject).toISOString();
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return N3.DataFactory.literal(dateString, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
+        return DataFactory.literal(dateString, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
     }
 
-    protected iriToNode(iri: IriString): N3.NamedNode {
-        return N3.DataFactory.namedNode(iri);
+    protected iriToNode(iri: IriString): NamedNode {
+        return DataFactory.namedNode(iri);
     }
 }

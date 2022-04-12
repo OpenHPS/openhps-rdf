@@ -9,8 +9,19 @@ import {
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
 import { IriString, Thing, Subject } from './types';
-import * as N3 from 'n3';
-import { WriterOptions as N3WriterOptions } from 'n3';
+import {
+    NamedNode,
+    BlankNode,
+    Store,
+    Quad_Predicate,
+    Quad_Subject,
+    Quad_Object,
+    Literal,
+    DataFactory,
+    Quad,
+    Writer,
+} from 'n3';
+import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
@@ -78,12 +89,12 @@ export class RDFSerializer extends DataSerializer {
         } as any);
     }
 
-    static deserializeFromStore<T>(subject: N3.NamedNode | N3.BlankNode, store: N3.Store): T {
+    static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
         /**
          * @param subject
          * @param store
          */
-        function quadsToThing(subject: N3.NamedNode | N3.BlankNode, store: N3.Store): Thing {
+        function quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
             return {
                 termType: subject.termType,
                 value: subject.value,
@@ -113,34 +124,34 @@ export class RDFSerializer extends DataSerializer {
     }
 
     static serializeToSubjects<T>(data: T, baseUri?: IriString): Subject[] {
-        const quads: N3.Quad[] = RDFSerializer.serializeToQuads(data, baseUri);
-        const store = new N3.Store(quads);
-        const quadSubjects: N3.Quad_Subject[] = store.getSubjects(null, null, null);
+        const quads: Quad[] = RDFSerializer.serializeToQuads(data, baseUri);
+        const store = new Store(quads);
+        const quadSubjects: Quad_Subject[] = store.getSubjects(null, null, null);
         /**
          *
          * @param quadSubject
          */
-        function serializePredicates(quadSubject: N3.Quad_Subject) {
-            const quadPredicates: N3.Quad_Predicate[] = store.getPredicates(quadSubject, null, null);
+        function serializePredicates(quadSubject: Quad_Subject) {
+            const quadPredicates: Quad_Predicate[] = store.getPredicates(quadSubject, null, null);
             return quadPredicates
                 .map((quadPredicate) => {
-                    const quadObjects: N3.Quad_Object[] = store.getObjects(quadSubject, quadPredicate, null);
+                    const quadObjects: Quad_Object[] = store.getObjects(quadSubject, quadPredicate, null);
                     const literals: Record<string, string[]> = quadObjects
-                        .filter((obj) => obj instanceof N3.Literal)
-                        .filter((obj: N3.Literal) => obj.language === '')
-                        .map((obj: N3.Literal) => ({ [obj.datatype.value]: [obj.value] }))
+                        .filter((obj) => obj instanceof Literal)
+                        .filter((obj: Literal) => obj.language === '')
+                        .map((obj: Literal) => ({ [obj.datatype.value]: [obj.value] }))
                         .reduce((a, b) => ({ ...a, ...b }), {});
                     const langStrings: Record<string, string[]> = quadObjects
-                        .filter((obj) => obj instanceof N3.Literal)
-                        .filter((obj: N3.Literal) => obj.language !== '')
-                        .map((obj: N3.Literal) => ({ [obj.language]: [obj.value] }))
+                        .filter((obj) => obj instanceof Literal)
+                        .filter((obj: Literal) => obj.language !== '')
+                        .map((obj: Literal) => ({ [obj.language]: [obj.value] }))
                         .reduce((a, b) => ({ ...a, ...b }), {});
                     const namedNodes: Array<string> = quadObjects
-                        .filter((obj) => obj instanceof N3.NamedNode)
+                        .filter((obj) => obj instanceof NamedNode)
                         .map((obj) => obj.value);
                     const blankNodes: Array<any | string> = quadObjects
-                        .filter((obj) => obj instanceof N3.BlankNode)
-                        .map((obj: N3.BlankNode) => serializePredicates(N3.DataFactory.blankNode(obj.value)));
+                        .filter((obj) => obj instanceof BlankNode)
+                        .map((obj: BlankNode) => serializePredicates(DataFactory.blankNode(obj.value)));
                     return {
                         [quadPredicate.value]: {
                             namedNodes,
@@ -153,7 +164,7 @@ export class RDFSerializer extends DataSerializer {
                 .reduce((a, b) => ({ ...a, ...b }), {});
         }
         const subjects: Subject[] = quadSubjects
-            .filter((quadSubject) => quadSubject instanceof N3.NamedNode)
+            .filter((quadSubject) => quadSubject instanceof NamedNode)
             .map((quadSubject) => {
                 return {
                     type: 'Subject',
@@ -164,24 +175,22 @@ export class RDFSerializer extends DataSerializer {
         return subjects;
     }
 
-    static serializeToQuads<T>(data: T, baseUri?: IriString): N3.Quad[] {
+    static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
         const thing =
             (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, baseUri);
         const subject =
-            thing.termType === 'BlankNode'
-                ? N3.DataFactory.blankNode(thing.value)
-                : N3.DataFactory.namedNode(thing.value);
+            thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)
             .map((predicateIri) => {
-                const predicate = N3.DataFactory.namedNode(predicateIri);
+                const predicate = DataFactory.namedNode(predicateIri);
                 return thing.predicates[predicateIri].map((object) => {
                     if ((object as any)['predicates'] !== undefined) {
                         return [
-                            N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object),
+                            DataFactory.quad(subject, predicate, object as Quad_Object),
                             ...this.serializeToQuads(object as Thing),
                         ];
                     } else {
-                        return [N3.DataFactory.quad(subject, predicate, object as N3.Quad_Object)];
+                        return [DataFactory.quad(subject, predicate, object as Quad_Object)];
                     }
                 });
             })
@@ -192,21 +201,21 @@ export class RDFSerializer extends DataSerializer {
     /**
      * Stringify a thing to RDF graph construct
      *
-     * @param {Thing | N3.Store} thing Thing to serialize
+     * @param {Thing | Store} thing Thing to serialize
      * @param {WriterOptions} [options] Writer options
      * @returns {Promise<string>} Promise of a stringified graph
      */
-    static async stringify(thing: Thing | N3.Store | any, options: WriterOptions = {}): Promise<string> {
+    static async stringify(thing: Thing | Store | any, options: WriterOptions = {}): Promise<string> {
         return new Promise((resolve, reject) => {
-            let store: N3.Store;
-            let quads: N3.Quad[];
+            let store: Store;
+            let quads: Quad[];
 
-            if (thing instanceof N3.Store) {
+            if (thing instanceof Store) {
                 store = thing;
                 quads = store.getQuads(null, null, null, null);
             } else {
                 quads = this.serializeToQuads(thing, options.baseUri);
-                store = new N3.Store(quads);
+                store = new Store(quads);
             }
 
             // Filter the prefixes to only include prefixes used
@@ -244,7 +253,7 @@ export class RDFSerializer extends DataSerializer {
                 ...filteredPrefixes,
                 ...options.prefixes,
             };
-            const writer = new N3.Writer(options);
+            const writer = new Writer(options);
             if (options.prettyPrint) {
                 store.getSubjects(null, null, null).forEach((subject) => {
                     if (subject.termType === 'BlankNode') {
@@ -274,7 +283,7 @@ export class RDFSerializer extends DataSerializer {
         });
     }
 
-    private static writeBlankNode(writer: N3.Writer, object: N3.Quad_Object, store: N3.Store): N3.BlankNode {
+    private static writeBlankNode(writer: Writer, object: Quad_Object, store: Store): BlankNode {
         const blankNodePredicates = store.getPredicates(object, null, null);
         return writer.blank(
             blankNodePredicates
@@ -362,7 +371,7 @@ export class RDFSerializer extends DataSerializer {
         if (identifierMember) {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             uri = rdfOptions.serializer ? rdfOptions.serializer(identifier, dataType) : identifier;
-            uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : N3.DataFactory.blankNode(uri).value;
+            uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : DataFactory.blankNode(uri).value;
         } else {
             return baseUri;
         }

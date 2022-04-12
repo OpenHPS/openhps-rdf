@@ -1,5 +1,5 @@
 import { SerializableObject } from '@openhps/core';
-import * as N3 from 'n3';
+import { NamedNode } from 'n3';
 import { Thing } from './types';
 
 @SerializableObject({
@@ -14,4 +14,4 @@ import { Thing } from './types';
         },
     },
 })
-export class SerializableNamedNode extends N3.NamedNode {}
+export class SerializableNamedNode extends NamedNode {}

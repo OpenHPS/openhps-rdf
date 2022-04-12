@@ -10,7 +10,7 @@ import {
     Serializable,
     TypeDescriptor,
 } from '@openhps/core';
-import * as N3 from 'n3';
+import { Literal, NamedNode, Quad_Object } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, xsd } from '../decorators';
 import { rdf } from '../vocab';
 import { IriString, RDFSerializerConfig, Thing } from './types';
@@ -37,7 +37,7 @@ export class InternalRDFDeserializer extends Deserializer {
                 .filter(([k, _]) => k === rdf.type)
                 .map(([_, v]) => v)
                 .flat()
-                .map((v: N3.NamedNode) => v.value as IriString);
+                .map((v: NamedNode) => v.value as IriString);
             const mappedTypes = rdfTypes
                 .map((type) => knownRDFTypes.get(type))
                 .flat()
@@ -192,7 +192,7 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeLiteral<TD extends TypeDescriptor>(
-        sourceObject: N3.Literal,
+        sourceObject: Literal,
         typeDescriptor: TD,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
@@ -210,7 +210,7 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeDate<TD extends TypeDescriptor>(
-        sourceObject: N3.Literal,
+        sourceObject: Literal,
         typeDescriptor: TD,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
@@ -222,7 +222,7 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeArray<T, TD extends TypeDescriptor>(
-        sourceObject: N3.Quad_Object[],
+        sourceObject: Quad_Object[],
         typeDescriptor: ArrayTypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
@@ -261,7 +261,7 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeMap<TD extends TypeDescriptor>(
-        sourceObject: N3.Literal,
+        sourceObject: Literal,
         typeDescriptor: TD,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
@@ -273,7 +273,7 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeSet<TD extends TypeDescriptor>(
-        sourceObject: N3.Quad_Object[],
+        sourceObject: Quad_Object[],
         typeDescriptor: TD,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,

@@ -9,10 +9,11 @@ import {
     DataFrame
 } from '@openhps/core';
 import 'mocha';
-import { N3, SPARQLStoreDriver } from '../../src';
+import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
+const wkt = require('wkt');
 
-describe('SPARQLStoreDriver', () => {
+describe('SPARQLDataDriver (N3 store)', () => {
     let service: DataObjectService<DataObject>;
     let frameService: DataFrameService<DataFrame>;
     const object1 = new DataObject('mvdewync', 'Maxim');
@@ -28,12 +29,12 @@ describe('SPARQLStoreDriver', () => {
     frame3.addObject(object1);
 
     before((done) => {
-        service = new DataObjectService(new SPARQLStoreDriver(DataObject, {
-            store: new N3.Store(),
+        service = new DataObjectService(new SPARQLDataDriver(DataObject, {
+            sources: [new Store()],
             baseUri: "http://openhps.org/terms#"
         }));
-        frameService = new DataFrameService(new SPARQLStoreDriver(DataFrame, {
-            store: new N3.Store(),
+        frameService = new DataFrameService(new SPARQLDataDriver(DataFrame, {
+            sources: [new Store()],
             baseUri: "http://openhps.org/terms#"
         }));
         Promise.all([service.emitAsync('build'), frameService.emitAsync('build')]).then(() => {
@@ -96,32 +97,121 @@ describe('SPARQLStoreDriver', () => {
         });
     });
 
-    describe('find', () => {
-        // it('should perform a raw query', (done) => {
-        //     (service['driver'] as any).query(`
-        //     PREFIX : <http://openhps.org/terms#>
-        //     CONSTRUCT {
-        //         ?subject ?prop ?val.
-        //         ?child ?childProp ?childPropVal.
-        //         ?someSubj ?incomingChildProp ?child.
-        //     } WHERE {
-        //         ?subject ?prop ?val;
-        //             ((<http://example.org#overrides>|!<http://example.org#overrides>)+) ?child.
-        //         ?child ?childProp ?childPropVal.
-        //         ?someSubj ?incomingChildProp ?child.
-        //         {
-        //             {
-        //                 ?subject ?predicate ?object.
-        //                 FILTER(?subject = :dataobject_mvdewync)
-        //             }
-        //         }
-        //     }
-        //     `).then(data => {
-        //         expect(data.displayName).to.equal("Maxim Van de Wynckel");
-        //         done();
-        //     }).catch(done);
-        // });
+    describe('extension functions', () => {
+        it('should perform a raw query', (done) => {
+            ((service['driver'] as any)['client']).queryBindings(`
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
 
+            SELECT ?geoJSON
+            WHERE {
+                BIND (("""<http://www.opengis.net/def/crs/OGC/1.3/CRS84>
+                        Point Z(-83.4 34.0 0)"""^^geo:wktLiteral) AS ?testgeom)
+                BIND(geof:asGeoJSON(?testgeom) AS ?geoJSON)
+            }
+            `, {
+                sources: [(service['driver'] as any).options.store],
+                extensionFunctions: {
+                    'http://www.opengis.net/def/function/geosparql/asGeoJSON'(args: Term[]) {
+                        const wktLiteral = args[0];
+                        const pattern = /^<(https?:\/\/.*)>/g;
+                        let wktString: string = wktLiteral.value.replace(pattern, "").replace("\n", "").trim();
+                        const matches = pattern.exec(wktLiteral.value);
+                        const crs = matches.length > 0 ? matches[0] : 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
+                        const geoJSON = wkt.parse(wktString);
+                        return DataFactory.literal(JSON.stringify(geoJSON), ogc.geoJSONLiteral);
+                    }
+                }
+            })
+            .then((stream) => {
+                stream.on('data', (binding) => {
+                    console.log(binding.get('geoJSON').value);
+                });
+                stream.on('end', () => {
+                    done();
+                });
+                stream.on('error', done);
+            }).catch(done);
+        });
+
+        it('should perform a raw query2', (done) => {
+            const store = new Store(new Parser().parse(`
+            @prefix : <http://example.com/> .
+            @prefix qudt: <http://qudt.org/schema/qudt/> .
+            @prefix ssn: <http://www.w3.org/ns/ssn/> .
+            @prefix sosa: <http://www.w3.org/ns/sosa/> .
+            @prefix qudt-unit: <http://qudt.org/vocab/unit/> .
+            @prefix geo: <http://www.opengis.net/ont/geosparql#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+            :1648736932937 a sosa:Observation;
+                sosa:hasResult
+                    [
+                    a geo:Geometry;
+                    geo:asWKT """<http://www.opengis.net/def/crs/OGC/1.3/CRS84>
+                        Point Z(46.641890130 5.893628199 15)"""^^geo:wktLiteral ;
+                    geo:coordinateDimension 3 ;
+                    geo:hasSpatialAccuracy
+                        [ a qudt:QuantityValue ;
+                            qudt:numericValue 598 ;
+                            qudt:unit qudt-unit:CentiM ]
+                    ];
+                sosa:observedProperty <> ;
+                sosa:resultTime "2022-03-31T14:28:52.937Z"^^xsd:dateTime .
+            `));
+
+            ((service['driver'] as any)['client']).queryBindings(`
+            PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+            PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+            PREFIX qudt: <http://qudt.org/schema/qudt/>
+            PREFIX ssn: <http://www.w3.org/ns/ssn/>
+            PREFIX sosa: <http://www.w3.org/ns/sosa/>
+            PREFIX qudt-unit: <http://qudt.org/vocab/unit/>
+
+            SELECT ?posGeoJSON ?datetime ?accuracy {
+                ?observation sosa:hasResult ?pos ;
+                  sosa:resultTime ?datetime .
+                ?pos geo:hasSpatialAccuracy ?spatialAccuracy ;
+                  geo:asWKT ?posWKT .
+                BIND(geof:asGeoJSON(?posWKT) AS ?posGeoJSON)
+                {
+                  ?spatialAccuracy qudt:numericValue ?value ;
+                    qudt:unit ?unit .
+                  ?unit qudt:conversionMultiplier ?multiplier .
+                  OPTIONAL { ?unit qudt:conversionOffset ?offset }
+                  BIND(COALESCE(?offset, 0) as ?offset)
+                  BIND(((?value * ?multiplier) + ?offset) 
+                    AS ?accuracy)
+                  FILTER(?accuracy < 6)
+                }
+            } ORDER BY DESC(?datetime) LIMIT 20
+            `, {
+                sources: [store, 'http://qudt.org/2.1/vocab/unit'],
+                extensionFunctions: {
+                    'http://www.opengis.net/def/function/geosparql/asGeoJSON'(args: Term[]) {
+                        const wktLiteral = args[0];
+                        const pattern = /^<(https?:\/\/.*)>/g;
+                        let wktString: string = wktLiteral.value.replace("\n", "").replace(pattern, "").trim();
+                        const matches = pattern.exec(wktLiteral.value);
+                        const crs = matches.length > 0 ? matches[0] : 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
+                        const geoJSON = wkt.parse(wktString);
+                        return DataFactory.literal(JSON.stringify(geoJSON), ogc.geoJSONLiteral);
+                    }
+                }
+            })
+            .then((stream) => {
+                stream.on('data', (binding) => {
+                    console.log(binding.get('posGeoJSON').value, binding.get('datetime').value,  binding.get('accuracy').value);
+                });
+                stream.on('end', () => {
+                    done();
+                });
+                stream.on('error', done);
+            }).catch(done);
+        });
+    });
+
+    describe('find', () => {
         it('should find by uid', (done) => {
             service.findByUID("mvdewync").then(data => {
                 expect(data.displayName).to.equal("Maxim Van de Wynckel");

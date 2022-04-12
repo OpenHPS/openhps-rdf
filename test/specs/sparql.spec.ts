@@ -12,7 +12,7 @@ import 'mocha';
 import { SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 
-describe('SPARQLDataDriver', () => {
+describe('SPARQLDataDriver (Fuseki endpoint)', () => {
     let service: DataObjectService<DataObject>;
     let frameService: DataFrameService<DataFrame>;
     const object1 = new DataObject('mvdewync', 'Maxim');
@@ -29,20 +29,14 @@ describe('SPARQLDataDriver', () => {
 
     before((done) => {
         service = new DataObjectService(new SPARQLDataDriver(DataObject, {
-            endpointUrl: "http://localhost:3030/openhps-rdf-1/query",
-            updateUrl: "http://localhost:3030/openhps-rdf-1/update",
-            storeUrl: "http://localhost:3030/openhps-rdf-1/data",
-            user: "admin",
-            password: "test",
-            baseUri: "http://openhps.org/terms#"
+            httpAuth: "admin:test",
+            baseUri: "http://openhps.org/terms#",
+            sources: [{ type: 'sparql', value: "http://localhost:3030/openhps-rdf-1" }],
         }));
         frameService = new DataFrameService(new SPARQLDataDriver(DataFrame, {
-            endpointUrl: "http://localhost:3030/openhps-rdf-2/query",
-            updateUrl: "http://localhost:3030/openhps-rdf-2/update",
-            storeUrl: "http://localhost:3030/openhps-rdf-2/data",
-            user: "admin",
-            password: "test",
-            baseUri: "http://openhps.org/terms#"
+            httpAuth: "admin:test",
+            baseUri: "http://openhps.org/terms#",
+            sources: [{ type: 'sparql', value: "http://localhost:3030/openhps-rdf-2" }],
         }));
         Promise.all([service.emitAsync('build'), frameService.emitAsync('build')]).then(() => {
             return Promise.all([service.deleteAll(), frameService.deleteAll()]);
