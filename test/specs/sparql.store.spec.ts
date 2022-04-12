@@ -100,7 +100,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
 
     describe('extension functions', () => {
         it('should perform a raw query', (done) => {
-            ((service['driver'] as any)['client']).queryBindings(`
+            ((service['driver'] as any)['engine']).queryBindings(`
             PREFIX geo: <http://www.opengis.net/ont/geosparql#>
             PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
 
@@ -161,7 +161,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 sosa:resultTime "2022-03-31T14:28:52.937Z"^^xsd:dateTime .
             `));
 
-            ((service['driver'] as any)['client']).queryBindings(`
+            ((service['driver'] as any)['engine']).queryBindings(`
             PREFIX geo: <http://www.opengis.net/ont/geosparql#>
             PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
             PREFIX qudt: <http://qudt.org/schema/qudt/>

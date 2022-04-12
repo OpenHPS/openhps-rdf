@@ -7,7 +7,7 @@ import {
     MemoryQueryEvaluator,
     DataServiceDriver,
 } from '@openhps/core';
-import { DataFactory, Quad, Store } from 'n3';
+import { DataFactory, Quad, Store, Term } from 'n3';
 import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
 import { SPARQLGenerator } from './SPARQLGenerator';
@@ -23,14 +23,14 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         this.options.engine = this.options.engine ?? new QueryEngine();
     }
 
-    protected get client(): IQueryEngine {
+    get engine(): IQueryEngine {
         return this.options.engine;
     }
 
-    queryBinding(query: string): Promise<any[]> {
+    queryBindings(query: string, options: QueryStringContext = this.options): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            this.client
-                .queryBindings(query, this.options)
+            this.engine
+                .queryBindings(query, options)
                 .then((stream) => {
                     const bindings: any[] = [];
                     stream.on('data', (binding: any) => {
@@ -44,16 +44,16 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    queryVoid(query: string): Promise<void> {
+    queryVoid(query: string, options: QueryStringContext = this.options): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.client.queryVoid(query, this.options).then(resolve).catch(reject);
+            this.engine.queryVoid(query, options).then(resolve).catch(reject);
         });
     }
 
-    queryQuads(query: string): Promise<Store> {
+    queryQuads(query: string, options: QueryStringContext = this.options): Promise<Store> {
         return new Promise((resolve, reject) => {
-            this.client
-                .queryQuads(query, this.options)
+            this.engine
+                .queryQuads(query, options)
                 .then((stream) => {
                     const store: Store = new Store();
                     stream.on('data', (row: Quad) => {
