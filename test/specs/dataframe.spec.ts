@@ -2,7 +2,7 @@ import 'mocha';
 import { Absolute3DPosition, Accuracy3D, AngleUnit, DataFrame, DataObject, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
 import { openhps, qudt, qudt_unit, RDFSerializer, Thing } from '../../src';
 import { expect } from 'chai';
-import { DataFactory, Parser } from 'n3';
+import { DataFactory, Parser, Store } from 'n3';
 
 describe('DataFrame', () => {
     const object = new DataObject();
@@ -43,9 +43,17 @@ describe('DataFrame', () => {
         const serializedOrientation = serializedPosition.predicates[openhps.hasOrientation][0] as Thing;
         serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
         const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
+        const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
 
         it('should deserialize a data frame', () => {
             expect(deserialized).to.not.be.undefined;
+        });
+
+        it('should deserialize a data frame from store', () => {
+            const store = new Store(serializedQuads);
+            const deserializedFrame = RDFSerializer.deserializeFromStore(DataFactory.namedNode(serialized.value), store);
+            expect(deserializedFrame['_objects']).to.not.be.undefined;
+            expect(deserializedFrame['_objects']).to.be.instanceOf(Map);
         });
     });
 

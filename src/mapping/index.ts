@@ -17,3 +17,4 @@ import './SensorValue';
 import './Accuracy';
 import './LinearVelocity';
 import './AngularVelocity';
+import './UnitValue';

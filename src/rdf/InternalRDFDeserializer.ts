@@ -5,6 +5,7 @@ import {
     Deserializer,
     DeserializerFn,
     IndexedObject,
+    MapTypeDescriptor,
     MemberOptionsBase,
     ObjectMemberMetadata,
     Serializable,
@@ -152,6 +153,7 @@ export class InternalRDFDeserializer extends Deserializer {
                     : rootMember && rootMember.options && rootMember.options.rdf
                     ? rootMember
                     : undefined;
+
             if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
                 return undefined;
             }
@@ -163,11 +165,22 @@ export class InternalRDFDeserializer extends Deserializer {
                 }
 
                 if (memberOptions.type().ctor === Array) {
-                    targetObject[memberOptions.key] = deserializer.convertSingleValue(
-                        sourceObject.predicates[predicateIri],
-                        memberOptions.type(),
+                    targetObject[memberOptions.key] = this.deserializeArray(
+                        sourceObject.predicates[predicateIri] as Quad_Object[],
+                        memberOptions.type() as ArrayTypeDescriptor,
                         knownTypes,
                         memberOptions.name,
+                        this,
+                        memberOptions,
+                        serializerOptions,
+                    );
+                } else if (memberOptions.type().ctor === Map) {
+                    targetObject[memberOptions.key] = this.deserializeMap(
+                        sourceObject.predicates[predicateIri] as Quad_Object[],
+                        memberOptions.type() as MapTypeDescriptor,
+                        knownTypes,
+                        memberOptions.name,
+                        this,
                         memberOptions,
                         serializerOptions,
                     );
@@ -221,7 +234,7 @@ export class InternalRDFDeserializer extends Deserializer {
         return new Date(sourceObject.value);
     }
 
-    deserializeArray<T, TD extends TypeDescriptor>(
+    deserializeArray(
         sourceObject: Quad_Object[],
         typeDescriptor: ArrayTypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
@@ -260,16 +273,60 @@ export class InternalRDFDeserializer extends Deserializer {
         return false;
     }
 
-    deserializeMap<TD extends TypeDescriptor>(
-        sourceObject: Literal,
-        typeDescriptor: TD,
+    deserializeMap(
+        sourceObject: Quad_Object[],
+        typeDescriptor: MapTypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
         deserializer: Deserializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: DataSerializerConfig,
     ): any {
-        return undefined;
+        const result = new Map();
+        if (!sourceObject) {
+            return result;
+        }
+        sourceObject
+            .map((object) => {
+                return deserializer.convertSingleValue(
+                    object,
+                    typeDescriptor.valueType,
+                    knownTypes,
+                    memberName,
+                    memberOptions,
+                    serializerOptions,
+                );
+            })
+            .filter((val) => this.isInstanceOf(val, typeDescriptor.valueType.ctor))
+            .forEach((object) => {
+                // Get metadata
+                const metadata = DataSerializer.getMetadata(object.constructor);
+                const rootMetadata = DataSerializer.getRootMetadata(object.constructor);
+
+                const options =
+                    metadata.options && metadata.options.rdf
+                        ? metadata.options.rdf
+                        : rootMetadata.options && rootMetadata.options.rdf
+                        ? rootMetadata.options.rdf
+                        : undefined;
+
+                if (!options) {
+                    return undefined;
+                }
+
+                const identifierMember = Array.from(metadata.dataMembers.values()).filter((member) => {
+                    return (
+                        member &&
+                        member.options &&
+                        member.options.rdf &&
+                        (member.options.rdf as RDFIdentifierOptions).identifier
+                    );
+                })[0];
+                if (identifierMember) {
+                    result.set(object[identifierMember.key], object);
+                }
+            });
+        return result;
     }
 
     deserializeSet<TD extends TypeDescriptor>(

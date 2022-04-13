@@ -1,6 +1,14 @@
-import { DataSerializer, FilterQuery, ObjectMemberMetadata, QuerySelector, Serializable } from '@openhps/core';
+import {
+    ArrayTypeDescriptor,
+    DataSerializer,
+    FilterQuery,
+    MapTypeDescriptor,
+    ObjectMemberMetadata,
+    QuerySelector,
+    Serializable,
+} from '@openhps/core';
 import { FilterPattern, GroupPattern, Pattern, UnionPattern, Generator, SparqlQuery, ConstructQuery } from 'sparqljs';
-import { DataFactory } from 'n3';
+import { DataFactory, Quad_Subject } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { IriString, RDFSerializer } from '../rdf';
 
@@ -147,8 +155,6 @@ export class SPARQLGenerator<T> {
         const childVar = DataFactory.variable('child');
         const childPropVar = DataFactory.variable('childProp');
         const childPropValVar = DataFactory.variable('childPropVal');
-        const someSubjVar = DataFactory.variable('someSubj');
-        const incomingChildProp = DataFactory.variable('incomingChildProp');
         const dummyPredicate = DataFactory.namedNode('http://example.org#overrides');
 
         const constructQuery: ConstructQuery = {
@@ -163,11 +169,6 @@ export class SPARQLGenerator<T> {
                     subject: childVar,
                     predicate: childPropVar,
                     object: childPropValVar,
-                },
-                {
-                    subject: someSubjVar,
-                    predicate: incomingChildProp,
-                    object: childVar,
                 },
             ],
             where: [
@@ -205,11 +206,6 @@ export class SPARQLGenerator<T> {
                             subject: childVar,
                             predicate: childPropVar,
                             object: childPropValVar,
-                        },
-                        {
-                            subject: someSubjVar,
-                            predicate: incomingChildProp,
-                            object: childVar,
                         },
                     ],
                 },
@@ -261,7 +257,12 @@ export class SPARQLGenerator<T> {
         return patterns;
     }
 
-    protected generateComponent(key: string, query: any, dataType: Serializable<any>): Pattern[] {
+    protected generateComponent(
+        key: string,
+        query: any,
+        dataType: Serializable<any>,
+        subject: Quad_Subject = DataFactory.variable('subject'),
+    ): Pattern[] {
         const patterns: Pattern[] = [];
         if (key.startsWith('$')) {
             patterns.push(...this.generateOp(key, query));
@@ -269,6 +270,7 @@ export class SPARQLGenerator<T> {
             patterns.push(...this.generatePath(key, query, dataType));
         } else {
             const rootMetadata = DataSerializer.getRootMetadata(dataType);
+
             let member: ObjectMemberMetadata;
             rootMetadata.knownTypes.forEach((knownType) => {
                 if (!member) {
@@ -299,10 +301,7 @@ export class SPARQLGenerator<T> {
                     expression: {
                         type: 'operation',
                         operator: '=',
-                        args: [
-                            DataFactory.variable('subject'),
-                            DataFactory.namedNode(this.baseUri + rdf.serializer(query, dataType)),
-                        ],
+                        args: [subject, DataFactory.namedNode(this.baseUri + rdf.serializer(query, dataType))],
                     },
                 } as FilterPattern;
                 patterns.push(pattern);
@@ -320,7 +319,7 @@ export class SPARQLGenerator<T> {
                             type: 'bgp',
                             triples: [
                                 {
-                                    subject: DataFactory.variable('subject'),
+                                    subject,
                                     predicate: DataFactory.namedNode(predicate),
                                     object: DataFactory.variable('object'),
                                 },
@@ -343,11 +342,11 @@ export class SPARQLGenerator<T> {
                     ],
                 });
             } else if (typeof query === 'object') {
-                const selectorPatterns = this.generateSelector(query, predicate, dataType);
+                const selectorPatterns = this.generateSelector(query, predicate, dataType, member, subject);
                 if (selectorPatterns.length > 0) {
                     patterns.push(...selectorPatterns);
                 } else {
-                    const blankNode = DataFactory.blankNode();
+                    const object = DataFactory.variable(`o${this.next}`);
                     const pattern: GroupPattern = {
                         type: 'group',
                         patterns: [
@@ -355,29 +354,18 @@ export class SPARQLGenerator<T> {
                                 type: 'bgp',
                                 triples: [
                                     {
-                                        subject: DataFactory.variable('subject'),
+                                        subject,
                                         predicate: DataFactory.namedNode(predicate),
-                                        object: blankNode,
+                                        object,
                                     },
                                 ],
                             },
                         ],
                     };
                     pattern.patterns.push(
-                        ...this.createQuery(query, member.type().ctor)
-                            .map((x) => (x.type === 'bgp' ? [x] : x.type === 'group' ? x.patterns : []))
-                            .flat()
-                            .map((x) => {
-                                if (x.type === 'bgp') {
-                                    x.triples.map((triple) => {
-                                        triple.subject = blankNode;
-                                        return triple;
-                                    });
-                                    return x;
-                                } else {
-                                    return x;
-                                }
-                            }),
+                        ...this.createQuery(query, member.type().ctor, object)
+                            .map((x) => (x.type === 'group' ? x.patterns : [x]))
+                            .flat(),
                     );
                     patterns.push(pattern);
                 }
@@ -387,7 +375,7 @@ export class SPARQLGenerator<T> {
                     type: 'bgp',
                     triples: [
                         {
-                            subject: DataFactory.variable('subject'),
+                            subject,
                             predicate: DataFactory.namedNode(predicate),
                             object: DataFactory.literal(
                                 query,
@@ -410,11 +398,13 @@ export class SPARQLGenerator<T> {
         subquery: QuerySelector<T>,
         predicate: IriString,
         dataType: Serializable<T>,
+        member: ObjectMemberMetadata,
+        subject: Quad_Subject,
     ): Pattern[] {
         const patterns: Pattern[] = [];
         for (const selector of Object.keys(subquery)) {
-            patterns.push(...this.generateComparisonSelector(selector, subquery, predicate, dataType));
-            patterns.push(...this.generateArraySelector(selector, subquery, predicate, dataType));
+            patterns.push(...this.generateComparisonSelector(selector, subquery, predicate, dataType, subject));
+            patterns.push(...this.generateArraySelector(selector, subquery, predicate, dataType, member, subject));
         }
         return patterns;
     }
@@ -424,6 +414,7 @@ export class SPARQLGenerator<T> {
         subquery: QuerySelector<T>,
         predicate: IriString,
         dataType: Serializable<any>,
+        subject: Quad_Subject,
     ): Pattern[] {
         const patterns: Pattern[] = [];
         let operator = undefined;
@@ -446,7 +437,6 @@ export class SPARQLGenerator<T> {
         }
 
         if (operator) {
-            const subject = DataFactory.variable(`s${this.next}`);
             const object = DataFactory.variable(`o${this.next}`);
             patterns.push({
                 type: 'bgp',
@@ -475,8 +465,16 @@ export class SPARQLGenerator<T> {
         subquery: QuerySelector<T>,
         predicate: IriString,
         dataType: Serializable<any>,
+        member: ObjectMemberMetadata,
+        subject: Quad_Subject,
     ): Pattern[] {
         const patterns: Pattern[] = [];
+        const objectType =
+            member.type().ctor === Map
+                ? (member.type() as MapTypeDescriptor).valueType
+                : (member.type() as ArrayTypeDescriptor).elementType;
+        const object = DataFactory.variable(`o${this.next}`);
+
         switch (selector) {
             case '$in':
                 // result = result && Array.from(value).includes(subquery[selector]);
@@ -492,12 +490,15 @@ export class SPARQLGenerator<T> {
                             type: 'bgp',
                             triples: [
                                 {
-                                    subject: DataFactory.variable('subject'),
+                                    subject,
                                     predicate: DataFactory.namedNode(predicate),
-                                    object: DataFactory.namedNode(this.baseUri + 'dataobject_mvdewync'),
+                                    object,
                                 },
                             ],
                         },
+                        ...this.createQuery(subquery[selector], objectType.ctor, object)
+                            .map((x) => (x.type === 'group' ? x.patterns : [x]))
+                            .flat(),
                     ],
                 });
                 break;
@@ -505,11 +506,15 @@ export class SPARQLGenerator<T> {
         return patterns;
     }
 
-    createQuery<T>(query: FilterQuery<T>, dataType: Serializable<any> = this.dataType): Pattern[] {
+    createQuery<T>(
+        query: FilterQuery<T>,
+        dataType: Serializable<any> = this.dataType,
+        subject?: Quad_Subject,
+    ): Pattern[] {
         const patterns: Pattern[] = [];
         if (query) {
             for (const key of Object.keys(query)) {
-                patterns.push(...this.generateComponent(key, query[key], dataType));
+                patterns.push(...this.generateComponent(key, query[key], dataType, subject));
             }
         }
         return patterns;

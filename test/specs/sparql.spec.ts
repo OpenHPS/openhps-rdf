@@ -17,14 +17,16 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
     let frameService: DataFrameService<DataFrame>;
     const object1 = new DataObject('mvdewync', 'Maxim');
     const object2 = new DataObject('bsigner', 'Beat');
-    const object3 = new DataObject('mvdewync2', 'Maxim');
+    const object3 = new DataObject('mvdewync2', 'Maxim2');
     const frame1 = new DataFrame();
     frame1.addObject(object1);
     frame1.addObject(object2);
     frame1.addObject(object3);
     const frame2 = new DataFrame();
+    frame2.createdTimestamp = frame1.createdTimestamp + 1;
     frame2.addObject(object3);
     const frame3 = new DataFrame();
+    frame3.createdTimestamp = frame2.createdTimestamp + 1;
     frame3.addObject(object1);
 
     before((done) => {
@@ -92,6 +94,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 roll: 0,
                 unit: AngleUnit.DEGREE
             });
+            object.createdTimestamp += 1;
             service.insertObject(object).then(() => {
                 done()
             }).catch(done);
@@ -230,6 +233,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gt: 50.20
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -242,6 +252,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $lt: 50.20
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -255,6 +272,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gt: 50.20,
+                            $lt: 50.40
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -267,6 +292,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $eq: 50.21,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -279,6 +311,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gte: 50.21,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -291,6 +330,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $lte: 50.19,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -342,6 +388,16 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         });
     });
 
+    describe('deserializing', () => {
+        it('should deserialize an array', (done) => {
+            frameService.findAll().then(data => {
+                expect(data.length).to.equal(3); // 3 frames
+                expect(data[0]['_objects']).to.not.undefined;
+                done();
+            }).catch(done);
+        });
+    });
+
     describe('count', () => {
         it('should count all objects', (done) => {
             service.count().then(num => {
@@ -360,20 +416,55 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         });
     });
 
-    // describe('array query', () => {
-    //     it('should support $elemMatch', (done) => {
-    //         frameService.findAll({
-    //             _objects: {
-    //                 $elemMatch: {
-    //                     uid: 'mvdewync',
-    //                 },
-    //             },
-    //         }).then(data => {
-    //             console.log(data)
-    //             expect(data.length).to.equal(1);
-    //         }).catch(done);
-    //     });
-    // });
+    describe('array query', () => {
+        it('should support $elemMatch', (done) => {
+            frameService.findAll({
+                _objects: {
+                    $elemMatch: {
+                        displayName: 'Maxim',
+                    },
+                },
+            }, {
+                sort: [
+                    ["createdTimestamp", 1]
+                ]
+            }).then(data => {
+                expect(data.length).to.equal(2);
+                expect(data[0].uid).to.equal(frame1.uid);
+                expect(data[1].uid).to.equal(frame3.uid);
+                return frameService.findAll({
+                    _objects: {
+                        $elemMatch: {
+                            uid: 'mvdewync2',
+                        },
+                    },
+                }, {
+                    sort: [
+                        ["createdTimestamp", 1]
+                    ]
+                });
+            }).then(data => {
+                expect(data.length).to.equal(2);
+                expect(data[0].uid).to.equal(frame1.uid);
+                expect(data[1].uid).to.equal(frame2.uid);
+                return frameService.findAll({
+                    _objects: {
+                        $elemMatch: {
+                            uid: 'bsigner',
+                        },
+                    },
+                }, {
+                    sort: [
+                        ["createdTimestamp", 1]
+                    ]
+                });
+            }).then(data => {
+                expect(data.length).to.equal(1);
+                expect(data[0].uid).to.equal(frame1.uid);
+                done();
+            }).catch(done);
+        });
+    });
 
     describe('delete', () => {
         it('should support deleting one identifier', (done) => {

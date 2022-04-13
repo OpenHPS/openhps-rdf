@@ -12,7 +12,6 @@ import 'mocha';
 import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 const wkt = require('wkt');
-import { QueryEngine } from '@comunica/query-sparql-link-traversal';
 
 describe('SPARQLDataDriver (N3 store)', () => {
     let service: DataObjectService<DataObject>;
@@ -345,6 +344,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gt: 50.20
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -357,6 +363,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $lt: 50.20
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -370,6 +383,14 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gt: 50.20,
+                            $lt: 50.40
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -382,6 +403,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $eq: 50.21,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -394,6 +422,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $gte: 50.21,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -406,6 +441,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
+                    return service.findAll({
+                        "position.latitude": {
+                            $lte: 50.19,
+                        }
+                    });
+                }).then(data => {
+                    expect(data.length).to.equal(0);
                     done();
                 }).catch(done);
             });
@@ -489,7 +531,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
     //             },
     //         }).then(data => {
     //             console.log(data)
-    //             expect(data.length).to.equal(1);
+    //             expect(data.length).to.equal(2);
     //         }).catch(done);
     //     });
     // });

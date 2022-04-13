@@ -37,8 +37,8 @@
       "types": "./dist/types/index.serialization.d.ts"
     }
   },
-  "unpkg": "dist/web/openhps-rdf.min.js",
-  "jsdelivr": "dist/web/openhps-rdf.min.js",
+  "unpkg": "dist/web/openhps-rdf.all.min.js",
+  "jsdelivr": "dist/web/openhps-rdf.all.min.js",
   "files": [
     "dist/**/*",
     "src/**/*",
