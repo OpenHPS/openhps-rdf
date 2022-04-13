@@ -6,8 +6,9 @@ import {
     Constructor,
     MemoryQueryEvaluator,
     DataServiceDriver,
+    DataSerializerUtils,
 } from '@openhps/core';
-import { DataFactory, Quad, Store, Term } from 'n3';
+import { DataFactory, Quad, Store } from 'n3';
 import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
 import { SPARQLGenerator } from './SPARQLGenerator';
@@ -116,8 +117,18 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
                     if (store.size === 0) {
                         return resolve(0);
                     }
+                    // Retrieve the subject type that we are counting
+                    const metadata = DataSerializerUtils.getMetadata(this.dataType);
+                    const rdfTypes =
+                        metadata && metadata.options && metadata.options.rdf && metadata.options.rdf.predicates
+                            ? metadata.options.rdf.predicates[rdf.type]
+                            : [];
                     const subjects = store
-                        .getSubjects(DataFactory.namedNode(rdf.type), null, null)
+                        .getSubjects(
+                            DataFactory.namedNode(rdf.type),
+                            rdfTypes.length > 0 ? DataFactory.namedNode(rdfTypes[0]) : null,
+                            null,
+                        )
                         .filter((subject) => subject.termType === 'NamedNode');
                     resolve(subjects.length);
                 })

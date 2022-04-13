@@ -5,6 +5,7 @@ import {
     DataSerializerConfig,
     SerializableObjectOptions,
     ObjectMemberMetadata,
+    DataSerializerUtils,
 } from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
@@ -55,15 +56,15 @@ export class RDFSerializer extends DataSerializer {
 
     protected static registerRDFType<T>(type: Serializable<T>): void {
         // Map RDF types
-        const meta = this.getMetadata(type);
+        const meta = DataSerializerUtils.getOwnMetadata(type);
         if (!meta.options || !meta.options.rdf) {
             return;
         }
         const rdfOptions = meta.options.rdf;
         if (rdfOptions.predicates) {
             Object.entries(rdfOptions.predicates)
-                .filter(([k, _]) => k === rdf.type)
-                .map(([_, v]) => v.flat())
+                .filter(([k]) => k === rdf.type)
+                .map(([, v]) => v.flat())
                 .flat()
                 .forEach((typeIri: IriString) => {
                     const results = this.knownRDFTypes.get(typeIri) ?? [];
@@ -77,7 +78,7 @@ export class RDFSerializer extends DataSerializer {
      * Serialize data
      *
      * @param {any} data Data to serialize
-     * @param baseUri
+     * @param {IriString} baseUri Base URI for serializing individuals
      * @returns {Thing} Serialized data
      */
     static serialize<T>(data: T, baseUri?: IriString): Thing {
@@ -91,8 +92,9 @@ export class RDFSerializer extends DataSerializer {
 
     static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
         /**
-         * @param subject
-         * @param store
+         * @param {NamedNode | BlankNode} subject Subject of quad
+         * @param {Store} store Quad store
+         * @returns {Thing} Thing from quads
          */
         function quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
             return {
@@ -128,8 +130,8 @@ export class RDFSerializer extends DataSerializer {
         const store = new Store(quads);
         const quadSubjects: Quad_Subject[] = store.getSubjects(null, null, null);
         /**
-         *
-         * @param quadSubject
+         * @param {Quad_Subject} quadSubject Quad subject
+         * @returns {any} Predicates
          */
         function serializePredicates(quadSubject: Quad_Subject) {
             const quadPredicates: Quad_Predicate[] = store.getPredicates(quadSubject, null, null);
@@ -312,8 +314,9 @@ export class RDFSerializer extends DataSerializer {
     /**
      * Deserialize data
      *
-     * @param serializedData Data to deserialze
-     * @param dataType Optional data type to specify deserialization type
+     * @param {any} serializedData Data to deserialze
+     * @param {Constructor} dataType Optional data type to specify deserialization type
+     * @returns {any} Deserialized object
      */
     static deserialize<T>(serializedData: any, dataType?: Constructor<T>): T | T[] {
         if (serializedData['predicates'] === undefined) {
@@ -326,7 +329,7 @@ export class RDFSerializer extends DataSerializer {
         }
         return deserializer.convertSingleValue(
             serializedData,
-            this.ensureTypeDescriptor(finalType),
+            DataSerializerUtils.ensureTypeDescriptor(finalType),
             this.knownTypes,
             undefined,
             undefined,
@@ -340,8 +343,8 @@ export class RDFSerializer extends DataSerializer {
 
     static getUriMetadata<T>(dataType: Serializable<T>): ObjectMemberMetadata {
         // Get metadata
-        const metadata = DataSerializer.getMetadata(dataType);
-        const rootMetadata = DataSerializer.getRootMetadata(dataType);
+        const metadata = DataSerializerUtils.getOwnMetadata(dataType);
+        const rootMetadata = DataSerializerUtils.getRootMetadata(dataType);
 
         const options =
             metadata.options && metadata.options.rdf
@@ -372,6 +375,7 @@ export class RDFSerializer extends DataSerializer {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             uri = rdfOptions.serializer ? rdfOptions.serializer(identifier, dataType) : identifier;
             uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : DataFactory.blankNode(uri).value;
+            return uri as IriString;
         } else {
             return baseUri;
         }

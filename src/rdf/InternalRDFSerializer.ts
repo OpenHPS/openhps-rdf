@@ -1,6 +1,5 @@
 import {
     ArrayTypeDescriptor,
-    DataSerializer,
     MapTypeDescriptor,
     MemberOptionsBase,
     ObjectMemberMetadata,
@@ -9,6 +8,7 @@ import {
     SerializerFn,
     TypeDescriptor,
     Serializable,
+    DataSerializerUtils,
 } from '@openhps/core';
 import { IriString, Thing } from './types';
 import { DataFactory, Literal, NamedNode } from 'n3';
@@ -79,18 +79,18 @@ export class InternalRDFSerializer extends Serializer {
     serializeObject<T, TD extends TypeDescriptor>(
         sourceObject: T,
         typeDescriptor: TD,
-        memberName: string,
+        _: string,
         serializer: Serializer,
-        memberOptions: ObjectMemberMetadata,
+        __: ObjectMemberMetadata,
         serializerOptions: any,
     ): Thing {
         let metadata: ObjectMetadata | undefined;
-        const rootMetadata = DataSerializer.getRootMetadata(sourceObject.constructor);
+        const rootMetadata = DataSerializerUtils.getRootMetadata(sourceObject.constructor);
 
         if (sourceObject.constructor !== typeDescriptor.ctor && sourceObject instanceof typeDescriptor.ctor) {
-            metadata = DataSerializer.getMetadata(sourceObject.constructor);
+            metadata = DataSerializerUtils.getOwnMetadata(sourceObject.constructor) ?? rootMetadata;
         } else {
-            metadata = DataSerializer.getMetadata(typeDescriptor.ctor);
+            metadata = DataSerializerUtils.getOwnMetadata(typeDescriptor.ctor) ?? rootMetadata;
         }
 
         const options =
@@ -262,9 +262,9 @@ export class InternalRDFSerializer extends Serializer {
 
     protected serializeDate(
         sourceObject: any,
-        typeDescriptor?: TypeDescriptor,
-        memberName?: string,
-        serializer?: Serializer,
+        _?: TypeDescriptor,
+        __?: string,
+        ___?: Serializer,
         memberOptions?: ObjectMemberMetadata,
     ): Literal {
         const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;

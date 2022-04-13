@@ -84,7 +84,7 @@ export async function generateNamespaceTs(
             return (
                 // Only include names that are valid Javascript identifiers (i.e. alphanumeric characters,
                 // underscores and dollar signs allowed, but shouldn't start with a digit)...
-                /^[A-Za-z_$](\w|\$)*$/.test(entityName) &&
+                /^[A-Za-z_\-$](\w|\$|\-)*$/.test(entityName) &&
                 // ...and are actually in this namespace:
                 entity.id.substring(0, namespace.length) === namespace
             );

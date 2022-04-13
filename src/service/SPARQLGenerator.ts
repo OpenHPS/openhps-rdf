@@ -1,6 +1,6 @@
 import {
     ArrayTypeDescriptor,
-    DataSerializer,
+    DataSerializerUtils,
     FilterQuery,
     MapTypeDescriptor,
     ObjectMemberMetadata,
@@ -269,12 +269,12 @@ export class SPARQLGenerator<T> {
         } else if (key.includes('.')) {
             patterns.push(...this.generatePath(key, query, dataType));
         } else {
-            const rootMetadata = DataSerializer.getRootMetadata(dataType);
+            const rootMetadata = DataSerializerUtils.getRootMetadata(dataType);
 
             let member: ObjectMemberMetadata;
             rootMetadata.knownTypes.forEach((knownType) => {
                 if (!member) {
-                    const metadata = DataSerializer.getMetadata(knownType);
+                    const metadata = DataSerializerUtils.getMetadata(knownType);
                     member = Array.from(metadata.dataMembers.values()).filter((member) => member.key === key)[0];
                     if (member) {
                         return;

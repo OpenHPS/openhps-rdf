@@ -1,14 +1,14 @@
 import {
     ArrayTypeDescriptor,
-    DataSerializer,
     DataSerializerConfig,
+    DataSerializerUtils,
     Deserializer,
     DeserializerFn,
     IndexedObject,
     MapTypeDescriptor,
-    MemberOptionsBase,
     ObjectMemberMetadata,
     Serializable,
+    SetTypeDescriptor,
     TypeDescriptor,
 } from '@openhps/core';
 import { Literal, NamedNode, Quad_Object } from 'n3';
@@ -35,8 +35,8 @@ export class InternalRDFDeserializer extends Deserializer {
         if (sourceObject['predicates'] !== undefined) {
             // Get type based on rdf:type predicate(s) if any
             const rdfTypes: IriString[] = Object.entries(sourceObject['predicates'])
-                .filter(([k, _]) => k === rdf.type)
-                .map(([_, v]) => v)
+                .filter(([k]) => k === rdf.type)
+                .map(([, v]) => v)
                 .flat()
                 .map((v: NamedNode) => v.value as IriString);
             const mappedTypes = rdfTypes
@@ -106,8 +106,8 @@ export class InternalRDFDeserializer extends Deserializer {
         const expectedSelfType = typeDescriptor.ctor;
         const typeFromRDF = this.rdfTypeResolver(sourceObject, knownTypes, serializerOptions.rdf.knownTypes);
         const finalType = typeFromRDF || expectedSelfType;
-        const metadata = DataSerializer.getMetadata(finalType);
-        const rootMetadata = DataSerializer.getRootMetadata(finalType);
+        const metadata = DataSerializerUtils.getOwnMetadata(finalType);
+        const rootMetadata = DataSerializerUtils.getOwnMetadata(finalType);
 
         if (!metadata && !rootMetadata) {
             return undefined;
@@ -184,6 +184,16 @@ export class InternalRDFDeserializer extends Deserializer {
                         memberOptions,
                         serializerOptions,
                     );
+                } else if (memberOptions.type().ctor === Set) {
+                    targetObject[memberOptions.key] = this.deserializeSet(
+                        sourceObject.predicates[predicateIri] as Quad_Object[],
+                        memberOptions.type() as SetTypeDescriptor,
+                        knownTypes,
+                        memberOptions.name,
+                        this,
+                        memberOptions,
+                        serializerOptions,
+                    );
                 } else {
                     targetObject[memberOptions.key] = sourceObject.predicates[predicateIri]
                         .map((object) => {
@@ -204,15 +214,7 @@ export class InternalRDFDeserializer extends Deserializer {
         return targetObject;
     }
 
-    deserializeLiteral<TD extends TypeDescriptor>(
-        sourceObject: Literal,
-        typeDescriptor: TD,
-        knownTypes: Map<string, Serializable<any>>,
-        memberName: string,
-        deserializer: Deserializer,
-        memberOptions?: MemberOptionsBase,
-        serializerOptions?: DataSerializerConfig,
-    ): any {
+    deserializeLiteral(sourceObject: Literal): any {
         switch (sourceObject.datatype.value) {
             case xsd.dateTime:
                 // Return timestamp
@@ -222,15 +224,7 @@ export class InternalRDFDeserializer extends Deserializer {
         }
     }
 
-    deserializeDate<TD extends TypeDescriptor>(
-        sourceObject: Literal,
-        typeDescriptor: TD,
-        knownTypes: Map<string, Serializable<any>>,
-        memberName: string,
-        deserializer: Deserializer,
-        memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: DataSerializerConfig,
-    ): any {
+    deserializeDate(sourceObject: Literal): any {
         return new Date(sourceObject.value);
     }
 
@@ -300,8 +294,8 @@ export class InternalRDFDeserializer extends Deserializer {
             .filter((val) => this.isInstanceOf(val, typeDescriptor.valueType.ctor))
             .forEach((object) => {
                 // Get metadata
-                const metadata = DataSerializer.getMetadata(object.constructor);
-                const rootMetadata = DataSerializer.getRootMetadata(object.constructor);
+                const metadata = DataSerializerUtils.getOwnMetadata(object.constructor);
+                const rootMetadata = DataSerializerUtils.getRootMetadata(object.constructor);
 
                 const options =
                     metadata.options && metadata.options.rdf
@@ -329,15 +323,34 @@ export class InternalRDFDeserializer extends Deserializer {
         return result;
     }
 
-    deserializeSet<TD extends TypeDescriptor>(
+    deserializeSet(
         sourceObject: Quad_Object[],
-        typeDescriptor: TD,
+        typeDescriptor: SetTypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
         memberName: string,
         deserializer: Deserializer,
-        memberOptions?: MemberOptionsBase,
+        memberOptions?: ObjectMemberMetadata,
         serializerOptions?: DataSerializerConfig,
     ): any {
-        return undefined;
+        const result = new Set();
+        if (!sourceObject) {
+            return result;
+        }
+        sourceObject
+            .map((object) => {
+                return deserializer.convertSingleValue(
+                    object,
+                    typeDescriptor.elementType,
+                    knownTypes,
+                    memberName,
+                    memberOptions,
+                    serializerOptions,
+                );
+            })
+            .filter((val) => this.isInstanceOf(val, typeDescriptor.elementType.ctor))
+            .forEach((object) => {
+                result.add(object);
+            });
+        return result;
     }
 }

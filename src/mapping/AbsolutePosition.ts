@@ -5,11 +5,6 @@ import { dcterms, ogc, openhps, qudt } from '../vocab';
 SerializableObject({
     rdf: {
         type: ogc.Geometry,
-        serializer: (pos: AbsolutePosition) => {
-            return {
-                predicates: {},
-            };
-        },
     },
 })(AbsolutePosition);
 SerializableMember({
