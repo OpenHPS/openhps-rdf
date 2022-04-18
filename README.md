@@ -24,7 +24,7 @@
 <br />
 
 ## Getting Started
-If you have [npm installed](https://www.npmjs.com/get-npm), start using @openhps/solid with the following command.
+If you have [npm installed](https://www.npmjs.com/get-npm), start using @openhps/rdf with the following command.
 ```bash
 npm install @openhps/rdf --save
 ```

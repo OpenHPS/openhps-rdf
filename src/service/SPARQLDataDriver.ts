@@ -12,7 +12,7 @@ import { DataFactory, Quad, Store } from 'n3';
 import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
 import { SPARQLGenerator } from './SPARQLGenerator';
-import type { QueryStringContext, IQueryEngine } from '@comunica/types';
+import type { QueryStringContext, IQueryEngine, BindingsStream, Bindings } from '@comunica/types';
 
 export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
     protected generator: SPARQLGenerator<T>;
@@ -28,13 +28,13 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         return this.options.engine;
     }
 
-    queryBindings(query: string, options: QueryStringContext = this.options): Promise<any[]> {
+    queryBindings(query: string, options: QueryStringContext = this.options): Promise<Bindings[]> {
         return new Promise((resolve, reject) => {
             this.engine
                 .queryBindings(query, options)
-                .then((stream) => {
-                    const bindings: any[] = [];
-                    stream.on('data', (binding: any) => {
+                .then((stream: BindingsStream) => {
+                    const bindings: Bindings[] = [];
+                    stream.on('data', (binding: Bindings) => {
                         bindings.push(binding);
                     });
                     stream.on('end', () => {
@@ -193,3 +193,5 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
      */
     engine?: IQueryEngine;
 }
+
+export type { QueryStringContext, IQueryEngine, BindingsStream, Bindings };
