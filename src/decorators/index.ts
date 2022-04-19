@@ -2,6 +2,8 @@ import { Serializable, SerializableObjectOptions, MemberOptionsBase } from '@ope
 import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 
+export { SerializableObjectOptions, MemberOptionsBase };
+
 declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface SerializableObjectOptions<T> {
         /**

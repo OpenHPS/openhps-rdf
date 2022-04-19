@@ -28,10 +28,13 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         return this.options.engine;
     }
 
-    queryBindings(query: string, options: QueryStringContext = this.options): Promise<Bindings[]> {
+    queryBindings(query: string, options?: Partial<QueryStringContext>): Promise<Bindings[]> {
         return new Promise((resolve, reject) => {
             this.engine
-                .queryBindings(query, options)
+                .queryBindings(query, {
+                    ...options,
+                    ...this.options,
+                })
                 .then((stream: BindingsStream) => {
                     const bindings: Bindings[] = [];
                     stream.on('data', (binding: Bindings) => {
@@ -45,16 +48,25 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    queryVoid(query: string, options: QueryStringContext = this.options): Promise<void> {
+    queryVoid(query: string, options?: Partial<QueryStringContext>): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.engine.queryVoid(query, options).then(resolve).catch(reject);
+            this.engine
+                .queryVoid(query, {
+                    ...options,
+                    ...this.options,
+                })
+                .then(resolve)
+                .catch(reject);
         });
     }
 
-    queryQuads(query: string, options: QueryStringContext = this.options): Promise<Store> {
+    queryQuads(query: string, options?: Partial<QueryStringContext>): Promise<Store> {
         return new Promise((resolve, reject) => {
             this.engine
-                .queryQuads(query, options)
+                .queryQuads(query, {
+                    ...options,
+                    ...this.options,
+                })
                 .then((stream) => {
                     const store: Store = new Store();
                     stream.on('data', (row: Quad) => {
