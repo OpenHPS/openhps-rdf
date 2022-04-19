@@ -1,1 +1,1 @@
-export * from './dist/esm/index.browser';
+export * from './dist/esm/index.serialization';
