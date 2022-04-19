@@ -1,4 +1,4 @@
-import { Serializable } from '@openhps/core'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { Serializable, SerializableObjectOptions, MemberOptionsBase } from '@openhps/core'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 
