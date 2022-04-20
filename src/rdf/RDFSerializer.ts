@@ -37,7 +37,7 @@ export class RDFSerializer extends DataSerializer {
                 if (options && options.rdf && options.rdf.type) {
                     options.rdf.predicates = options.rdf.predicates || {};
                     const types = options.rdf.predicates[rdf.type] || [];
-                    types.push(options.rdf.type);
+                    types.push(...(Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type]));
                     options.rdf.predicates[rdf.type] = types;
                 }
             },

@@ -18,7 +18,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              *
              * @see {@link https://www.w3.org/TR/rdf-schema/#ch_type}
              */
-            type?: IriString;
+            type?: IriString | IriString[];
             /**
              * Additional static predicates to add to this object that are not based
              * on any properties inside the object.
