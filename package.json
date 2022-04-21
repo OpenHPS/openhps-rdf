@@ -4,7 +4,9 @@
   "description": "Open Hybrid Positioning System",
   "author": "Maxim Van de Wynckel",
   "license": "Apache-2.0",
-  "sideEffects": false,
+  "sideEffects": [
+    "./**/mapping/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenHPS/openhps-rdf.git"
