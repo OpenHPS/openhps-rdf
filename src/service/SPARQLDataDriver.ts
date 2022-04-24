@@ -28,12 +28,16 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         return this.options.engine;
     }
 
+    invalidateCache(url?: IriString): void {
+        this.engine.invalidateHttpCache(url);
+    }
+
     queryBindings(query: string, options?: Partial<QueryStringContext>): Promise<Bindings[]> {
         return new Promise((resolve, reject) => {
             this.engine
                 .queryBindings(query, {
-                    ...options,
                     ...this.options,
+                    ...options,
                 })
                 .then((stream: BindingsStream) => {
                     const bindings: Bindings[] = [];
@@ -52,8 +56,8 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         return new Promise((resolve, reject) => {
             this.engine
                 .queryVoid(query, {
-                    ...options,
                     ...this.options,
+                    ...options,
                 })
                 .then(resolve)
                 .catch(reject);
@@ -64,8 +68,8 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         return new Promise((resolve, reject) => {
             this.engine
                 .queryQuads(query, {
-                    ...options,
                     ...this.options,
+                    ...options,
                 })
                 .then((stream) => {
                     const store: Store = new Store();
