@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, openhps, foaf, sosa } from '../vocab';
+import { dcterms, poso, foaf, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -42,11 +42,11 @@ SerializableMember({
 })(DataObject.prototype, 'displayName');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasPosition,
+        predicate: poso.hasPosition,
     },
 })(DataObject.prototype, 'position');
 SerializableArrayMember(RelativePosition, {
     rdf: {
-        predicate: openhps.hasPosition,
+        predicate: poso.hasPosition,
     },
 })(DataObject.prototype, 'relativePositions');

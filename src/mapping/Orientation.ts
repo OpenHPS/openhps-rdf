@@ -1,19 +1,19 @@
 import { AngleUnit, Orientation, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, qudt, qudt_unit } from '../vocab';
+import { dcterms, poso, qudt, qudt_unit } from '../vocab';
 import { DataFactory } from 'n3';
 import { Thing } from '../rdf';
 
 SerializableObject({
     rdf: {
-        type: openhps.Orientation,
+        type: poso.Orientation,
         serializer: (object: Orientation) => {
             const euler = object.toEuler();
             return {
                 predicates: {
-                    [openhps.yaw]: [DataFactory.literal(euler.yaw, DataFactory.namedNode(xsd.decimal))],
-                    [openhps.pitch]: [DataFactory.literal(euler.pitch, DataFactory.namedNode(xsd.decimal))],
-                    [openhps.roll]: [DataFactory.literal(euler.roll, DataFactory.namedNode(xsd.decimal))],
+                    [poso.yaw]: [DataFactory.literal(euler.yaw, DataFactory.namedNode(xsd.decimal))],
+                    [poso.pitch]: [DataFactory.literal(euler.pitch, DataFactory.namedNode(xsd.decimal))],
+                    [poso.roll]: [DataFactory.literal(euler.roll, DataFactory.namedNode(xsd.decimal))],
                     [qudt.unit]: [DataFactory.namedNode(qudt_unit.DEG)],
                 },
             };
@@ -24,11 +24,11 @@ SerializableObject({
             let pitch = 0;
             let unit: AngleUnit;
 
-            if (thing.predicates[openhps.yaw] && thing.predicates[openhps.pitch] && thing.predicates[openhps.roll]) {
+            if (thing.predicates[poso.yaw] && thing.predicates[poso.pitch] && thing.predicates[poso.roll]) {
                 // Euler
-                yaw = Number(thing.predicates[openhps.yaw][0].value);
-                pitch = Number(thing.predicates[openhps.pitch][0].value);
-                roll = Number(thing.predicates[openhps.roll][0].value);
+                yaw = Number(thing.predicates[poso.yaw][0].value);
+                pitch = Number(thing.predicates[poso.pitch][0].value);
+                roll = Number(thing.predicates[poso.roll][0].value);
             } else {
                 // Other orientation
             }
@@ -59,6 +59,6 @@ SerializableMember({
 })(Orientation.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
 })(Orientation.prototype, 'accuracy');

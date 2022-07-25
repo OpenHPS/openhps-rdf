@@ -3,19 +3,24 @@
  * @see {@link https://gitlab.com/vincenttunru/rdf-namespaces}
  */
 
-import { NamedNode, Store } from 'n3';
+import { Literal, NamedNode, Store } from 'n3';
 
 function getComment(node: NamedNode, store: Store): string {
-    const rdfComments = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null);
-    const skosDefinitions = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null);
-    const dctermsDescription = store.getObjects(node, 'http://purl.org/dc/terms/description', null);
+    const rdfComments = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null)
+        .filter((object: Literal) => object.language === "en");
+    const skosDefinitions = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null)
+        .filter((object: Literal) => object.language === "en");
+    const dctermsDescription = store.getObjects(node, 'http://purl.org/dc/terms/description', null)
+        .filter((object: Literal) => object.language === "en");
     const comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : dctermsDescription.length > 0 ? dctermsDescription[0].value : undefined;
     return comment;
 }
 
 function getLabel(node: NamedNode, store: Store): string {
-    const rdfLabels = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#label', null);
-    const skosLabels = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null);
+    const rdfLabels = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#label', null)
+        .filter((object: Literal) => object.language === "en");
+    const skosLabels = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null)
+        .filter((object: Literal) => object.language === "en");
     const label = rdfLabels.length > 0 ? rdfLabels[0].value : skosLabels.length > 0 ? skosLabels[0].value : undefined;
     return label;
 }

@@ -32,7 +32,8 @@ const namespaces: Namespaces = {
     sosa: 'http://www.w3.org/ns/sosa/',
     ssn: 'http://www.w3.org/ns/ssn/',
     ssns: 'http://www.w3.org/ns/ssn/systems/',
-    openhps: 'http://openhps.org/terms#',
+    poso: 'http://purl.org/poso/',
+    posocommon: 'http://purl.org/poso/common/',
     /**
      * OGC GeoSparql 1.1
      *
@@ -48,7 +49,7 @@ const mirrors: Mirrors = {
     'http://purl.org/dc/terms/':
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
     'http://purl.org/dqm-vocabulary/v1/dqm#': 'http://semwebquality.org/dqm-vocabulary/v1/dqm.owl',
-    'http://openhps.org/terms#': 'https://cdn.jsdelivr.net/gh/OpenHPS/openhps-rdf@master/ontology/v1/openhps.ttl',
+    'http://xmlns.com/foaf/0.1/': 'https://xmlns.com/foaf/spec/index.rdf',
 };
 
 export { namespaces, mirrors };

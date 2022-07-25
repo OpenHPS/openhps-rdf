@@ -1,6 +1,6 @@
 import { LinearVelocity, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, quantitykind, qudt } from '../vocab';
+import { dcterms, poso, quantitykind, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -18,6 +18,6 @@ SerializableMember({
 })(LinearVelocity.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
 })(LinearVelocity.prototype, 'accuracy');

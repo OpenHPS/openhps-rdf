@@ -1,6 +1,6 @@
 import { AngularVelocity, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps, qudt } from '../vocab';
+import { dcterms, poso, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -15,6 +15,6 @@ SerializableMember({
 })(AngularVelocity.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
 })(AngularVelocity.prototype, 'accuracy');

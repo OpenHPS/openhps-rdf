@@ -1,6 +1,6 @@
 import 'mocha';
 import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { openhps, rdf, RDFSerializer } from '../../src';
+import { poso, rdf, RDFSerializer } from '../../src';
 import { expect } from 'chai';
 
 describe('DataObject', () => {
@@ -29,7 +29,7 @@ describe('DataObject', () => {
         });
 
         it('should serialize the position of an object', () => {
-            const positions = serialized.predicates[openhps.hasPosition];
+            const positions = serialized.predicates[poso.hasPosition];
             expect(positions.length).to.equal(3);
         });
 

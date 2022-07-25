@@ -1,7 +1,7 @@
 import { AngleUnit, Orientation } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { dcterms, openhps, RDFSerializer } from '../../src';
+import { dcterms, poso, RDFSerializer } from '../../src';
 
 describe('Orientation', () => {
 
@@ -16,14 +16,14 @@ describe('Orientation', () => {
         const serialized = RDFSerializer.serialize(object);
 
         it('should include custom serialization', () => {
-            expect(serialized.predicates[openhps.yaw]).to.not.be.undefined;
-            expect(serialized.predicates[openhps.pitch]).to.not.be.undefined;
-            expect(serialized.predicates[openhps.roll]).to.not.be.undefined;
+            expect(serialized.predicates[poso.yaw]).to.not.be.undefined;
+            expect(serialized.predicates[poso.pitch]).to.not.be.undefined;
+            expect(serialized.predicates[poso.roll]).to.not.be.undefined;
             expect(serialized.predicates[dcterms.created]).to.not.be.undefined;
             const euler = object.toEuler();
-            expect(Number(serialized.predicates[openhps.yaw][0].value)).to.equal(euler.yaw);
-            expect(Number(serialized.predicates[openhps.pitch][0].value)).to.equal(euler.pitch);
-            expect(Number(serialized.predicates[openhps.roll][0].value)).to.equal(euler.roll);
+            expect(Number(serialized.predicates[poso.yaw][0].value)).to.equal(euler.yaw);
+            expect(Number(serialized.predicates[poso.pitch][0].value)).to.equal(euler.pitch);
+            expect(Number(serialized.predicates[poso.roll][0].value)).to.equal(euler.roll);
         });
 
     });

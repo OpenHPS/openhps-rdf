@@ -1,6 +1,6 @@
 import 'mocha';
 import { Absolute3DPosition, Accuracy3D, AngleUnit, DataFrame, DataObject, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { openhps, qudt, qudt_unit, RDFSerializer, Thing } from '../../src';
+import { poso, sosa, qudt, qudt_unit, RDFSerializer, Thing } from '../../src';
 import { expect } from 'chai';
 import { DataFactory, Parser, Store } from 'n3';
 
@@ -31,16 +31,16 @@ describe('DataFrame', () => {
             });
             expect(frame.getObjects().length).to.equal(2);
             expect(frame['_objects'].size).to.equal(2);
-            expect(serialized.predicates[openhps.includesObject].length).to.equal(2);
-            expect((serialized.predicates[openhps.includesObject][0] as Thing).predicates[openhps.hasPosition].length).to.equal(3);
+            expect(serialized.predicates[sosa.hasFeatureOfInterest].length).to.equal(2);
+            expect((serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing).predicates[poso.hasPosition].length).to.equal(3);
         });
     });
 
     describe('deserialization', () => {
         const serialized = RDFSerializer.serialize(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
-        const serializedObject = serialized.predicates[openhps.includesObject][0] as Thing;
-        const serializedPosition = serializedObject.predicates[openhps.hasPosition][0] as Thing;
-        const serializedOrientation = serializedPosition.predicates[openhps.hasOrientation][0] as Thing;
+        const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
+        const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
+        const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
         serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
         const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
         const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");

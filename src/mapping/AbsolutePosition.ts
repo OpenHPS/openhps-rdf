@@ -1,6 +1,6 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, ogc, openhps, qudt } from '../vocab';
+import { dcterms, ogc, poso, qudt } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -20,12 +20,12 @@ SerializableMember({
 })(AbsolutePosition.prototype, 'unit');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
     name: 'accuracy',
 })(AbsolutePosition.prototype, '_accuracy');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasOrientation,
+        predicate: poso.hasOrientation,
     },
 })(AbsolutePosition.prototype, 'orientation');

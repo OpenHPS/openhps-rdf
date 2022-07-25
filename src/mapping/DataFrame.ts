@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, openhps, sosa } from '../vocab';
+import { dcterms, poso, sosa, ssn } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -42,7 +42,7 @@ SerializableMember({
 })(DataFrame.prototype, '_source');
 SerializableMapMember(String, DataObject, {
     rdf: {
-        predicate: openhps.includesObject,
+        predicate: sosa.hasFeatureOfInterest,
     },
     name: 'objects',
 })(DataFrame.prototype, '_objects');

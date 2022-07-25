@@ -1,10 +1,10 @@
 import { RelativePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, openhps } from '../vocab';
+import { dcterms, poso } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.RelativePosition,
+        type: poso.RelativePosition,
     },
 })(RelativePosition);
 SerializableMember({
@@ -15,12 +15,12 @@ SerializableMember({
 })(RelativePosition.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: openhps.relativeTo,
+        predicate: poso.isRelativeTo,
     },
 })(RelativePosition.prototype, 'referenceObjectUID');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
     name: 'accuracy',
 })(RelativePosition.prototype, '_accuracy');

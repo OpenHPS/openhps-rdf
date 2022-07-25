@@ -1,6 +1,6 @@
 import { SensorValue, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { openhps, sosa } from '../vocab';
+import { poso, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -18,6 +18,6 @@ SerializableMember({
 })(SensorValue.prototype, 'timestamp');
 SerializableMember({
     rdf: {
-        predicate: openhps.hasAccuracy,
+        predicate: poso.hasAccuracy,
     },
 })(SensorValue.prototype, 'accuracy');

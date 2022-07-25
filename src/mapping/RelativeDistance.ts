@@ -1,8 +1,8 @@
 import { RelativeDistance, SerializableObject } from '@openhps/core';
-import { openhps } from '../vocab';
+import { poso } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: openhps.RelativePosition,
+        type: poso.RelativeDistance,
     },
 })(RelativeDistance);
