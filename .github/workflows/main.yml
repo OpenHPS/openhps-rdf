@@ -52,6 +52,13 @@ jobs:
           path: |
             **/node_modules
           key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('**/package-lock.json') }}
+      - name: Load build cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/dist
+            **/src/vocab
+          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/package-lock.json') }}-${{ github.run_number }}
       - name: Quality
         run: |
           npm run lint
@@ -60,6 +67,15 @@ jobs:
     name: Unit tests
     needs: build
     runs-on: ubuntu-latest
+    services:
+      jena-fuseki:
+        image: 'stain/jena-fuseki:jena4'
+        env:
+          ADMIN_PASSWORD: test
+          FUSEKI_DATASET_1: openhps-rdf-1
+          FUSEKI_DATASET_2: openhps-rdf-2
+        ports:
+          - 3030:3030
     steps:
       - uses: actions/checkout@v3
       - name: Load dependency cache
@@ -146,15 +162,6 @@ jobs:
     name: Publish unit tests and coverage
     needs: test_coverage
     runs-on: ubuntu-latest
-    services:
-      jena-fuseki:
-        image: 'stain/jena-fuseki:jena4'
-        env:
-          ADMIN_PASSWORD: test
-          FUSEKI_DATASET_1: openhps-rdf-1
-          FUSEKI_DATASET_2: openhps-rdf-2
-        ports:
-          - 3030:3030
     steps:
       - uses: actions/checkout@v3
       - name: Load test and coverage cache
