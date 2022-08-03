@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, poso, sosa, ssn } from '../vocab';
+import { dcterms, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {

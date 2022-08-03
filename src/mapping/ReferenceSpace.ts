@@ -1,5 +1,5 @@
 import { ReferenceSpace, SerializableObject } from '@openhps/core';
-import { poso, rdf, ogc, schema } from '../vocab';
+import { rdf, ogc, schema } from '../vocab';
 
 SerializableObject({
     rdf: {
