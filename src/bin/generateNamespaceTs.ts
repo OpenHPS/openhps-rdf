@@ -44,12 +44,14 @@ export async function generateNamespaceTs(
     let quads: Quad[] = [];
     const contentType = response.headers['content-type'] ?? '';
     if (contentType.includes("application/rdf+xml") || file.startsWith("<?xml version=")) {
-        const parser = new RdfXmlParser();
+        const parser = new RdfXmlParser({
+            baseIRI: namespace
+        });
         parser.on('data', (data: Quad) => {
             quads.push(data);
         });
         parser.on('error', (err) => {
-            console.error(err);
+            console.error("An error occured during RDF parsing", err);
         });
         parser.write(file);
         parser.end();

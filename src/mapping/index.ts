@@ -18,3 +18,7 @@ import './Accuracy';
 import './LinearVelocity';
 import './AngularVelocity';
 import './UnitValue';
+
+if (require("@openhps/rf") === undefined) {
+    import("./rf");
+}

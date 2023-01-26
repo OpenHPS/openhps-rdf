@@ -29,6 +29,7 @@ describe('DataFrame', () => {
                 format: 'text/turtle',
                 prettyPrint: true
             });
+            //console.log(turtle)
             expect(frame.getObjects().length).to.equal(2);
             expect(frame['_objects'].size).to.equal(2);
             expect(serialized.predicates[sosa.hasFeatureOfInterest].length).to.equal(2);
