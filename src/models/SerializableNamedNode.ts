@@ -1,6 +1,6 @@
 import { SerializableObject } from '@openhps/core';
 import { NamedNode } from 'n3';
-import { Thing } from './types';
+import { Thing } from '../rdf/types';
 
 @SerializableObject({
     rdf: {

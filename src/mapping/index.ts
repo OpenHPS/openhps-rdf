@@ -19,6 +19,10 @@ import './LinearVelocity';
 import './AngularVelocity';
 import './UnitValue';
 
-if (require("@openhps/rf") === undefined) {
+if (require("@openhps/rf") !== undefined) {
     import("./rf");
+}
+
+if (require("@openhps/geospatial") !== undefined) {
+    import("./geospatial");
 }
