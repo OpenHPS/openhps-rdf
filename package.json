@@ -80,7 +80,7 @@
     "sparqljs": "^3.6.2"
   },
   "peerDependencies": {
-    "@openhps/core": ">=0.3.38",
+    "@openhps/core": ">=0.3.50",
     "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {

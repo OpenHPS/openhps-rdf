@@ -1,7 +1,7 @@
 import 'mocha';
 import { RDFSerializer } from '../../src';
-import { GeographicalPosition } from '@openhps/core';
-import { Building } from '@openhps/geospatial';
+import { DataSerializerUtils, GeographicalPosition } from '@openhps/core';
+import { Building, SymbolicSpace } from '@openhps/geospatial';
 
 describe('@openhps/geospatial', () => {
     const building = new Building("Pleinlaan 9")
@@ -15,6 +15,7 @@ describe('@openhps/geospatial', () => {
         });
 
     describe('serialization', () => {
+        console.log(DataSerializerUtils.getRootMetadata(SymbolicSpace));
         const serialized = RDFSerializer.serialize(building, "https://maximvdw.solidweb.org/public/openhps.ttl#");
 
         it('should serialize models', async () => {
