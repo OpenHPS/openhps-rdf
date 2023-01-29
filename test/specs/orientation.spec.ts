@@ -1,4 +1,4 @@
-import { AngleUnit, Orientation } from '@openhps/core';
+import { AngleUnit, DataSerializerUtils, Orientation } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
 import { dcterms, poso, RDFSerializer } from '../../src';
@@ -30,6 +30,7 @@ describe('Orientation', () => {
 
     describe('deserialization', () => {
         const serialized = RDFSerializer.serialize(object);
+        console.log(DataSerializerUtils.getMetadata(Orientation))
         const deserialized = RDFSerializer.deserialize(serialized, Orientation);
 
         it('should include custom deserialization', () => {

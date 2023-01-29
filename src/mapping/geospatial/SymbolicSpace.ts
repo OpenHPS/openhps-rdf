@@ -10,13 +10,16 @@ SerializableObject({
         type: ssn.Deployment,
         serializer: (obj: SymbolicSpace<GeographicalPosition>) => {
             const geometry = new PolygonGeometry();
-            geometry.coords = obj.getBounds().map(coord => obj.transform(coord)).map(coord => {
-                return {
-                    latitude: coord.latitude,
-                    longitude: coord.longitude,
-                    altitude: coord.altitude
-                };
-            });
+            geometry.coords = obj
+                .getBounds()
+                .map((coord) => obj.transform(coord))
+                .map((coord) => {
+                    return {
+                        latitude: coord.latitude,
+                        longitude: coord.longitude,
+                        altitude: coord.altitude,
+                    };
+                });
             return {
                 predicates: {
                     [ogc.hasGeometry]: [RDFSerializer.serialize(geometry)],
@@ -25,6 +28,6 @@ SerializableObject({
         },
         deserializer: (thing: Thing) => {
             return undefined;
-        }
+        },
     },
 })(SymbolicSpace);

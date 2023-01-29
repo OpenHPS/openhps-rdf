@@ -1,5 +1,5 @@
 import { SerializableMember, SerializableObject, Unit } from '@openhps/core';
-import { qudt } from '../vocab'
+import { qudt } from '../vocab';
 
 @SerializableObject({
     rdf: {

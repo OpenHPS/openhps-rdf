@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, poso, foaf, sosa } from '../vocab';
+import { dcterms, poso, rdfs, sosa } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -37,7 +37,7 @@ SerializableMember({
 })(DataObject.prototype, 'createdTimestamp');
 SerializableMember({
     rdf: {
-        predicate: foaf.name,
+        predicate: rdfs.label,
     },
 })(DataObject.prototype, 'displayName');
 SerializableMember({
