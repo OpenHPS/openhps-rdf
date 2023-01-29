@@ -1,6 +1,6 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BLEObject } from '@openhps/rf';
-import { poso } from '../../vocab';
+import { poso, hardware } from '../../vocab';
 
 SerializableObject({
     rdf: {
@@ -9,7 +9,7 @@ SerializableObject({
 })(BLEObject);
 SerializableMember({
     rdf: {
-        predicate: hardware.mac,
+        predicate: hardware.macAddress,
     },
     name: 'address',
 })(BLEObject.prototype, 'address');

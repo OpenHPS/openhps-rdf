@@ -8,6 +8,7 @@ import { getTs } from './getTs';
 import axios from 'axios';
 import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
 import { RdfXmlParser } from "rdfxml-streaming-parser";
+import * as https from 'https';
 
 /**
  * @param namespace
@@ -37,8 +38,12 @@ export async function generateNamespaceTs(
     const schemaLocation = options.mirrors[namespace] || namespace;
     const response = await axios.get(schemaLocation, {
         headers: {
-            'Accept': 'text/turtle, application/rdf+xml, text/html'
-        }
+            'Accept': 'text/turtle, application/rdf+xml, text/html',
+        },
+        timeout: 60000,
+        httpsAgent: new https.Agent({  
+            rejectUnauthorized: false
+        })
     });
     const file = response.data;
     let quads: Quad[] = [];
