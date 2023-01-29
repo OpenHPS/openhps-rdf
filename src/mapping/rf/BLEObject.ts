@@ -1,4 +1,4 @@
-import { SerializableObject } from '@openhps/core';
+import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BLEObject } from '@openhps/rf';
 import { poso } from '../../vocab';
 
@@ -7,3 +7,9 @@ SerializableObject({
         type: poso.RFLandmark,
     },
 })(BLEObject);
+SerializableMember({
+    rdf: {
+        predicate: hardware.mac,
+    },
+    name: 'address',
+})(BLEObject.prototype, 'address');

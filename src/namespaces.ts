@@ -40,6 +40,7 @@ const namespaces: Namespaces = {
      * @see {@link https://github.com/opengeospatial/ogc-geosparql/tree/master/1.1}
      */
     ogc: 'http://www.opengis.net/ont/geosparql#',
+    hardware: 'http://w3id.org/devops-infra/hardware#'
 };
 
 const mirrors: Mirrors = {
@@ -50,6 +51,7 @@ const mirrors: Mirrors = {
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
     'http://purl.org/dqm-vocabulary/v1/dqm#': 'http://semwebquality.org/dqm-vocabulary/v1/dqm.owl',
     'http://xmlns.com/foaf/0.1/': 'http://xmlns.com/foaf/0.1/index.rdf',
+    'http://w3id.org/devops-infra/hardware#': 'https://oeg-upm.github.io/devops-infra/ontology/hardware/ontology.ttl'
 };
 
 export { namespaces, mirrors };

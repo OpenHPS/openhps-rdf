@@ -1,0 +1,21 @@
+import { SerializableMember, SerializableObject } from '@openhps/core';
+import { BLEiBeacon } from '@openhps/rf';
+import { posoc } from '../../vocab';
+
+SerializableObject({
+    rdf: {
+        type: posoc.iBeacon,
+    },
+})(BLEiBeacon);
+SerializableMember({
+    rdf: {
+        predicate: posoc.major,
+    },
+    name: 'major',
+})(BLEiBeacon.prototype, 'major');
+SerializableMember({
+    rdf: {
+        predicate: posoc.minor,
+    },
+    name: 'minor',
+})(BLEiBeacon.prototype, 'minor');
