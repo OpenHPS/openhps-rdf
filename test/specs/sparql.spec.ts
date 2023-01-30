@@ -375,7 +375,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 ]
             }, {
                 sort: [
-                    ["displayName", 1]
+                    ["displayName", -1]
                 ]
             }).then(data => {
                 expect(data.length).to.equal(2);
