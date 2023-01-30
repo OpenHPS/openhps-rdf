@@ -7,26 +7,26 @@ import {
     Unit,
 } from '@openhps/core';
 import { IriString, Thing } from '../rdf';
-import { qudt_unit, qudt } from '../vocab';
+import { unit, qudt } from '../vocab';
 
 const UNIT_MAP = new Map<string, IriString>([
     /* Length units */
-    [LengthUnit.METER.name, qudt_unit.M],
-    [LengthUnit.KILOMETER.name, qudt_unit.KiloM],
-    [LengthUnit.CENTIMETER.name, qudt_unit.CentiM],
-    [LengthUnit.MILLIMETER.name, qudt_unit.MilliM],
-    [LengthUnit.MILE.name, qudt_unit.MI],
+    [LengthUnit.METER.name, unit.M],
+    [LengthUnit.KILOMETER.name, unit.KiloM],
+    [LengthUnit.CENTIMETER.name, unit.CentiM],
+    [LengthUnit.MILLIMETER.name, unit.MilliM],
+    [LengthUnit.MILE.name, unit.MI],
     /* Angle units */
-    [AngleUnit.DEGREE.name, qudt_unit.DEG],
-    [AngleUnit.RADIAN.name, qudt_unit.RAD],
+    [AngleUnit.DEGREE.name, unit.DEG],
+    [AngleUnit.RADIAN.name, unit.RAD],
     /* Linear velocity units */
-    [LinearVelocityUnit.METER_PER_SECOND.name, qudt_unit.M_PER_SEC],
-    [LinearVelocityUnit.CENTIMETER_PER_SECOND.name, qudt_unit.CentiM_PER_SEC],
+    [LinearVelocityUnit.METER_PER_SECOND.name, unit.M_PER_SEC],
+    [LinearVelocityUnit.CENTIMETER_PER_SECOND.name, unit.CentiM_PER_SEC],
     /* Angular velocity units */
-    [AngularVelocityUnit.DEGREE_PER_MINUTE.name, qudt_unit.DEG_PER_MIN],
-    [AngularVelocityUnit.DEGREE_PER_SECOND.name, qudt_unit.DEG_PER_SEC],
-    [AngularVelocityUnit.RADIAN_PER_MINUTE.name, qudt_unit.RAD_PER_MIN],
-    [AngularVelocityUnit.RADIAN_PER_SECOND.name, qudt_unit.RAD_PER_SEC],
+    [AngularVelocityUnit.DEGREE_PER_MINUTE.name, unit.DEG_PER_MIN],
+    [AngularVelocityUnit.DEGREE_PER_SECOND.name, unit.DEG_PER_SEC],
+    [AngularVelocityUnit.RADIAN_PER_MINUTE.name, unit.RAD_PER_MIN],
+    [AngularVelocityUnit.RADIAN_PER_SECOND.name, unit.RAD_PER_SEC],
 ]);
 
 const REVERSE_UNIT_MAP = new Map<IriString, string>(

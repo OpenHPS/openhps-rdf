@@ -1,6 +1,6 @@
 import 'mocha';
 import { Absolute3DPosition, Accuracy3D, AngleUnit, DataFrame, DataObject, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { poso, sosa, qudt, qudt_unit, RDFSerializer, Thing } from '../../src';
+import { poso, sosa, qudt, unit, RDFSerializer, Thing } from '../../src';
 import { expect } from 'chai';
 import { DataFactory, Parser, Store } from 'n3';
 
@@ -27,13 +27,14 @@ describe('DataFrame', () => {
         it('should serialize the position of a frame', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
-                prettyPrint: true
+                prettyPrint: true,
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
             });
             console.log(turtle)
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
             const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
-            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
+            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
             const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
     
@@ -51,7 +52,7 @@ describe('DataFrame', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
             const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
-            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
+            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
             expect(deserialized).to.not.be.undefined;
         });
@@ -60,7 +61,7 @@ describe('DataFrame', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
             const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
-            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(qudt_unit.RAD);
+            serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");    
             const store = new Store(serializedQuads);
             const deserializedFrame = RDFSerializer.deserializeFromStore(DataFactory.namedNode(serialized.value), store);

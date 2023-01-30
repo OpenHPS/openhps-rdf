@@ -179,7 +179,9 @@ describe('RDFSerializer', () => {
             feature.properties.push(property);
 
             const serialized = RDFSerializer.serialize(feature);
-            console.log(await RDFSerializer.stringify(serialized))
+            console.log(await RDFSerializer.stringify(serialized, {
+                baseUri: "http://example.com/"
+            }))
         });
     });
 

@@ -32,7 +32,8 @@ export async function generateNamespaceTs(
         HydraLink: 'http://www.w3.org/ns/hydra/core#Link',
         HydraTemplatedLink: 'http://www.w3.org/ns/hydra/core#TemplatedLink',
         HydraVariableRepresentation: 'http://www.w3.org/ns/hydra/core#VariableRepresentation',
-        OtherIndividual: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+        OtherIndividual: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+        //XsdDatatype: 'http://www.w3.org/2001/XMLSchema'
     };
 
     const schemaLocation = options.mirrors[namespace] || namespace;

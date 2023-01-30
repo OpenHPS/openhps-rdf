@@ -1,5 +1,5 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
-import { BLEObject } from '@openhps/rf';
+import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
+import { BLEObject, MACAddress } from '@openhps/rf';
 import { poso, hardware } from '../../vocab';
 
 SerializableObject({
@@ -13,3 +13,9 @@ SerializableMember({
     },
     name: 'address',
 })(BLEObject.prototype, 'address');
+SerializableArrayMember(MACAddress, {
+    rdf: {
+        predicate: hardware.macAddress,
+    },
+    name: 'knownAddresses',
+})(BLEObject.prototype, 'knownAddresses');

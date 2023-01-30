@@ -1,15 +1,15 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { RelativeRSSI } from '@openhps/rf';
 import { DataFactory } from 'n3';
-import { poso, qudt, qudt_unit } from '../../vocab';
+import { poso, qudt, unit } from '../../vocab';
 
 SerializableObject({
     rdf: {
         type: poso.RelativeSignalStrength,
-        serializer: (rel: RelativeRSSI) => {
+        serializer: () => {
             return {
                 predicates: {
-                    [qudt.unit]: [DataFactory.namedNode(qudt_unit.DeciB_M)],
+                    [qudt.unit]: [DataFactory.namedNode(unit.DeciB_M)],
                 },
             };
         },

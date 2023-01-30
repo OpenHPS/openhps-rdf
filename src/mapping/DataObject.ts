@@ -25,8 +25,9 @@ SerializableObject({
 SerializableMember({
     rdf: {
         identifier: true,
-        serializer: (uid: string, dataType: Serializable<any>) => `${dataType.name.toLowerCase()}_${uid}`,
-        deserializer: (thing: Thing) => thing.value.substring(thing.value.lastIndexOf('_') + 1),
+        serializer: (uid: string, dataType: Serializable<any>) => uid,
+        deserializer: (thing: Thing) =>
+            thing.value.substring(Math.max(thing.value.lastIndexOf('/'), thing.value.lastIndexOf('#')) + 1),
     },
 })(DataObject.prototype, 'uid');
 SerializableMember({

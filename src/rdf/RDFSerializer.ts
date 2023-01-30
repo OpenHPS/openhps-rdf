@@ -225,6 +225,9 @@ export class RDFSerializer extends DataSerializer {
                 xsd: 'http://www.w3.org/2001/XMLSchema#',
                 ...namespaces,
             };
+            if (options.baseUri) {
+                prefixes[''] = options.baseUri;
+            }
             const ns = Object.keys(prefixes)
                 .map((k) => {
                     return { [prefixes[k]]: k };

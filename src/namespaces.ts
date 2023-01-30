@@ -22,7 +22,7 @@ const namespaces: Namespaces = {
      * @see {@link https://qudt.org}
      */
     qudt: 'http://qudt.org/schema/qudt/',
-    qudt_unit: 'http://qudt.org/vocab/unit/',
+    unit: 'http://qudt.org/vocab/unit/',
     quantitykind: 'http://qudt.org/vocab/quantitykind/',
     /**
      * Semantic Sensor Network Ontology
@@ -41,6 +41,7 @@ const namespaces: Namespaces = {
      */
     ogc: 'http://www.opengis.net/ont/geosparql#',
     hardware: 'http://w3id.org/devops-infra/hardware#',
+    //indoorgml: 'http://www.opengis.net/indoorgml/1.0/core',
 };
 
 const mirrors: Mirrors = {
@@ -52,6 +53,7 @@ const mirrors: Mirrors = {
     'http://purl.org/dqm-vocabulary/v1/dqm#': 'http://semwebquality.org/dqm-vocabulary/v1/dqm.owl',
     'http://xmlns.com/foaf/0.1/': 'http://xmlns.com/foaf/0.1/index.rdf',
     'http://w3id.org/devops-infra/hardware#': 'https://oeg-upm.github.io/devops-infra/ontology/hardware/ontology.ttl',
+    'http://www.opengis.net/indoorgml/1.0/core': 'https://schemas.opengis.net/indoorgml/1.0/indoorgmlcore.xsd',
 };
 
 export { namespaces, mirrors };

@@ -1,3 +1,4 @@
+import '@openhps/core';
 import './AbsolutePosition';
 import './GeographicalPosition';
 import './Absolute2DPosition';

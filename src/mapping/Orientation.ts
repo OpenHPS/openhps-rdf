@@ -1,6 +1,6 @@
 import { AngleUnit, Orientation, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, poso, qudt, qudt_unit } from '../vocab';
+import { dcterms, poso, qudt, unit as qudt_unit } from '../vocab';
 import { DataFactory } from 'n3';
 import { Thing } from '../rdf';
 
