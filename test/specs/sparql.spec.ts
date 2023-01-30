@@ -153,7 +153,11 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                     displayName: "Beat Signer"
                 }, {
                     displayName: "Maxim Van de Wynckel"
-                }]
+                }],
+            }, {
+                sort: [
+                    ["displayName", 1]
+                ]
             }).then(data => {
                 expect(data.length).to.equal(2);
                 expect(data[0].displayName).to.equal("Beat Signer");
@@ -368,6 +372,10 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                     {
                         displayName: "Beat Signer"
                     }
+                ]
+            }, {
+                sort: [
+                    ["displayName", 1]
                 ]
             }).then(data => {
                 expect(data.length).to.equal(2);

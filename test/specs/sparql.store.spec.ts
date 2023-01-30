@@ -265,6 +265,10 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 }, {
                     displayName: "Maxim Van de Wynckel"
                 }]
+            }, {
+                sort: [
+                    ["displayName", 1]
+                ]
             }).then(data => {
                 expect(data.length).to.equal(2);
                 expect(data[0].displayName).to.equal("Beat Signer");
