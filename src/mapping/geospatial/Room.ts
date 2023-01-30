@@ -1,9 +1,9 @@
 import { SerializableObject } from '@openhps/core';
 import { Room } from '@openhps/geospatial';
-import { schema } from '../../vocab';
+import { schema, seas } from '../../vocab';
 
 SerializableObject({
     rdf: {
-        type: schema.Room,
+        type: [schema.Room, seas.Room],
     },
 })(Room);

@@ -41,6 +41,7 @@ const namespaces: Namespaces = {
      */
     ogc: 'http://www.opengis.net/ont/geosparql#',
     hardware: 'http://w3id.org/devops-infra/hardware#',
+    seas: 'https://w3id.org/seas/',
     //indoorgml: 'http://www.opengis.net/indoorgml/1.0/core',
 };
 
@@ -54,6 +55,7 @@ const mirrors: Mirrors = {
     'http://xmlns.com/foaf/0.1/': 'http://xmlns.com/foaf/0.1/index.rdf',
     'http://w3id.org/devops-infra/hardware#': 'https://oeg-upm.github.io/devops-infra/ontology/hardware/ontology.ttl',
     'http://www.opengis.net/indoorgml/1.0/core': 'https://schemas.opengis.net/indoorgml/1.0/indoorgmlcore.xsd',
+    'https://w3id.org/seas/': 'https://w3id.org/seas/BuildingOntology-1.0.rdf',
 };
 
 export { namespaces, mirrors };
