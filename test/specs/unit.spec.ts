@@ -16,7 +16,7 @@ describe('Unit', () => {
         const serialized = RDFSerializer.serialize(LengthUnit.METER);
 
         it('should be deserializable', () => {
-            const deserialized = RDFSerializer.deserialize(serialized);
+            const deserialized = RDFSerializer.deserialize(serialized, Unit);
             expect(deserialized).to.equal(LengthUnit.METER);
         });
     });
