@@ -74,13 +74,13 @@
     "linked data"
   ],
   "dependencies": {
-    "@comunica/query-sparql": "^2.6.0",
+    "@comunica/query-sparql": "^2.6.2",
     "@types/n3": "^1.10.4",
     "n3": ">=1.16.3",
     "sparqljs": "^3.6.2"
   },
   "peerDependencies": {
-    "@openhps/core": ">=0.3.50",
+    "@openhps/core": ">=0.3.54",
     "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
@@ -97,8 +97,8 @@
     "@types/node-fetch": "^3.0.3",
     "@types/sparqljs": "^3.1.3",
     "@types/uuid": "^9.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.49.0",
-    "@typescript-eslint/parser": "^5.49.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "axios": "^1.2.6",
     "buffer": "^6.0.3",
     "chai": "^4.3.7",
@@ -123,7 +123,7 @@
     "terser-webpack-plugin": "^5.3.6",
     "ts-node": "^10.9.1",
     "typedoc": "^0.23.24",
-    "typescript": "^4.9.4",
+    "typescript": "^4.9.5",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "wkt": "^0.1.1"

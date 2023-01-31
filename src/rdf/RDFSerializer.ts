@@ -241,7 +241,7 @@ export class RDFSerializer extends DataSerializer {
                     quad.subject.value,
                     quad.predicate.value,
                     quad.object.termType === 'NamedNode'
-                        ? quad.object.termType
+                        ? quad.object.value
                         : quad.object.termType === 'Literal'
                         ? quad.object.datatype.value
                         : quad.object.value,
