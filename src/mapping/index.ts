@@ -27,3 +27,7 @@ if (require('@openhps/rf') !== undefined) {
 if (require('@openhps/geospatial') !== undefined) {
     import('./geospatial');
 }
+
+if (require('@openhps/fingerprinting') !== undefined) {
+    import('./fingerprinting');
+}

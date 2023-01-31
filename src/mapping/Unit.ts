@@ -37,7 +37,6 @@ const REVERSE_UNIT_MAP = new Map<IriString, string>(
 
 SerializableObject({
     rdf: {
-        type: qudt.Unit,
         serializer: (object: Unit) => {
             const unit = UNIT_MAP.get(object.name);
             return {

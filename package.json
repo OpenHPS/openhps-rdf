@@ -89,6 +89,7 @@
     "@comunica/query-sparql-link-traversal": "0.0.2-alpha.2.0",
     "@comunica/query-sparql-rdfjs": "^2.6.0",
     "@openhps/core": "^0.3.53",
+    "@openhps/fingerprinting": "^0.1.4",
     "@openhps/geospatial": "^0.1.14",
     "@openhps/rf": "^0.1.17",
     "@types/chai": "^4.3.4",

@@ -8,7 +8,7 @@ import {
 } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
-import { dcterms, poso, rdfs, sosa } from '../vocab';
+import { dcterms, poso, rdfs, sosa, ogc } from '../vocab';
 
 SerializableObject({
     rdf: {
@@ -19,7 +19,7 @@ SerializableObject({
          *
          * http://www.w3.org/ns/sosa/FeatureOfInterest
          */
-        type: sosa.FeatureOfInterest,
+        type: [sosa.FeatureOfInterest, ogc.SpatialObject],
     },
 })(DataObject);
 SerializableMember({
