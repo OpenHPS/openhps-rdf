@@ -20,14 +20,27 @@ import './LinearVelocity';
 import './AngularVelocity';
 import './UnitValue';
 
-if (require('@openhps/rf') !== undefined) {
+/**
+ *
+ * @param path
+ */
+function moduleIsAvailable(path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+if (moduleIsAvailable('@openhps/rf')) {
     import('./rf');
 }
 
-if (require('@openhps/geospatial') !== undefined) {
+if (moduleIsAvailable('@openhps/geospatial')) {
     import('./geospatial');
 }
 
-if (require('@openhps/fingerprinting') !== undefined) {
+if (moduleIsAvailable('@openhps/fingerprinting')) {
     import('./fingerprinting');
 }
