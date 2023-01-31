@@ -1,8 +1,8 @@
 import '@openhps/core';
 import './AbsolutePosition';
 import './GeographicalPosition';
-import './Absolute2DPosition';
 import './Absolute3DPosition';
+import './Absolute2DPosition';
 import './RelativePosition';
 import './RelativeAngle';
 import './RelativeDistance';

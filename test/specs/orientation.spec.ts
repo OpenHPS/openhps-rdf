@@ -30,7 +30,6 @@ describe('Orientation', () => {
 
     describe('deserialization', () => {
         const serialized = RDFSerializer.serialize(object);
-        console.log(DataSerializerUtils.getMetadata(Orientation))
         const deserialized = RDFSerializer.deserialize(serialized, Orientation);
 
         it('should include custom deserialization', () => {

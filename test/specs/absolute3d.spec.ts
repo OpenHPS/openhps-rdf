@@ -1,11 +1,11 @@
 import 'mocha';
-import { GeographicalPosition } from '@openhps/core';
+import { Absolute3DPosition } from '@openhps/core';
 import { RDFSerializer, Literal } from '../../src';
 import { geo, ogc, rdf } from '../../src/vocab';
 import { expect } from 'chai';
 
-describe('GeographicalPosition', () => {
-    const object = new GeographicalPosition(50.10, 20.5, 10);
+describe('Absolute3DPosition', () => {
+    const object = new Absolute3DPosition(50.10, 20.5, 10);
 
     describe('serialization', () => {
         let serialized = undefined;
@@ -13,20 +13,15 @@ describe('GeographicalPosition', () => {
         before(() => {
             serialized = RDFSerializer.serialize(object);
         });
-
+        
         it('should have an absolute position rdf type', () => {
             expect(serialized.predicates[rdf.type]).to.not.be.undefined;
             expect(serialized.predicates[rdf.type][1].value).to.equal(ogc.Geometry);
         });
 
-        it('should have a geo:Point rdf type', () => {
-            expect(serialized.predicates[rdf.type]).to.not.be.undefined;
-            expect(serialized.predicates[rdf.type][0].value).to.equal(geo.Point);
-        });
-
         it('should have a 3d wkt serialization', () => {
             expect(serialized.predicates[ogc.asWKT]).to.not.be.undefined;
-            expect((serialized.predicates[ogc.asWKT][0] as Literal).id).to.equal("\"POINT Z(20.5 50.1 10)\"^^http://www.opengis.net/ont/geosparql#wktLiteral");
+            expect((serialized.predicates[ogc.asWKT][0] as Literal).id).to.equal("\"POINT Z(50.1 20.5 10)\"^^http://www.opengis.net/ont/geosparql#wktLiteral");
         });
 
     });
