@@ -1,7 +1,7 @@
 import 'mocha';
 import { GeographicalPosition } from '@openhps/core';
 import { RDFSerializer, Literal } from '../../src';
-import { geo, ogc, rdf } from '../../src/vocab';
+import { geo, ogc, rdf, poso } from '../../src/vocab';
 import { expect } from 'chai';
 
 describe('GeographicalPosition', () => {
@@ -16,7 +16,8 @@ describe('GeographicalPosition', () => {
 
         it('should have an absolute position rdf type', () => {
             expect(serialized.predicates[rdf.type]).to.not.be.undefined;
-            expect(serialized.predicates[rdf.type][1].value).to.equal(ogc.Geometry);
+            expect(serialized.predicates[rdf.type][0].value).to.equal(geo.Point);
+            expect(serialized.predicates[rdf.type][1].value).to.equal(poso.AbsolutePosition);
         });
 
         it('should have a geo:Point rdf type', () => {

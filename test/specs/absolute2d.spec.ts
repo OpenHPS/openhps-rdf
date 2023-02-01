@@ -1,11 +1,11 @@
 import 'mocha';
-import { Absolute3DPosition, LengthUnit } from '@openhps/core';
+import { Absolute2DPosition, LengthUnit } from '@openhps/core';
 import { RDFSerializer, Literal } from '../../src';
 import { poso, ogc, rdf } from '../../src/vocab';
 import { expect } from 'chai';
 
-describe('Absolute3DPosition', () => {
-    const object = new Absolute3DPosition(50.10, 20.5, 4);
+describe('Absolute2DPosition', () => {
+    const object = new Absolute2DPosition(50.10, 20.5);
     object.unit = LengthUnit.METER;
 
     describe('serialization', () => {
@@ -30,7 +30,7 @@ describe('Absolute3DPosition', () => {
         it('should have an x coordinate', () => {
             expect(serialized.predicates[poso.xAxisValue]).to.not.be.undefined;
             expect(serialized.predicates[poso.yAxisValue]).to.not.be.undefined;
-            expect(serialized.predicates[poso.zAxisValue]).to.not.be.undefined;
+            console.log((serialized.predicates[poso.xAxisValue][0] as Literal));
         });
 
     });

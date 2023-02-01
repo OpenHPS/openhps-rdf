@@ -47,7 +47,19 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions.options.rdf &&
             memberOptions.options.rdf.serializer
         ) {
-            return memberOptions.options.rdf.serializer(sourceObject) as any;
+            const thing: Thing = {
+                termType: 'BlankNode',
+                value: DataFactory.blankNode().value,
+                predicates: {},
+            };
+            return mergeDeep(
+                thing,
+                memberOptions.options.rdf.serializer(
+                    sourceObject,
+                    serializerOptions.sourceObject,
+                    typeDescriptor.ctor,
+                ) as any,
+            );
         }
 
         // Existing serialization strategy
@@ -165,7 +177,7 @@ export class InternalRDFSerializer extends Serializer {
                 memberOptions.type(),
                 `${memberOptions.name}`,
                 memberOptions as MemberOptionsBase,
-                serializerOptions,
+                { ...serializerOptions, sourceObject: sourceObject },
             );
             if (object) {
                 const predicates = (memberOptions.options.rdf as RDFLiteralOptions).predicate;

@@ -12,7 +12,7 @@ import {
     TypeDescriptor,
 } from '@openhps/core';
 import { Literal, NamedNode, Quad_Object } from 'n3';
-import { RDFIdentifierOptions, RDFLiteralOptions, xsd } from '../decorators';
+import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions, xsd } from '../decorators';
 import { rdf } from '../vocab';
 import { IriString, RDFSerializerConfig, Thing } from './types';
 
@@ -31,7 +31,7 @@ export class InternalRDFDeserializer extends Deserializer {
         sourceObject: IndexedObject,
         knownTypes: Map<string, Serializable<any>>,
         knownRDFTypes: Map<IriString, string[]>,
-    ) {
+    ): Serializable<any> {
         if (sourceObject['predicates'] !== undefined) {
             // Get type based on rdf:type predicate(s) if any
             const rdfTypes: IriString[] = Object.entries(sourceObject['predicates'])
@@ -43,7 +43,36 @@ export class InternalRDFDeserializer extends Deserializer {
                 .map((type) => knownRDFTypes.get(type))
                 .flat()
                 .map((type) => knownTypes.get(type));
-            return mappedTypes[0];
+            if (mappedTypes.length > 1) {
+                // Sort the mapped types based on the data members
+                const typesPriorities = mappedTypes.map((type) => {
+                    const metadata = DataSerializerUtils.getMetadata(type);
+                    const predicates = Array.from(metadata.dataMembers.values())
+                        .map((member) => {
+                            if (member.options && member.options.rdf) {
+                                return (member.options.rdf as RDFObjectOptions).predicate;
+                            } else {
+                                return undefined;
+                            }
+                        })
+                        .filter((f) => f !== undefined);
+                    const sourcePredicates = Object.keys(sourceObject.predicates);
+                    const priority = sourcePredicates.filter((predicate) =>
+                        predicates.includes(predicate as IriString),
+                    ).length;
+                    const negativePriority =
+                        predicates.filter((predicate) => !sourcePredicates.includes(predicate as IriString)).length /
+                        10;
+                    return [type, priority - negativePriority];
+                });
+                return typesPriorities.sort(
+                    (a: [any, number], b: [any, number]) => b[1] - a[1],
+                )[0][0] as Serializable<any>;
+            } else if (mappedTypes.length === 0) {
+                return Object;
+            } else {
+                return mappedTypes[0];
+            }
         }
         return Object;
     }
@@ -60,6 +89,20 @@ export class InternalRDFDeserializer extends Deserializer {
             return null;
         } else if (sourceObject === null || sourceObject === undefined) {
             return;
+        }
+
+        // Custom deserializer
+        if (
+            memberOptions &&
+            memberOptions.options &&
+            memberOptions.options.rdf &&
+            memberOptions.options.rdf.deserializer
+        ) {
+            return memberOptions.options.rdf.deserializer(
+                sourceObject,
+                serializerOptions.targetObject,
+                typeDescriptor.ctor,
+            ) as any;
         }
 
         const deserializer = this.deserializationStrategy.get(typeDescriptor.ctor);
@@ -125,7 +168,7 @@ export class InternalRDFDeserializer extends Deserializer {
         }
 
         const targetObject = options.deserializer
-            ? options.deserializer(sourceObject)
+            ? options.deserializer(sourceObject, this.instantiateType(finalType))
             : this.instantiateType(finalType);
 
         // Get the URI if available
@@ -203,7 +246,7 @@ export class InternalRDFDeserializer extends Deserializer {
                                 knownTypes,
                                 memberOptions.name,
                                 memberOptions,
-                                serializerOptions,
+                                { ...serializerOptions, targetObject: targetObject },
                             );
                         })
                         .filter((item) => this.isInstanceOf(item, memberOptions.type().ctor))[0];

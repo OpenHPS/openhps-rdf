@@ -31,7 +31,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) deserializer for this object.
              */
-            deserializer?: (thing: Thing) => Partial<T>;
+            deserializer?: (thing: Thing, instance?: T) => T;
             /**
              * Type resolver for deserialized thing. Return true
              * if the type matches and false if the type does not match.
@@ -54,11 +54,11 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this member.
              */
-            serializer?: (object: any, dataType?: Serializable<any>) => Partial<Quad_Object>;
+            serializer?: (value: any, object: any, dataType?: Serializable<any>) => Partial<Thing>;
             /**
              * Custom (partial) deserializer for this member.
              */
-            deserializer?: (thing: Thing, dataType?: Serializable<any>) => any;
+            deserializer?: (thing: Thing, targetObject?: any, dataType?: Serializable<any>) => any;
         } & (RDFLiteralOptions | RDFIdentifierOptions);
     }
 }

@@ -41,8 +41,13 @@ describe('DataObject', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
-        const deserialized: DataObject = RDFSerializer.deserialize(serialized);
+        let serialized;
+        let deserialized: DataObject;
+
+        before(() => {
+            serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+            deserialized = RDFSerializer.deserialize(serialized);
+        });
 
         it('should deserialize an object', () => {
             expect(deserialized.displayName).to.equal("Beat Signer");

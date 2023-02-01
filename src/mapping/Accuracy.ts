@@ -6,15 +6,6 @@ import { ssns, schema } from '../vocab';
 SerializableObject({
     rdf: {
         type: ssns.Accuracy,
-    },
-})(Accuracy);
-SerializableMember({
-    rdf: {
-        predicate: schema.unitCode,
-    },
-})(Accuracy.prototype, '_unit');
-SerializableMember({
-    rdf: {
         serializer: (object: Accuracy) => {
             return {
                 predicates: {
@@ -23,8 +14,14 @@ SerializableMember({
                 },
             };
         },
-        deserializer: (thing: Thing) => {
-            return thing.predicates[schema.maxValue][0].value;
+        deserializer: (thing: Thing, instance: Accuracy) => {
+            instance.value = parseFloat(thing.predicates[schema.maxValue][0].value);
+            return instance;
         },
     },
-})(Accuracy.prototype, 'value');
+})(Accuracy);
+SerializableMember({
+    rdf: {
+        predicate: schema.unitCode,
+    },
+})(Accuracy.prototype, '_unit');

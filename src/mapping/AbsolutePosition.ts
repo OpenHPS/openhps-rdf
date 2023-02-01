@@ -1,10 +1,10 @@
 import { AbsolutePosition, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
-import { dcterms, ogc, poso, qudt } from '../vocab';
+import { dcterms, ogc, poso } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: ogc.Geometry,
+        type: [poso.AbsolutePosition],
     },
 })(AbsolutePosition);
 SerializableMember({
@@ -13,11 +13,6 @@ SerializableMember({
         datatype: xsd.dateTime,
     },
 })(AbsolutePosition.prototype, 'timestamp');
-SerializableMember({
-    rdf: {
-        predicate: qudt.unit,
-    },
-})(AbsolutePosition.prototype, 'unit');
 SerializableMember({
     rdf: {
         predicate: poso.hasAccuracy,

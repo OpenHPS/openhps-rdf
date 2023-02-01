@@ -186,7 +186,14 @@ export class RDFSerializer extends DataSerializer {
             .map((predicateIri) => {
                 const predicate = DataFactory.namedNode(predicateIri);
                 return thing.predicates[predicateIri].map((object) => {
-                    if ((object as any)['predicates'] !== undefined) {
+                    if (!object) {
+                        // Object is undefined
+                        return [];
+                    }
+                    if (
+                        (object as any)['predicates'] !== undefined &&
+                        Object.values((object as any)['predicates']).length > 0
+                    ) {
                         return [
                             DataFactory.quad(subject, predicate, object as Quad_Object),
                             ...this.serializeToQuads(object as Thing),
@@ -244,7 +251,7 @@ export class RDFSerializer extends DataSerializer {
                         ? quad.object.value
                         : quad.object.termType === 'Literal'
                         ? quad.object.datatype.value
-                        : quad.object.value,
+                        : '',
                 ];
                 usedNamespacesInQuad.map((namespace) => {
                     Object.keys(ns).forEach((n) => {
