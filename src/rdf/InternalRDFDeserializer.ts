@@ -69,12 +69,12 @@ export class InternalRDFDeserializer extends Deserializer {
                     (a: [any, number], b: [any, number]) => b[1] - a[1],
                 )[0][0] as Serializable<any>;
             } else if (mappedTypes.length === 0) {
-                return Object;
+                return undefined;
             } else {
                 return mappedTypes[0];
             }
         }
-        return Object;
+        return undefined;
     }
 
     convertSingleValue(

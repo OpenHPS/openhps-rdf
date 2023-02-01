@@ -68,7 +68,7 @@ export class RDFSerializer extends DataSerializer {
                 .flat()
                 .forEach((typeIri: IriString) => {
                     const results = this.knownRDFTypes.get(typeIri) ?? [];
-                    results.push(type.name);
+                    if (!results.includes(type.name)) results.push(type.name);
                     this.knownRDFTypes.set(typeIri, results);
                 });
         }
