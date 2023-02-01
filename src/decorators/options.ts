@@ -54,7 +54,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this member.
              */
-            serializer?: (value: any, object: any, dataType?: Serializable<any>) => Partial<Thing>;
+            serializer?: (value: any, object?: any, dataType?: Serializable<any>) => Partial<Thing>;
             /**
              * Custom (partial) deserializer for this member.
              */
