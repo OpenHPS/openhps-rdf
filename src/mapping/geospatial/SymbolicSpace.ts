@@ -15,9 +15,9 @@ SerializableObject({
                 .map((coord) => obj.transform(coord))
                 .map((coord) => {
                     return {
-                        latitude: coord.latitude,
-                        longitude: coord.longitude,
-                        altitude: coord.altitude,
+                        latitude: coord.y,
+                        longitude: coord.x,
+                        altitude: coord.z,
                     };
                 });
             return {
@@ -25,9 +25,6 @@ SerializableObject({
                     [ogc.hasGeometry]: [RDFSerializer.serialize(geometry)],
                 },
             };
-        },
-        deserializer: (thing: Thing) => {
-            return undefined;
         },
     },
 })(SymbolicSpace);
