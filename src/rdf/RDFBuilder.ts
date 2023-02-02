@@ -58,7 +58,7 @@ export class RDFBuilder {
                 languageOrDatatype ? DataFactory.namedNode(languageOrDatatype) : undefined,
             );
         } else if (
-            obj['termType'] !== undefined &&
+            obj['termType'] === undefined &&
             typeof object === 'object' &&
             RDFSerializer.findTypeByName(object.constructor.name)
         ) {
