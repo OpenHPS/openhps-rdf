@@ -38,7 +38,7 @@ export class RDFBuilder {
     ): RDFBuilder {
         let obj = object;
         if (typeof object === 'string') {
-            if (object.startsWith('http')) {
+            if (object.startsWith('http') && languageOrDatatype === undefined) {
                 // Named node
                 obj = DataFactory.namedNode(object);
             } else {
@@ -57,7 +57,11 @@ export class RDFBuilder {
                 object,
                 languageOrDatatype ? DataFactory.namedNode(languageOrDatatype) : undefined,
             );
-        } else if (typeof object === 'object' && RDFSerializer.findTypeByName(object.constructor.name)) {
+        } else if (
+            obj['termType'] !== undefined &&
+            typeof object === 'object' &&
+            RDFSerializer.findTypeByName(object.constructor.name)
+        ) {
             obj = RDFSerializer.serialize(object);
         }
         const data = this.thing.predicates[predicate] ?? [];
