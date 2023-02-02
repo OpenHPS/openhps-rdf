@@ -15,6 +15,7 @@ describe('Absolute3DPosition', () => {
             serialized = RDFSerializer.serialize(object);
             serialized.id = "http://test"
             serialized.termType = "NamedNode"
+            console.log(serialized)
             console.log(await RDFSerializer.stringify(serialized, {
                 prettyPrint: true,
                 baseUri: "http://example.org/"
