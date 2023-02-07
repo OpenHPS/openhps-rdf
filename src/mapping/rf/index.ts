@@ -1,7 +1,7 @@
 import '@openhps/rf';
 import './RelativeRSSI';
 import './BLEObject';
-import './BLEiBeacon';
+import './BLEiBeaconObject';
 import './BLEBeaconObject';
 import './WLANObject';
 import './BLEAltBeacon';
