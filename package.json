@@ -92,6 +92,7 @@
     "@openhps/fingerprinting": "^0.1.4",
     "@openhps/geospatial": "^0.1.14",
     "@openhps/rf": "^0.1.17",
+    "@openhps/video": "^0.1.11",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",

@@ -44,3 +44,7 @@ if (moduleIsAvailable('@openhps/geospatial')) {
 if (moduleIsAvailable('@openhps/fingerprinting')) {
     import('./fingerprinting');
 }
+
+if (moduleIsAvailable('@openhps/video')) {
+    import('./video');
+}

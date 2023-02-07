@@ -1,5 +1,5 @@
 import 'mocha';
-import { BLEiBeacon, MACAddress, RelativeRSSI } from '@openhps/rf';
+import { BLEiBeacon, BLEObject, MACAddress, RelativeRSSI } from '@openhps/rf';
 import { RDFSerializer } from '../../src';
 import { DataObject } from '@openhps/core';
 
@@ -22,6 +22,16 @@ describe('@openhps/rdf', () => {
         
         it('should serialize a MACAddress', async () => {
             const object = new BLEiBeacon(MACAddress.fromString("00:11:22:33:44"));
+            const turtle = await RDFSerializer.stringify(object, {
+                format: 'text/turtle',
+                prettyPrint: true,
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
+            console.log(turtle);
+        });
+
+        it('should serialize a ble object', async () => {
+            const object = new BLEObject(MACAddress.fromString("00:11:22:33:44"));
             const turtle = await RDFSerializer.stringify(object, {
                 format: 'text/turtle',
                 prettyPrint: true,

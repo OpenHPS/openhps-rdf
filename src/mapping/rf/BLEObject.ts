@@ -1,6 +1,6 @@
 import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { BLEObject, MACAddress } from '@openhps/rf';
-import { DataFactory, Literal } from 'n3';
+import { DataFactory } from 'n3';
 import { Thing } from '../../rdf';
 import { poso, hardware } from '../../vocab';
 
