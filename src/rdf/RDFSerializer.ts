@@ -75,6 +75,26 @@ export class RDFSerializer extends DataSerializer {
     }
 
     /**
+     * Serialize an object to an URI
+     *
+     * @param {any} data Data to serialize to an URI
+     * @param {string} baseUri Base URI
+     * @returns {string} Resource URI
+     */
+    static serializeToUri<T>(data: T, baseUri?: IriString): IriString {
+        const identifierMember = this.getUriMetadata(data.constructor);
+        let uri: string = undefined;
+        if (identifierMember) {
+            const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
+            uri = rdfOptions.serializer
+                ? rdfOptions.serializer((data as any)[identifierMember.key] as string, data.constructor)
+                : ((data as any)[identifierMember.key] as string);
+        }
+        uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : DataFactory.blankNode(uri).value;
+        return uri as IriString;
+    }
+
+    /**
      * Serialize data
      *
      * @param {any} data Data to serialize

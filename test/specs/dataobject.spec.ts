@@ -20,6 +20,10 @@ describe('DataObject', () => {
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
         
+        it('should serialize to an uri', () => {
+            expect(RDFSerializer.serializeToUri(object, "https://maximvdw.solidweb.org/public/openhps.ttl#")).to.eql("https://maximvdw.solidweb.org/public/openhps.ttl#bsigner");
+        });
+
         it('should have two rdf types', async () => {
             expect(serialized.predicates[rdf.type].length).to.equal(2);
             const turtle = await RDFSerializer.stringify(serialized, {
