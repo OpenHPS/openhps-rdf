@@ -45,6 +45,7 @@ export const xsd = {
     string: 'http://www.w3.org/2001/XMLSchema#string',
     double: 'http://www.w3.org/2001/XMLSchema#double',
     langString: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
+    hexBinary: 'http://www.w3.org/2001/XMLSchema#hexBinary',
 } as const;
 
 export type XmlSchemaTypeIri = (typeof xsd)[keyof typeof xsd];
