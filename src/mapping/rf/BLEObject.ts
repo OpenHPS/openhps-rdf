@@ -2,13 +2,31 @@ import { SerializableArrayMember, SerializableMember, SerializableObject } from 
 import { BLEObject, MACAddress } from '@openhps/rf';
 import { DataFactory } from 'n3';
 import { Thing } from '../../rdf';
-import { poso, hardware } from '../../vocab';
+import { poso, posoc, hardware } from '../../vocab';
 
 SerializableObject({
     rdf: {
         type: poso.RFLandmark,
     },
 })(BLEObject);
+SerializableMember({
+    rdf: {
+        predicate: hardware.macAddress,
+        serializer: (object: MACAddress) => {
+            if (!object) {
+                return undefined;
+            }
+            return DataFactory.literal(object.toString());
+        },
+        deserializer: (thing: Thing) => {
+            if (!thing) {
+                return undefined;
+            }
+            return MACAddress.fromString(thing.value);
+        },
+    },
+    name: 'calibratedRSSI',
+})(BLEObject.prototype, 'calibratedRSSI');
 SerializableMember({
     rdf: {
         predicate: hardware.macAddress,
