@@ -22,6 +22,7 @@ describe('@openhps/rdf', () => {
         
         it('should serialize a MACAddress', async () => {
             const object = new BLEiBeacon(MACAddress.fromString("00:11:22:33:44"));
+            object.calibratedRSSI = -56;
             const turtle = await RDFSerializer.stringify(object, {
                 format: 'text/turtle',
                 prettyPrint: true,

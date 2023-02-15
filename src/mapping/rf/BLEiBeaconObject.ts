@@ -18,12 +18,14 @@ SerializableMember({
 SerializableMember({
     rdf: {
         predicate: posoc.major,
+        datatype: xsd.integer,
     },
     name: 'major',
 })(BLEiBeacon.prototype, 'major');
 SerializableMember({
     rdf: {
         predicate: posoc.minor,
+        datatype: xsd.integer,
     },
     name: 'minor',
 })(BLEiBeacon.prototype, 'minor');

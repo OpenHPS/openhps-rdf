@@ -11,7 +11,7 @@ import {
     DataSerializerUtils,
 } from '@openhps/core';
 import { IriString, Thing } from './types';
-import { DataFactory, Literal, NamedNode } from 'n3';
+import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, XmlSchemaTypeIri, xsd } from '../decorators/';
 import { mergeDeep } from './utils';
 
@@ -32,7 +32,7 @@ export class InternalRDFSerializer extends Serializer {
         memberName: string,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions: any = {},
-    ): Thing {
+    ): Thing | Literal {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
         }
@@ -47,19 +47,23 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions.options.rdf &&
             memberOptions.options.rdf.serializer
         ) {
-            const thing: Thing = {
-                termType: 'BlankNode',
-                value: DataFactory.blankNode().value,
-                predicates: {},
-            };
-            return mergeDeep(
-                thing,
-                memberOptions.options.rdf.serializer(
-                    sourceObject,
-                    serializerOptions.sourceObject,
-                    typeDescriptor.ctor,
-                ) as any,
-            );
+            const output = memberOptions.options.rdf.serializer(
+                sourceObject,
+                serializerOptions.sourceObject,
+                typeDescriptor.ctor,
+            ) as Thing | Quad_Object;
+            if (output.termType === 'Literal') {
+                return output as Literal;
+            } else {
+                return mergeDeep(
+                    {
+                        termType: 'BlankNode',
+                        value: DataFactory.blankNode().value,
+                        predicates: {},
+                    },
+                    output,
+                );
+            }
         }
 
         // Existing serialization strategy
