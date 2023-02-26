@@ -1,68 +1,97 @@
-<testsuite name="Mocha Tests" tests="56" failures="0" errors="1" skipped="-1" timestamp="Mon, 30 Jan 2023 14:11:02 GMT" time="23.296">
-<testcase classname="DataFrame serialization" name="should serialize the position of a frame" time="0.013"/>
-<testcase classname="DataFrame deserialization" name="should deserialize a data frame" time="0.001"/>
-<testcase classname="DataFrame deserialization" name="should deserialize a data frame from store" time="0.002"/>
-<testcase classname="DataObject serialization" name="should have a single rdf type" time="0.001"/>
-<testcase classname="DataObject serialization" name="should serialize the position of an object" time="0.001"/>
+<testsuite name="Mocha Tests" tests="95" failures="0" errors="0" skipped="0" timestamp="Sun, 26 Feb 2023 20:58:18 GMT" time="21.503">
+<testcase classname="Absolute2DPosition serialization" name="should have an absolute position rdf type" time="0"/>
+<testcase classname="Absolute2DPosition serialization" name="should have an x coordinate" time="0.001"/>
+<testcase classname="Absolute3DPosition serialization" name="should have an absolute position rdf type" time="0"/>
+<testcase classname="Absolute3DPosition serialization" name="should have an x coordinate" time="0"/>
+<testcase classname="DataFrame serialization" name="should serialize the position of a frame" time="0.011"/>
+<testcase classname="DataFrame deserialization" name="should deserialize a data frame" time="0.002"/>
+<testcase classname="DataFrame deserialization" name="should deserialize a data frame from store" time="0.005"/>
+<testcase classname="DataObject serialization" name="should serialize to an uri" time="0.001"/>
+<testcase classname="DataObject serialization" name="should have two rdf types" time="0.001"/>
+<testcase classname="DataObject serialization" name="should serialize the position of an object" time="0"/>
 <testcase classname="DataObject serialization" name="should serialize to subjects" time="0.002"/>
 <testcase classname="DataObject deserialization" name="should deserialize an object" time="0"/>
 <testcase classname="GeographicalPosition serialization" name="should have an absolute position rdf type" time="0"/>
 <testcase classname="GeographicalPosition serialization" name="should have a geo:Point rdf type" time="0"/>
-<testcase classname="@openhps/geospatial serialization" name="should serialize models" time="0.023"/>
-<testcase classname="Orientation serialization" name="should include custom serialization" time="0.001"/>
+<testcase classname="GeographicalPosition serialization" name="should have a 3d wkt serialization" time="0"/>
+<testcase classname="@openhps/geospatial serialization" name="should serialize models" time="0.015"/>
+<testcase classname="Orientation serialization" name="should include custom serialization" time="0"/>
 <testcase classname="Orientation deserialization" name="should include custom deserialization" time="0"/>
-<testcase classname="RDFSerializer serialization" name="should not serialize an unconfigured member" time="0.001"/>
-<testcase classname="RDFSerializer serialization" name="should serialize single predicates per property" time="0"/>
+<testcase classname="RDFSerializer serialization" name="should not serialize an unconfigured member" time="0"/>
+<testcase classname="RDFSerializer serialization" name="should serialize single predicates per property" time="0.001"/>
 <testcase classname="RDFSerializer serialization" name="should serialize multiple predicates per property" time="0"/>
-<testcase classname="RDFSerializer serialization" name="should serialize multiple predicates with same IRI" time="0.001"/>
-<testcase classname="RDFSerializer serialization" name="should serialize anonymous inner objects as blank nodes" time="0.001"/>
-<testcase classname="RDFSerializer serialization" name="should serialize anonymous inner objects as blank nodes" time="0.001"/>
-<testcase classname="RDFSerializer serialization" name="should serialize named nodes" time="0.001"/>
+<testcase classname="RDFSerializer serialization" name="should serialize multiple predicates with same IRI" time="0"/>
+<testcase classname="RDFSerializer serialization" name="should serialize anonymous inner objects as blank nodes" time="0"/>
+<testcase classname="RDFSerializer serialization" name="should serialize anonymous inner objects as blank nodes" time="0"/>
+<testcase classname="RDFSerializer serialization" name="should serialize named nodes" time="0"/>
 <testcase classname="RDFSerializer serialization" name="should serialize circular members" time="0.001"/>
 <testcase classname="ReferenceSpace serialization" name="should have a single rdf type" time="0.001"/>
 <testcase classname="ReferenceSpace serialization" name="should serialize to subjects" time="0"/>
 <testcase classname="ReferenceSpace deserialization" name="should deserialize an object" time="0"/>
 <testcase classname="@openhps/rdf serialization" name="should serialize models" time="0.001"/>
+<testcase classname="@openhps/rdf serialization" name="should serialize a MACAddress" time="0.003"/>
+<testcase classname="@openhps/rdf serialization" name="should serialize a ble object" time="0.001"/>
+<testcase classname="SensorObject serialization" name="should serialize" time="0.004"/>
+<testcase classname="SensorObject deserialization" name="should correctly deserialize" time="0"/>
 <testcase classname="SerializableNamedNode" name="should use the uri from the N3 namednode as its own" time="0"/>
-<testcase classname="SPARQLDataDriver (Fuseki endpoint)" name="&#x22;before all&#x22; hook in &#x22;SPARQLDataDriver (Fuseki endpoint)&#x22;" time="0.057"><failure>fetch failed
-TypeError: fetch failed
-    at Object.fetch (node:internal/deps/undici/undici:11118:11)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async Function.getResponse (node_modules\@comunica\actor-http-fetch\lib\ActorHttpFetch.ts:59:26)
-    at async ActorHttpFetch.run (node_modules\@comunica\actor-http-fetch\lib\ActorHttpFetch.ts:145:24)
-    at async ActorHttpWayback.run (node_modules\@comunica\actor-http-wayback\lib\ActorHttpWayback.ts:41:18)
-    at async SparqlEndpointFetcher.handleFetchCall (node_modules\fetch-sparql-endpoint\lib\SparqlEndpointFetcher.ts:217:36)
-    at async SparqlEndpointFetcher.fetchUpdate (node_modules\fetch-sparql-endpoint\lib\SparqlEndpointFetcher.ts:163:5)
-    at async Promise.all (index 0)</failure></testcase>
-<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support inserting new dataobjects" time="0.013"/>
-<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support inserting new dataframes" time="0.005"/>
-<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support updating a dataobject" time="0.004"/>
-<testcase classname="SPARQLDataDriver (N3 store) extension functions" name="should perform a raw query" time="0.008"/>
-<testcase classname="SPARQLDataDriver (N3 store) extension functions" name="should perform a raw query from multiple sources" time="3.932"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should find by uid" time="1.594"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should find one item" time="1.636"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should find one item by a display name" time="0.079"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should find all items" time="1.567"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="$and should not work as an OR" time="0.01"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="$or should work as an OR" time="0.104"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support regex queries" time="0.065"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support explicit path querying" time="0.068"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by number ascending" time="1.617"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by number descending" time="2.008"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by name" time="1.983"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support combinations of queries" time="0.127"/>
-<testcase classname="SPARQLDataDriver (N3 store) find" name="should support implicit path querying" time="0.12"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check greater then: &#x3E;" time="0.09"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check lesser then: &#x3C;" time="0.088"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check greater then and lesser then" time="0.089"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check equality: =" time="0.13"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check gte: &#x3E;=" time="0.09"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check lte: &#x3C;=" time="0.074"/>
-<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should support combinations of expressions" time="0.106"/>
-<testcase classname="SPARQLDataDriver (N3 store) count" name="should count all objects" time="2.039"/>
-<testcase classname="SPARQLDataDriver (N3 store) count" name="should count specific objects" time="1.855"/>
-<testcase classname="SPARQLDataDriver (N3 store) delete" name="should support deleting one identifier" time="3.618"/>
-<testcase classname="SPARQLDataDriver (N3 store) delete" name="should support deleting all tuples" time="0.007"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) insert" name="should support inserting new dataobjects" time="0.073"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) insert" name="should support inserting new dataframes" time="0.053"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) insert" name="should support updating a dataobject" time="0.028"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should find by uid" time="0.024"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should find one item" time="0.015"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should find one item by a display name" time="0.021"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should find all items" time="0.024"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="$and should not work as an OR" time="0.018"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="$or should work as an OR" time="0.037"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support regex queries" time="0.026"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support explicit path querying" time="0.022"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support sorting by number ascending" time="0.026"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support sorting by number descending" time="0.03"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support sorting by name" time="0.026"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support combinations of queries" time="0.038"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find" name="should support implicit path querying" time="0.04"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check greater then: &#x3E;" time="0.053"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check lesser then: &#x3C;" time="0.063"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check greater then and lesser then" time="0.039"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check equality: =" time="0.031"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check gte: &#x3E;=" time="0.044"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should check lte: &#x3C;=" time="0.031"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) find expressions" name="should support combinations of expressions" time="0.02"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) deserializing" name="should deserialize an array" time="0.012"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) count" name="should count all objects" time="0.015"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) count" name="should count specific objects" time="0.011"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) array query" name="should support $elemMatch" time="0.033"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) delete" name="should support deleting one identifier" time="0.058"/>
+<testcase classname="SPARQLDataDriver (Fuseki endpoint) delete" name="should support deleting all tuples" time="0.026"/>
+<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support inserting new dataobjects" time="0.018"/>
+<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support inserting new dataframes" time="0.007"/>
+<testcase classname="SPARQLDataDriver (N3 store) insert" name="should support updating a dataobject" time="0.006"/>
+<testcase classname="SPARQLDataDriver (N3 store) extension functions" name="should perform a raw query" time="0.007"/>
+<testcase classname="SPARQLDataDriver (N3 store) extension functions" name="should perform a raw query from multiple sources" time="3.031"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should find by uid" time="1.68"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should find one item" time="1.651"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should find one item by a display name" time="0.074"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should find all items" time="1.61"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="$and should not work as an OR" time="0.007"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="$or should work as an OR" time="0.101"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support regex queries" time="0.078"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support explicit path querying" time="0.07"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by number ascending" time="1.679"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by number descending" time="1.695"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support sorting by name" time="1.646"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support combinations of queries" time="0.099"/>
+<testcase classname="SPARQLDataDriver (N3 store) find" name="should support implicit path querying" time="0.069"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check greater then: &#x3E;" time="0.069"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check lesser then: &#x3C;" time="0.07"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check greater then and lesser then" time="0.076"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check equality: =" time="0.068"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check gte: &#x3E;=" time="0.073"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should check lte: &#x3C;=" time="0.069"/>
+<testcase classname="SPARQLDataDriver (N3 store) find expressions" name="should support combinations of expressions" time="0.107"/>
+<testcase classname="SPARQLDataDriver (N3 store) count" name="should count all objects" time="1.68"/>
+<testcase classname="SPARQLDataDriver (N3 store) count" name="should count specific objects" time="1.641"/>
+<testcase classname="SPARQLDataDriver (N3 store) delete" name="should support deleting one identifier" time="2.999"/>
+<testcase classname="SPARQLDataDriver (N3 store) delete" name="should support deleting all tuples" time="0.006"/>
 <testcase classname="Unit serialization" name="should be serializable" time="0"/>
 <testcase classname="Unit deserialization" name="should be deserializable" time="0"/>
 </testsuite>
