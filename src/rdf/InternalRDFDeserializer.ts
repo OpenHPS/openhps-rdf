@@ -42,6 +42,7 @@ export class InternalRDFDeserializer extends Deserializer {
             const mappedTypes = rdfTypes
                 .map((type) => knownRDFTypes.get(type))
                 .flat()
+                .filter((type) => type !== undefined)
                 .map((type) => knownTypes.get(type));
             if (mappedTypes.length > 1) {
                 // Sort the mapped types based on the data members

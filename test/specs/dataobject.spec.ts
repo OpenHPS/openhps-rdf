@@ -25,11 +25,11 @@ describe('DataObject', () => {
         });
 
         it('should have two rdf types', async () => {
-            expect(serialized.predicates[rdf.type].length).to.equal(2);
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
                 prettyPrint: false
             });
+            expect(serialized.predicates[rdf.type].length).to.equal(2);
         });
 
         it('should serialize the position of an object', () => {

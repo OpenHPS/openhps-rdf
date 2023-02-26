@@ -11,11 +11,12 @@ describe('ReferenceSpace', () => {
         const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
         
         it('should have a single rdf type', async () => {
-            expect(serialized.predicates[rdf.type].length).to.equal(4);
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
                 prettyPrint: false
             });
+            console.log(turtle)
+            expect(serialized.predicates[rdf.type].length).to.equal(3);
         });
 
         it('should serialize to subjects', async () => {

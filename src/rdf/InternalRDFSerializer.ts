@@ -103,7 +103,7 @@ export class InternalRDFSerializer extends Serializer {
         let metadata: ObjectMetadata | undefined;
         const rootMetadata = DataSerializerUtils.getRootMetadata(sourceObject.constructor);
 
-        if (sourceObject.constructor !== typeDescriptor.ctor && sourceObject instanceof typeDescriptor.ctor) {
+        if (sourceObject.constructor !== typeDescriptor.ctor) {
             metadata = DataSerializerUtils.getOwnMetadata(sourceObject.constructor) ?? rootMetadata;
         } else {
             metadata = DataSerializerUtils.getOwnMetadata(typeDescriptor.ctor) ?? rootMetadata;
@@ -115,7 +115,6 @@ export class InternalRDFSerializer extends Serializer {
                 : rootMetadata.options && rootMetadata.options.rdf
                 ? rootMetadata.options.rdf
                 : undefined;
-
         if (!options) {
             return undefined;
         }
@@ -183,6 +182,7 @@ export class InternalRDFSerializer extends Serializer {
                 memberOptions as MemberOptionsBase,
                 { ...serializerOptions, sourceObject: sourceObject },
             );
+
             if (object) {
                 const predicates = (memberOptions.options.rdf as RDFLiteralOptions).predicate;
                 [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {

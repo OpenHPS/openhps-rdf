@@ -39,9 +39,11 @@ SerializableObject({
     rdf: {
         serializer: (object: Unit) => {
             const unit = UNIT_MAP.get(object.name);
-            return {
-                value: unit,
-            };
+            return unit
+                ? {
+                      value: unit,
+                  }
+                : {};
         },
         deserializer: (thing: Thing) => {
             const name = REVERSE_UNIT_MAP.get(thing.value as IriString);

@@ -43,6 +43,7 @@ const namespaces: Namespaces = {
     hardware: 'http://w3id.org/devops-infra/hardware#',
     seas: 'https://w3id.org/seas/',
     //indoorgml: 'http://www.opengis.net/indoorgml/1.0/core',
+    m3lite: 'http://purl.org/iot/vocab/m3-lite#',
 };
 
 const mirrors: Mirrors = {

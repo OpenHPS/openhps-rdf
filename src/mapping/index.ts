@@ -10,6 +10,7 @@ import './RelativeDistance';
 import './DataObject';
 import './DataFrame';
 import './ReferenceSpace';
+import './SensorObject';
 
 import './Orientation';
 
