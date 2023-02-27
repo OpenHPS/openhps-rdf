@@ -1,4 +1,4 @@
-import { QueryEngine } from '@comunica/query-sparql';
+import { QueryEngine } from './QueryEngine';
 import {
     DataServiceOptions,
     FilterQuery,

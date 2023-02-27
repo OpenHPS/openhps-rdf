@@ -54,7 +54,8 @@
     "cover:ci": "nyc mocha --config test/.mocharc.json --reporter mocha-multi-reporters && nyc report --reporter=cobertura",
     "lint": "eslint src/ --ignore-pattern vocab --ignore-pattern bin",
     "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
-    "build": "npm run clean && npm run build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
+    "build": "npm run clean && npm-run-all --parallel build:comunica build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
+    "build:comunica": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
     "build:ts:cjs": "tsc --build ./tsconfig/tsconfig.bundle.cjs.json",
     "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json",
     "build:ts:esm5": "tsc --build ./tsconfig/tsconfig.bundle.esm5.json",
@@ -81,7 +82,7 @@
     "sparqljs": "^3.6.2"
   },
   "peerDependencies": {
-    "@openhps/core": ">=0.3.54",
+    "@openhps/core": ">=0.4.13",
     "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
@@ -97,7 +98,7 @@
     "@openhps/video": "^0.1.11",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^18.14.1",
+    "@types/node": "^18.14.2",
     "@types/node-fetch": "^3.0.3",
     "@types/sparqljs": "^3.1.3",
     "@types/uuid": "^9.0.1",
@@ -126,7 +127,7 @@
     "standard-version": "^9.5.0",
     "terser-webpack-plugin": "^5.3.6",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.23.25",
+    "typedoc": "^0.23.26",
     "typescript": "^4.9.5",
     "webpack": "^5.75.0",
     "webpack-bundle-analyzer": "^4.8.0",

@@ -55,7 +55,7 @@ const bundle = (env, module, entry = 'index', suffix = '') => {
   const filename = `${PROJECT_NAME}${suffix}${module ? ".es" : ""}${env.prod ? ".min" : ""}`;
   return {
     name: PROJECT_NAME,
-    entry: `./dist/esm/${entry}.js`,
+    entry: `./dist/esm5/${entry}.js`,
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: `web/${filename}.js`,
@@ -78,17 +78,19 @@ const bundle = (env, module, entry = 'index', suffix = '') => {
       }
     },
     devtool: 'source-map',
-    plugins: [new BundleAnalyzerPlugin({
+    plugins: !module ? [new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       analyzerPort: 'auto',
       openAnalyzer: false,
       reportFilename: `web/report_${filename}.html`
-    })],
+    })] : [],
     ...defaultConfig(env)
   };
 };
 
 module.exports = env => [
+  bundle(env, true, 'index.minimal', ''),
+  bundle(env, false, 'index.minimal', ''),
   bundle(env, true, 'index', '.all'),
   bundle(env, false, 'index', '.all'),
   bundle(env, true, 'index.sparql', '.sparql'),

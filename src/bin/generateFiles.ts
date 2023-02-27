@@ -35,7 +35,7 @@ export async function generateFiles(
         // This is a somewhat hackish workaround to this proposal not being ratified for Ecmascript yet:
         // https://github.com/tc39/proposal-export-ns-from
         .map((filename) => {
-            const exportLine = `import * as ${filename}Import from './${filename}'; export const ${filename} = ${filename}Import;`;
+            const exportLine = `export * as ${filename} from './${filename}';`;
             return generatedFilenames.includes(filename)
                 ? exportLine
                 : `// This vocabulary was unavailable when this file was generated:\n// ${exportLine}`;

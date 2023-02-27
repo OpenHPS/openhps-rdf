@@ -24,13 +24,29 @@
 <br />
 
 This OpenHPS module adds RDF data support to the OpenHPS framework. The main vocabulary used for serializing data is the
-POsitioning System Ontology (POSO) ontology that will be presented at ISWC 2022.
+POsitioning System Ontology (POSO) ontology that was presented at ISWC 2022.
 
 ## Getting Started
 If you have [npm installed](https://www.npmjs.com/get-npm), start using @openhps/rdf with the following command.
 ```bash
 npm install @openhps/rdf --save
 ```
+
+## Installation
+
+### Web
+- `openhps-rdf.js`: CJS export of RDF mappings, SPARQL data service
+- `openhps-rdf.vocab.js`: CJS export of common RDF vocabularies
+- `openhps-rdf.serialization.js`: CJS export of RDF serialization
+- `openhps-rdf.sparql.js`: CJS export of SPARQL data service and serialization
+- `openhps-rdf.all.js`: CJS export of RDF mappings, SPARQL data service and vocabularies
+- `openhps-rdf.es.js`: ESM export of RDF mappings, SPARQL data service
+- `openhps-rdf.vocab.es.js`: ESM export of common RDF vocabularies
+- `openhps-rdf.serialization.es.js`: ESM export of RDF serialization
+- `openhps-rdf.sparql.es.js`: ESM export of SPARQL data service and serialization
+- `openhps-rdf.all.es.js`: ESM export of RDF mappings, SPARQL data service and vocabularies
+
+Each export has a `*.min.js` version that is minified.
 
 ## Usage
 
