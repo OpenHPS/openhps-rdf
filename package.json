@@ -52,7 +52,7 @@
     "test": "mocha --config test/.mocharc.json",
     "cover": "nyc mocha --config test/.mocharc.json && nyc report --reporter=cobertura",
     "cover:ci": "nyc mocha --config test/.mocharc.json --reporter mocha-multi-reporters && nyc report --reporter=cobertura",
-    "lint": "eslint src/ --ignore-pattern vocab --ignore-pattern bin",
+    "lint": "eslint src/ --ignore-pattern vocab --ignore-pattern bin --ignore-pattern engine-default.js",
     "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
     "build": "npm run clean && npm-run-all --parallel build:comunica build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
     "build:comunica": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
