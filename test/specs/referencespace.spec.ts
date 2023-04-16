@@ -8,7 +8,9 @@ describe('ReferenceSpace', () => {
     object.displayName = "Test";
 
     describe('serialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(object, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
         
         it('should have a single rdf type', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
@@ -27,7 +29,9 @@ describe('ReferenceSpace', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(object, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
         const deserialized: ReferenceSpace = RDFSerializer.deserialize(serialized);
 
         it('should deserialize an object', () => {

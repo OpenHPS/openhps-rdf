@@ -10,7 +10,9 @@ describe('SensorObject', () => {
 
     describe('serialization', () => {
         it('should serialize', async () => {
-            const serialized = RDFSerializer.serialize(sensor, "http://example.com#");
+            const serialized = RDFSerializer.serialize(sensor, {
+                baseUri: "http://example.com#"
+            });
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
                 prettyPrint: true
@@ -24,7 +26,9 @@ describe('SensorObject', () => {
         let deserialized: SensorObject;
 
         before(() => {
-            serialized = RDFSerializer.serialize(sensor, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+            serialized = RDFSerializer.serialize(sensor, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
             deserialized = RDFSerializer.deserialize(serialized);
         });
 

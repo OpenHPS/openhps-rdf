@@ -18,7 +18,9 @@ describe('DataObject', () => {
     object.addRelativePosition(new RelativeDistance('object2', 5));
 
     describe('serialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(object, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
         
         it('should serialize to an uri', () => {
             expect(RDFSerializer.serializeToUri(object, "https://maximvdw.solidweb.org/public/openhps.ttl#")).to.eql("https://maximvdw.solidweb.org/public/openhps.ttl#bsigner");
@@ -49,7 +51,9 @@ describe('DataObject', () => {
         let deserialized: DataObject;
 
         before(() => {
-            serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+            serialized = RDFSerializer.serialize(object, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
             deserialized = RDFSerializer.deserialize(serialized);
         });
 

@@ -22,7 +22,9 @@ describe('DataFrame', () => {
     frame.addObject(new DataObject().setPosition(new Absolute3DPosition(1, 2, 3)));
 
     describe('serialization', () => {
-        const serialized = RDFSerializer.serialize(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(frame, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
 
         it('should serialize the position of a frame', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
@@ -46,7 +48,9 @@ describe('DataFrame', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(frame, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
      
         it('should deserialize a data frame', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;

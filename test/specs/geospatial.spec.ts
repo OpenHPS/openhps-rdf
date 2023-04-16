@@ -17,7 +17,9 @@ describe('@openhps/geospatial', () => {
         });
 
     describe('serialization', () => {
-        const serialized = RDFSerializer.serialize(building, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(building, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
 
         it('should serialize models', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
@@ -31,7 +33,9 @@ describe('@openhps/geospatial', () => {
             const geojson = JSON.parse(geojsonStr);
             const spaces = geojson.features.map(feature => SymbolicSpace.fromGeoJSON(feature));
             Object.values(spaces).forEach(async space => {
-                const serialized = RDFSerializer.serialize(space, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+                const serialized = RDFSerializer.serialize(space, {
+                    baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                });
                 const turtle = await RDFSerializer.stringify(serialized, {
                     format: 'text/turtle',
                     prettyPrint: true
@@ -42,7 +46,9 @@ describe('@openhps/geospatial', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(building, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(building, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
         
     });
 

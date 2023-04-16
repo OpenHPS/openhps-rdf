@@ -26,6 +26,7 @@ import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
+import { RDFSerializerConfig } from '.';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -98,13 +99,13 @@ export class RDFSerializer extends DataSerializer {
      * Serialize data
      *
      * @param {any} data Data to serialize
-     * @param {IriString} baseUri Base URI for serializing individuals
+     * @param {RDFSerializerConfig} [config] RDF serializer configuration
      * @returns {Thing} Serialized data
      */
-    static serialize<T>(data: T, baseUri?: IriString): Thing {
+    static serialize<T>(data: T, config?: RDFSerializerConfig): Thing {
         return super.serialize(data, {
             rdf: {
-                baseUri,
+                baseUri: config ? config.baseUri : undefined,
             },
             ...this.options,
         } as any);
@@ -199,7 +200,7 @@ export class RDFSerializer extends DataSerializer {
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
         const thing =
-            (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, baseUri);
+            (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, { baseUri });
         const subject =
             thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)

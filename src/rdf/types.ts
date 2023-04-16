@@ -27,6 +27,10 @@ export interface RDFSerializerConfig extends DataSerializerConfig {
     rdf?: {
         knownTypes?: Map<IriString, string[]>;
     };
+    /**
+     * Base URI for serializing individuals
+     */
+    baseUri?: IriString;
     sourceObject?: any;
     targetObject?: any;
 }

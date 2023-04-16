@@ -1,6 +1,6 @@
 {
   "name": "@openhps/rdf",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Open Hybrid Positioning System",
   "author": "Maxim Van de Wynckel",
   "license": "Apache-2.0",
@@ -49,6 +49,7 @@
     "*.d.ts"
   ],
   "scripts": {
+    "examples": "shx cp node_modules/@openhps/*/dist/web/*.* examples/common/ && shx cp dist/web/*.* examples/common/ && serve ./examples",
     "test": "mocha --config test/.mocharc.json",
     "cover": "nyc mocha --config test/.mocharc.json && nyc report --reporter=cobertura",
     "cover:ci": "nyc mocha --config test/.mocharc.json --reporter mocha-multi-reporters && nyc report --reporter=cobertura",
@@ -123,6 +124,7 @@
     "prettier": "^2.8.7",
     "rdfxml-streaming-parser": "^2.2.2",
     "reflect-metadata": ">=0.1.13",
+    "serve": "^14.2.0",
     "shx": "^0.3.4",
     "standard-version": "^9.5.0",
     "terser-webpack-plugin": "^5.3.7",

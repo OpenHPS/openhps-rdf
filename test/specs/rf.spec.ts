@@ -9,7 +9,9 @@ describe('@openhps/rdf', () => {
     object.addRelativePosition(relativeRSSI);
 
     describe('serialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(object, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
 
         it('should serialize models', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
@@ -43,7 +45,9 @@ describe('@openhps/rdf', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(object, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        const serialized = RDFSerializer.serialize(object, {
+            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        });
         
     });
 
