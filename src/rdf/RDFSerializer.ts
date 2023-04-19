@@ -9,7 +9,7 @@ import {
 } from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
-import { IriString, Thing, Subject } from './types';
+import { IriString, Thing, Subject, RDFSerializerConfig } from './types';
 import {
     NamedNode,
     BlankNode,
@@ -26,7 +26,6 @@ import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
-import { RDFSerializerConfig } from '.';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -77,7 +76,6 @@ export class RDFSerializer extends DataSerializer {
 
     /**
      * Serialize an object to an URI
-     *
      * @param {any} data Data to serialize to an URI
      * @param {string} baseUri Base URI
      * @returns {string} Resource URI
@@ -97,7 +95,6 @@ export class RDFSerializer extends DataSerializer {
 
     /**
      * Serialize data
-     *
      * @param {any} data Data to serialize
      * @param {RDFSerializerConfig} [config] RDF serializer configuration
      * @returns {Thing} Serialized data
@@ -230,7 +227,6 @@ export class RDFSerializer extends DataSerializer {
 
     /**
      * Stringify a thing to RDF graph construct
-     *
      * @param {Thing | Store} thing Thing to serialize
      * @param {WriterOptions} [options] Writer options
      * @returns {Promise<string>} Promise of a stringified graph
@@ -344,7 +340,6 @@ export class RDFSerializer extends DataSerializer {
     static deserialize<T>(serializedData: any[], dataType?: Constructor<T>): T | T[];
     /**
      * Deserialize data
-     *
      * @param {any} serializedData Data to deserialze
      * @param {Constructor} dataType Optional data type to specify deserialization type
      * @returns {any} Deserialized object
@@ -417,7 +412,6 @@ export interface WriterOptions extends N3WriterOptions {
     baseUri?: IriString;
     /**
      * Pretty print the output. Merge blank nodes in the [] notation.
-     *
      * @default false
      */
     prettyPrint?: boolean;

@@ -1,6 +1,5 @@
 /**
  * Deep merge objects
- *
  * @param {any} target Target object
  * @param {any} source Source object
  * @returns {any} Merged object
@@ -25,7 +24,6 @@ export function mergeDeep(target: any, source: any) {
 
 /**
  * Check if something is an object
- *
  * @param {any} item Item to check for object
  * @returns {boolean} Is an object
  */

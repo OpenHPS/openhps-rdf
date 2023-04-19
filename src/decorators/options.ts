@@ -9,13 +9,11 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface SerializableObjectOptions<T> {
         /**
          * Resource Description Framework serialization options
-         *
          * @see {@link https://www.w3.org/RDF/}
          */
         rdf?: {
             /**
              * RDF type of this class. This will be automatically added as a static predicate.
-             *
              * @see {@link https://www.w3.org/TR/rdf-schema/#ch_type}
              */
             type?: IriString | IriString[];
@@ -43,7 +41,6 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface MemberOptionsBase {
         /**
          * Resource Description Framework serialization options
-         *
          * @see {@link https://www.w3.org/RDF/}
          */
         rdf?: {

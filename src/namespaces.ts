@@ -18,7 +18,6 @@ const namespaces: Namespaces = {
     foaf: 'http://xmlns.com/foaf/0.1/',
     /**
      * Quantity Kinds, Dimensions and Data Types
-     *
      * @see {@link https://qudt.org}
      */
     qudt: 'http://qudt.org/schema/qudt/',
@@ -26,7 +25,6 @@ const namespaces: Namespaces = {
     quantitykind: 'http://qudt.org/vocab/quantitykind/',
     /**
      * Semantic Sensor Network Ontology
-     *
      * @see {@link https://www.w3.org/TR/vocab-ssn/}
      */
     sosa: 'http://www.w3.org/ns/sosa/',
@@ -36,7 +34,6 @@ const namespaces: Namespaces = {
     posoc: 'http://purl.org/poso/common/',
     /**
      * OGC GeoSparql 1.1
-     *
      * @see {@link https://github.com/opengeospatial/ogc-geosparql/tree/master/1.1}
      */
     ogc: 'http://www.opengis.net/ont/geosparql#',

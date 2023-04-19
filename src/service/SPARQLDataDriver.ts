@@ -204,7 +204,6 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
     httpAuth?: `${string}:${string}`;
     /**
      * Comunica query engine
-     *
      * @default @comunica/query-sparql QueryEngine
      */
     engine?: IQueryEngine;
