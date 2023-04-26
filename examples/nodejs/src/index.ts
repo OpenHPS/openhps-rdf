@@ -18,7 +18,9 @@ person.projects = [
     project2
 ];
 
-const serialized = RDFSerializer.serialize(person, "http://maximvdw.solidweb.org/profile/card#");
+const serialized = RDFSerializer.serialize(person, {
+    baseUri: "http://maximvdw.solidweb.org/profile/card#"
+});
 RDFSerializer.stringify(serialized, {
     format: 'text/turtle'
 }).then(result => {

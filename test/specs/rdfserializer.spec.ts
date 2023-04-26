@@ -1,4 +1,4 @@
-import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
+import { Accelerometer, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode } from '../../src';
@@ -183,6 +183,64 @@ describe('RDFSerializer', () => {
                 baseUri: "http://example.com/"
             }))
         });
+    });
+
+    describe('deserialization', () => {
+
+        const turtle = `
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+        @prefix m3lite: <http://purl.org/iot/vocab/m3-lite#>.
+        @prefix sosa: <http://www.w3.org/ns/sosa/>.
+        @prefix ogc: <http://www.opengis.net/ont/geosparql#>.
+        @prefix dcmi: <http://purl.org/dc/terms/>.
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+        @prefix poso: <http://purl.org/poso/>.
+        @prefix qudt: <http://qudt.org/schema/qudt/>.
+        @prefix ssn: <http://www.w3.org/ns/ssn/>.
+        @prefix ssns: <http://www.w3.org/ns/ssn/systems/>.
+        @prefix schema: <http://schema.org/>.
+        @prefix unit: <http://qudt.org/vocab/unit/>.
+        
+        <http://example.com#test> a m3lite:Accelerometer, sosa:FeatureOfInterest, ogc:SpatialObject, sosa:Sensor;
+            dcmi:created "2023-04-26T12:38:32.595Z"^^xsd:dateTime;
+            sosa:madeObservation [
+          a m3lite:Acceleration, sosa:Observation;
+          poso:xAxisValue [
+          a qudt:QuantityValue;
+          qudt:unit [];
+          qudt:numericValue "1"^^xsd:double
+        ];
+          poso:yAxisValue [
+          a qudt:QuantityValue;
+          qudt:unit [];
+          qudt:numericValue "2"^^xsd:double
+        ];
+          poso:zAxisValue [
+          a qudt:QuantityValue;
+          qudt:unit [];
+          qudt:numericValue "3"^^xsd:double
+        ];
+          sosa:phenomenonTime "2023-04-26T12:38:32.595Z"^^xsd:dateTime;
+          poso:hasAccuracy [
+          a ssns:Accuracy;
+          schema:minValue -1;
+          schema:maxValue 1;
+          schema:unitCode []
+        ];
+          schema:unitCode []
+        ];
+            ssns:hasSystemProperty [
+          a ssns:Frequency, ssn:Property;
+          schema:unitCode unit:HZ;
+          schema:value 50
+        ].
+        `;
+
+        it('should deserialize from turtle text', () => {
+            const object = RDFSerializer.deserializeFromString("http://example.com#test", turtle);
+            expect(object).to.be.instanceOf(Accelerometer);
+        });
+
     });
 
 });

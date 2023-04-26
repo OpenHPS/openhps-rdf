@@ -21,6 +21,7 @@ import {
     DataFactory,
     Quad,
     Writer,
+    Parser,
 } from 'n3';
 import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
@@ -106,6 +107,13 @@ export class RDFSerializer extends DataSerializer {
             },
             ...this.options,
         } as any);
+    }
+
+    static deserializeFromString<T>(subject: IriString, input: string): T {
+        const parser = new Parser();
+        const quads: Quad[] = parser.parse(input);
+        const store = new Store(quads);
+        return this.deserializeFromStore(DataFactory.namedNode(subject), store);
     }
 
     static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
