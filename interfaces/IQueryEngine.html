@@ -18,9 +18,9 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>Base interface for a Comunica query engine.</p>
 </div></section> 
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryContext</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">IQueryContextCommon</span> = <span class="tsd-signature-type ">IQueryContextCommon</span></h4></li>
 <li>
@@ -69,12 +69,10 @@
 <li class="tsd-signature" id="explain.__type.__type-1"><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">query</span>, <span class="tsd-kind-parameter">context</span>, <span class="tsd-kind-parameter">explainMode</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">IQueryExplained</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Explain the given query</p>
-
-<h3>Returns</h3><p>A promise that resolves to the query output.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -92,7 +90,8 @@
 <h5><span class="tsd-kind-parameter">explainMode</span>: <span class="tsd-signature-type ">QueryExplainMode</span></h5>
 <div class="tsd-comment tsd-typography"><p>The explain mode.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">IQueryExplained</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">IQueryExplained</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the query output.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
 <li>Defined in node_modules/@comunica/types/lib/IQueryEngine.d.ts:62</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-external"><a id="getResultMediaTypeFormats" class="tsd-anchor"></a>
@@ -105,9 +104,7 @@
 <ul class="tsd-signatures tsd-is-external">
 <li class="tsd-signature" id="getResultMediaTypeFormats.__type-2.__type-3"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography">
-<h3>Returns</h3><p>All available SPARQL result media type formats.</p>
-</div>
+<div class="tsd-comment tsd-typography"></div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -115,7 +112,8 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type ">IActionContext</span></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>All available SPARQL result media type formats.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
 <li>Defined in node_modules/@comunica/types/lib/IQueryEngine.d.ts:72</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-external"><a id="getResultMediaTypes" class="tsd-anchor"></a>
@@ -128,9 +126,7 @@
 <ul class="tsd-signatures tsd-is-external">
 <li class="tsd-signature" id="getResultMediaTypes.__type-4.__type-5"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography">
-<h3>Returns</h3><p>All available SPARQL (weighted) result media types.</p>
-</div>
+<div class="tsd-comment tsd-typography"></div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -138,7 +134,8 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type ">IActionContext</span></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>All available SPARQL (weighted) result media types.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
 <li>Defined in node_modules/@comunica/types/lib/IQueryEngine.d.ts:67</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-external"><a id="invalidateHttpCache" class="tsd-anchor"></a>
@@ -153,8 +150,6 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Invalidate all internal caches related to the given page URL.
 If no page URL is given, then all pages will be invalidated.</p>
-
-<h3>Returns</h3><p>A promise resolving when the caches have been invalidated.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -163,7 +158,8 @@ If no page URL is given, then all pages will be invalidated.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">url</span>: <span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>The page URL to invalidate.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise resolving when the caches have been invalidated.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
 <li>Defined in node_modules/@comunica/types/lib/IQueryEngine.d.ts:87</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-external"><a id="query" class="tsd-anchor"></a>
@@ -182,9 +178,9 @@ This can reject given an unsupported or invalid query.</p>
 <p>This method is prefered in case you don&#39;t know beforehand what type of query will be executed,
 or if you require access to the metadata of the results.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -214,9 +210,9 @@ or if you require access to the metadata of the results.</p>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Query the bindings results of a SELECT query.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -246,9 +242,9 @@ or if you require access to the metadata of the results.</p>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Query the boolean result of an ASK query.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -278,9 +274,9 @@ or if you require access to the metadata of the results.</p>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Query the quad results of a CONSTRUCT or DESCRIBE query.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -310,9 +306,9 @@ or if you require access to the metadata of the results.</p>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Execute an UPDATE query.</p>
 </div>
-<section class="tsd-panel tsd-type-parameters">
+<section class="tsd-panel">
 <h4>Type Parameters</h4>
-<ul class="tsd-type-parameters">
+<ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">QueryFormatTypeInner</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type ">QueryFormatType</span></h4></li></ul></section>
 <div class="tsd-parameters">
@@ -341,8 +337,6 @@ or if you require access to the metadata of the results.</p>
 <li class="tsd-signature" id="resultToString.__type-18.__type-19"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">queryResult</span>, <span class="tsd-kind-parameter">mediaType</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Convert a query result to a string stream based on a certain media type.</p>
-
-<h3>Returns</h3><p>A text stream.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -359,7 +353,8 @@ or if you require access to the metadata of the results.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">context</span>: <span class="tsd-signature-type">any</span></h5>
 <div class="tsd-comment tsd-typography"><p>An optional context.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>A text stream.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
 <li>Defined in node_modules/@comunica/types/lib/IQueryEngine.d.ts:80</li></ul></aside></section></section></div>
 <div class="col-sidebar">
