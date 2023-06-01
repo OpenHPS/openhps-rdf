@@ -360,6 +360,8 @@ export class RDFSerializer extends DataSerializer {
         const finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);
         if (finalType === Object) {
             return serializedData as unknown as T;
+        } else if (finalType === undefined) {
+            return undefined;
         }
         return deserializer.convertSingleValue(
             serializedData,
