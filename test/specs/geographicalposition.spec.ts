@@ -32,4 +32,17 @@ describe('GeographicalPosition', () => {
 
     });
 
+    describe('deserialization', () => {
+        let serialized = undefined;
+        let deserialized = undefined;
+
+        before(async () => {
+            serialized = RDFSerializer.serialize(object);
+            deserialized = RDFSerializer.deserialize(serialized);
+        });
+
+        it('should deserialize to a geographical position', () => {
+            expect(deserialized.latitude).to.not.be.undefined;
+        });
+    });
 });

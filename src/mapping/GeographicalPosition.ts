@@ -1,5 +1,6 @@
 import { SerializableObject, GeographicalPosition, SerializableMember } from '@openhps/core';
 import { DataFactory } from 'n3';
+import { Thing } from '../rdf/types';
 import { xsd } from '../decorators';
 import { geo, schema, ogc } from '../vocab';
 
@@ -34,23 +35,26 @@ SerializableObject({
                 };
             }
         },
+        deserializer: (thing: Thing, instance: GeographicalPosition) => {
+            return instance;
+        },
     },
 })(GeographicalPosition);
 SerializableMember({
     rdf: {
         predicate: schema.latitude,
-        datatype: xsd.decimal,
+        datatype: xsd.double,
     },
 })(GeographicalPosition.prototype, 'latitude');
 SerializableMember({
     rdf: {
         predicate: schema.longitude,
-        datatype: xsd.decimal,
+        datatype: xsd.double,
     },
 })(GeographicalPosition.prototype, 'longitude');
 SerializableMember({
     rdf: {
         predicate: schema.elevation,
-        datatype: xsd.decimal,
+        datatype: xsd.double,
     },
 })(GeographicalPosition.prototype, 'altitude');

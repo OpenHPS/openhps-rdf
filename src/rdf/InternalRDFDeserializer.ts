@@ -259,12 +259,16 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeLiteral(sourceObject: Literal): any {
-        switch (sourceObject.datatype.value) {
+        const jsonObject: Literal = sourceObject.toJSON() as Literal;
+        switch (jsonObject.datatype.value) {
             case xsd.dateTime:
                 // Return timestamp
-                return new Date(sourceObject.value).getTime();
+                return new Date(jsonObject.value).getTime();
+            case xsd.decimal:
+            case xsd.double:
+                return Number(jsonObject.value);
             default:
-                return sourceObject.value;
+                return jsonObject.value;
         }
     }
 

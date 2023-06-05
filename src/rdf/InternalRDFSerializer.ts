@@ -262,7 +262,7 @@ export class InternalRDFSerializer extends Serializer {
             switch (typeof sourceObject) {
                 case 'bigint':
                 case 'number':
-                    xsdDatatype = xsd.decimal;
+                    xsdDatatype = xsd.double;
                     break;
                 case 'boolean':
                     xsdDatatype = xsd.boolean;
