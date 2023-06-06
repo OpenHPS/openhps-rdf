@@ -2,7 +2,6 @@ import { GeographicalPosition, SerializableObject } from '@openhps/core';
 import { SymbolicSpace } from '@openhps/geospatial';
 import { RDFSerializer } from '../../rdf/RDFSerializer';
 import { PolygonGeometry } from '../../models/PolygonGeometry';
-import { Thing } from '../../rdf/types';
 import { ssn, ogc } from '../../vocab';
 
 SerializableObject({
@@ -12,7 +11,7 @@ SerializableObject({
             const geometry = new PolygonGeometry();
             geometry.coords = obj
                 .getBounds()
-                .map((coord) => obj.transform(coord))
+                .map((pos) => (pos instanceof GeographicalPosition ? pos : obj.transform(pos)))
                 .map((coord) => {
                     return {
                         latitude: coord.y,
