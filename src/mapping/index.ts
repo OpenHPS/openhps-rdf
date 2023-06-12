@@ -20,32 +20,3 @@ import './Accuracy';
 import './LinearVelocity';
 import './AngularVelocity';
 import './UnitValue';
-
-/**
- *
- * @param path
- */
-function moduleIsAvailable(path) {
-    try {
-        require.resolve(path);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-if (moduleIsAvailable('@openhps/rf')) {
-    import('./rf');
-}
-
-if (moduleIsAvailable('@openhps/geospatial')) {
-    import('./geospatial');
-}
-
-if (moduleIsAvailable('@openhps/fingerprinting')) {
-    import('./fingerprinting');
-}
-
-if (moduleIsAvailable('@openhps/video')) {
-    import('./video');
-}

@@ -75,6 +75,21 @@ export class RDFSerializer extends DataSerializer {
         }
     }
 
+    static initialize(module: string): void {
+        if (module === 'rf') {
+            import('../mapping/rf');
+        }
+        if (module === 'geospatial') {
+            import('../mapping/geospatial');
+        }
+        if (module === 'fingerprinting') {
+            import('../mapping/fingerprinting');
+        }
+        if (module === 'video') {
+            import('../mapping/video');
+        }
+    }
+
     /**
      * Serialize an object to an URI
      * @param {any} data Data to serialize to an URI
