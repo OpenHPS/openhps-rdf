@@ -4,6 +4,7 @@ import { RDFSerializer } from '../../src';
 import { DataObject } from '@openhps/core';
 
 describe('@openhps/rdf', () => {
+    RDFSerializer.initialize("rf");
     const relativeRSSI = new RelativeRSSI("test", -56);
     const object = new DataObject();
     object.addRelativePosition(relativeRSSI);

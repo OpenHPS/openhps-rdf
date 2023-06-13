@@ -4,3 +4,4 @@ import './Building';
 import './Floor';
 import './Room';
 import './Corridor';
+import './Zone';

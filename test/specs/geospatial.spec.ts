@@ -4,8 +4,10 @@ import { GeographicalPosition } from '@openhps/core';
 import { Building, SymbolicSpace } from '@openhps/geospatial';
 import * as fs from 'fs';
 import * as path from 'path';
+import { expect } from 'chai';
 
 describe('@openhps/geospatial', () => {
+    RDFSerializer.initialize("geospatial");
     const building = new Building("Pleinlaan 9")
         .setBounds({
             topLeft: new GeographicalPosition(
@@ -40,16 +42,29 @@ describe('@openhps/geospatial', () => {
                     format: 'text/turtle',
                     prettyPrint: true
                 });
-                //console.log(turtle);
             })
         });
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(building, {
-            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+        let serialized;
+        let deserialized;
+
+        before(() => {
+            serialized = RDFSerializer.serialize(building, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
+            deserialized = RDFSerializer.deserialize(serialized);
         });
-        
+
+        it('should correct deserialize the correct space', () =>{
+            expect(deserialized).to.be.instanceOf(Building);
+        });
+
+        it('should contain a geometry', () =>{
+            expect((deserialized as Building).getBounds().length).to.be.gt(4);
+        });
+
     });
 
 

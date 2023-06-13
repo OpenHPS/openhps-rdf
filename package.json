@@ -5,7 +5,7 @@
   "author": "Maxim Van de Wynckel",
   "license": "Apache-2.0",
   "sideEffects": [
-    "./**/mapping/*"
+    "./**/mapping/**/*"
   ],
   "repository": {
     "type": "git",

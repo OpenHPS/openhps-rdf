@@ -3,6 +3,7 @@ import { SymbolicSpace } from '@openhps/geospatial';
 import { RDFSerializer } from '../../rdf/RDFSerializer';
 import { PolygonGeometry } from '../../models/PolygonGeometry';
 import { ssn, ogc } from '../../vocab';
+import { Thing } from '../../rdf';
 
 SerializableObject({
     rdf: {
@@ -24,6 +25,19 @@ SerializableObject({
                     [ogc.hasGeometry]: [RDFSerializer.serialize(geometry)],
                 },
             };
+        },
+        deserializer: (thing: Thing, instance: SymbolicSpace<any>) => {
+            if (thing.predicates[ogc.hasGeometry]) {
+                const geometry = RDFSerializer.deserialize(thing.predicates[ogc.hasGeometry][0] as Thing);
+                if (geometry instanceof PolygonGeometry) {
+                    instance.setBounds(
+                        geometry.coords.map((coord) => {
+                            return new GeographicalPosition(coord.latitude, coord.longitude, coord.altitude);
+                        }),
+                    );
+                }
+            }
+            return instance;
         },
     },
 })(SymbolicSpace);

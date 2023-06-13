@@ -5,3 +5,4 @@ import './BLEiBeaconObject';
 import './BLEBeaconObject';
 import './WLANObject';
 import './BLEAltBeacon';
+import './BLEEddystone';

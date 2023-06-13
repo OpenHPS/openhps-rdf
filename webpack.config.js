@@ -76,6 +76,30 @@ const bundle = (env, module, entry = 'index', suffix = '') => {
         commonjs2: '@openhps/core',
         amd: 'core',
         root: ['OpenHPS', 'core']
+      },
+      '@openhps/geospatial': module ? "./openhps-geospatial.es" + (env.prod ? ".min" : "") + ".js" : {
+        commonjs: '@openhps/geospatial',
+        commonjs2: '@openhps/geospatial',
+        amd: 'geospatial',
+        root: ['OpenHPS', 'geospatial']
+      },
+      '@openhps/rf': module ? "./openhps-rf.es" + (env.prod ? ".min" : "") + ".js" : {
+        commonjs: '@openhps/rf',
+        commonjs2: '@openhps/rf',
+        amd: 'rf',
+        root: ['OpenHPS', 'rf']
+      },
+      '@openhps/video': module ? "./openhps-video.es" + (env.prod ? ".min" : "") + ".js" : {
+        commonjs: '@openhps/video',
+        commonjs2: '@openhps/video',
+        amd: 'video',
+        root: ['OpenHPS', 'video']
+      },
+      '@openhps/fingerprinting': module ? "./openhps-fingerprinting.es" + (env.prod ? ".min" : "") + ".js" : {
+        commonjs: '@openhps/fingerprinting',
+        commonjs2: '@openhps/fingerprinting',
+        amd: 'fingerprinting',
+        root: ['OpenHPS', 'fingerprinting']
       }
     },
     devtool: 'source-map',
