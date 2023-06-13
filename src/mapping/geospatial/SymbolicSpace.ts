@@ -1,7 +1,7 @@
 import { GeographicalPosition, SerializableObject } from '@openhps/core';
 import { SymbolicSpace } from '@openhps/geospatial';
 import { RDFSerializer } from '../../rdf/RDFSerializer';
-import { PolygonGeometry } from '../../models/PolygonGeometry';
+import { PolygonGeometry } from '../../models/Geometry';
 import { ssn, ogc } from '../../vocab';
 import { Thing } from '../../rdf';
 
