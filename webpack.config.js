@@ -2,6 +2,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const pkg = require("./package.json");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const webpack = require('webpack');
 
 const LIBRARY_NAME = pkg.name;
 const PROJECT_NAME = pkg.name.replace("@", "").replace("/", "-");
@@ -83,7 +84,12 @@ const bundle = (env, module, entry = 'index', suffix = '') => {
       analyzerPort: 'auto',
       openAnalyzer: false,
       reportFilename: `web/report_${filename}.html`
-    })] : [],
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    })] : [new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    })],
     ...defaultConfig(env)
   };
 };

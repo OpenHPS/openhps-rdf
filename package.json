@@ -104,7 +104,7 @@
     "@openhps/video": "^0.1.11",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.3.0",
+    "@types/node": "^20.3.1",
     "@types/node-fetch": "^3.0.3",
     "@types/sparqljs": "^3.1.4",
     "@types/uuid": "^9.0.2",
