@@ -1,14 +1,17 @@
 import 'mocha';
 import { BLEiBeacon, BLEObject, MACAddress, RelativeRSSI } from '@openhps/rf';
-import { RDFSerializer } from '../../src';
+import { IriString, poso, posoc, RDFSerializer } from '../../src';
 import { DataObject } from '@openhps/core';
+import { expect } from 'chai';
 
-describe('@openhps/rdf', () => {
+describe('@openhps/rf', () => {
     RDFSerializer.initialize("rf");
     const relativeRSSI = new RelativeRSSI("test", -56);
     const object = new DataObject();
     object.addRelativePosition(relativeRSSI);
-
+    const beacon = new BLEiBeacon(MACAddress.fromString("11:22:33:44:55"));
+    beacon.calibratedRSSI = -56;
+    
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, {
             baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
@@ -41,15 +44,23 @@ describe('@openhps/rdf', () => {
                 prettyPrint: true,
                 baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
             });
-            console.log(turtle);
         });
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(object, {
-            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
-        });
+        let serialized;
+        let deserialized;
         
+        before(() => {
+            serialized = RDFSerializer.serialize(beacon, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
+            deserialized = RDFSerializer.deserialize(serialized);
+        });
+
+        it('should deserialize a beacon', () => {
+            expect(deserialized).to.be.instanceOf(BLEiBeacon);
+        });
     });
 
 

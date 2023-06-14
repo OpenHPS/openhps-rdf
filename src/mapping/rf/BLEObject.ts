@@ -34,6 +34,14 @@ SerializableMember({
                 )
                 .build();
         },
+        deserializer: (thing: Thing) => {
+            if (thing.termType === 'BlankNode') {
+                const rss: Thing = thing.predicates[poso.hasRSS][0] as Thing;
+                return rss.predicates[qudt.numericValue][0].value;
+            } else {
+                return undefined;
+            }
+        },
     },
     name: 'calibratedRSSI',
 })(BLEObject.prototype, 'calibratedRSSI');

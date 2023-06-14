@@ -44,6 +44,21 @@ export class InternalRDFDeserializer extends Deserializer {
                 .flat()
                 .filter((type) => type !== undefined)
                 .map((type) => knownTypes.get(type));
+            let typePriority: Array<[any, number]> = rdfTypes
+                .map((type) => {
+                    return knownRDFTypes.get(type).filter((type) => type !== undefined);
+                })
+                .map((types) =>
+                    types.map((type) => {
+                        return [knownTypes.get(type), types.length];
+                    }),
+                )
+                .flat() as Array<[any, number]>;
+            typePriority = typePriority.map((data) => {
+                return [data[0], Math.min(...typePriority.filter((d) => d[0] == data[0]).map((d) => d[1]))];
+            });
+            const typePriorityMap = new Map(typePriority);
+
             if (mappedTypes.length > 1) {
                 // Sort the mapped types based on the data members
                 const typesPriorities = mappedTypes.map((type) => {
@@ -64,7 +79,8 @@ export class InternalRDFDeserializer extends Deserializer {
                     const negativePriority =
                         predicates.filter((predicate) => !sourcePredicates.includes(predicate as IriString)).length /
                         10;
-                    return [type, priority - negativePriority];
+                    const usedTypeCount = typePriorityMap.get(type);
+                    return [type, priority - negativePriority - usedTypeCount];
                 });
                 return typesPriorities.sort(
                     (a: [any, number], b: [any, number]) => b[1] - a[1],
