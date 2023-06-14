@@ -46,7 +46,7 @@ export class InternalRDFDeserializer extends Deserializer {
                 .map((type) => knownTypes.get(type));
             let typePriority: Array<[any, number]> = rdfTypes
                 .map((type) => {
-                    return knownRDFTypes.get(type).filter((type) => type !== undefined);
+                    return (knownRDFTypes.get(type) ?? []).filter((type) => type !== undefined);
                 })
                 .map((types) =>
                     types.map((type) => {
