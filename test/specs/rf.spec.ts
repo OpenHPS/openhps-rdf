@@ -1,5 +1,5 @@
 import 'mocha';
-import { BLEiBeacon, BLEObject, MACAddress, RelativeRSSI } from '@openhps/rf';
+import { BLEiBeacon, BLEObject, BLEUUID, MACAddress, RelativeRSSI } from '@openhps/rf';
 import { IriString, poso, posoc, RDFSerializer } from '../../src';
 import { DataObject } from '@openhps/core';
 import { expect } from 'chai';
@@ -11,6 +11,7 @@ describe('@openhps/rf', () => {
     object.addRelativePosition(relativeRSSI);
     const beacon = new BLEiBeacon(MACAddress.fromString("11:22:33:44:55"));
     beacon.calibratedRSSI = -56;
+    beacon.proximityUUID = BLEUUID.fromString("AAEE");
     
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, {
@@ -60,6 +61,7 @@ describe('@openhps/rf', () => {
 
         it('should deserialize a beacon', () => {
             expect(deserialized).to.be.instanceOf(BLEiBeacon);
+            console.log(JSON.stringify(serialized, null, 2), deserialized, beacon)
         });
     });
 

@@ -1,5 +1,7 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { BLEiBeacon } from '@openhps/rf';
+import { BLEiBeacon, BLEUUID } from '@openhps/rf';
+import { DataFactory } from 'n3';
+import { Thing } from '../../rdf';
 import { xsd } from '../../decorators';
 import { posoc } from '../../vocab';
 
@@ -12,6 +14,18 @@ SerializableMember({
     rdf: {
         predicate: posoc.proximityUUID,
         datatype: xsd.hexBinary,
+        serializer: (value: BLEUUID) => {
+            if (!value) {
+                return undefined;
+            }
+            return DataFactory.literal(value.toString().replace('-', ''), xsd.hexBinary);
+        },
+        deserializer: (thing: Thing) => {
+            if (!thing) {
+                return undefined;
+            }
+            return BLEUUID.fromString(thing.value);
+        },
     },
     name: 'proximityUUID',
 })(BLEiBeacon.prototype, 'proximityUUID');
