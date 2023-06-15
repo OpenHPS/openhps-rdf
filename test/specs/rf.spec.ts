@@ -61,7 +61,7 @@ describe('@openhps/rf', () => {
 
         it('should deserialize a beacon', () => {
             expect(deserialized).to.be.instanceOf(BLEiBeacon);
-            console.log(JSON.stringify(serialized, null, 2), deserialized, beacon)
+            console.log(serialized.predicates[posoc.proximityUUID][0].value, deserialized.proximityUUID.toString(), beacon.proximityUUID.toString())
         });
     });
 

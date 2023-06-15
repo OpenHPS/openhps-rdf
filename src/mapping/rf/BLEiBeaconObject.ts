@@ -18,7 +18,7 @@ SerializableMember({
             if (!value) {
                 return undefined;
             }
-            return DataFactory.literal(value.toString().replace('-', ''), xsd.hexBinary);
+            return DataFactory.literal(value.toString().replace(/-/g, ''), DataFactory.namedNode(xsd.hexBinary));
         },
         deserializer: (thing: Thing) => {
             if (!thing) {
