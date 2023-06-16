@@ -5,6 +5,7 @@ import { QuantityValue } from './QuantityValue';
 // eslint-disable-next-line
 const wkt = require('wkt');
 import { DataFactory } from 'n3';
+import { geo } from '../vocab/schema';
 @SerializableObject({
     rdf: {
         type: ogc.Geometry,
@@ -20,6 +21,11 @@ import { DataFactory } from 'n3';
                         geometry.coords = geojson.coordinates[0].map((coord) => {
                             return { latitude: coord[1], longitude: coord[0], altitude: coord[2] };
                         });
+                        return geometry;
+                    case 'Point':
+                        geometry = new PointGeometry();
+                        geometry.spatialAccuracy = instance.spatialAccuracy;
+                        geometry;
                         return geometry;
                     default:
                         return instance;
