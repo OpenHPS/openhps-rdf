@@ -282,6 +282,7 @@ export class InternalRDFDeserializer extends Deserializer {
                 return new Date(jsonObject.value).getTime();
             case xsd.decimal:
             case xsd.double:
+            case xsd.integer:
                 return Number(jsonObject.value);
             default:
                 return jsonObject.value;

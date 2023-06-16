@@ -12,6 +12,8 @@ describe('@openhps/rf', () => {
     const beacon = new BLEiBeacon(MACAddress.fromString("11:22:33:44:55"));
     beacon.calibratedRSSI = -56;
     beacon.proximityUUID = BLEUUID.fromString("AAEE");
+    beacon.major = 1111;
+    beacon.minor = 1234;
     
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, {
@@ -61,9 +63,9 @@ describe('@openhps/rf', () => {
 
         it('should deserialize a beacon', () => {
             expect(deserialized).to.be.instanceOf(BLEiBeacon);
-            console.log(serialized.predicates[posoc.proximityUUID][0].value, deserialized.proximityUUID.toString(), beacon.proximityUUID.toString())
+            expect(deserialized.major).to.not.be.undefined;
+            expect(deserialized.minor).to.not.be.undefined;
         });
     });
-
 
 });
