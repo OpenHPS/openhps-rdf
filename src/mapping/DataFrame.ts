@@ -1,11 +1,4 @@
-import {
-    DataFrame,
-    DataObject,
-    Serializable,
-    SerializableMapMember,
-    SerializableMember,
-    SerializableObject,
-} from '@openhps/core';
+import { DataFrame, DataObject, SerializableMapMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { xsd } from '../decorators';
 import { Thing } from '../rdf';
 import { dcterms, sosa } from '../vocab';
@@ -25,7 +18,7 @@ SerializableObject({
 SerializableMember({
     rdf: {
         identifier: true,
-        serializer: (uid: string, dataType: Serializable<any>) => uid,
+        serializer: (uid: string) => uid,
         deserializer: (thing: Thing) =>
             thing.value.substring(Math.max(thing.value.lastIndexOf('/'), thing.value.lastIndexOf('#')) + 1),
     },

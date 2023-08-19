@@ -16,7 +16,7 @@ SerializableMember({
                 .add(qudt.numericValue, value, xsd.double)
                 .build();
         },
-        deserializer: (thing: Thing, targetObject: Absolute2DPosition) => {
+        deserializer: (thing: Thing) => {
             return parseFloat(thing.predicates[qudt.numericValue][0].value);
         },
     },
@@ -31,7 +31,7 @@ SerializableMember({
                 .add(qudt.numericValue, value, xsd.double)
                 .build();
         },
-        deserializer: (thing: Thing, targetObject: Absolute2DPosition) => {
+        deserializer: (thing: Thing) => {
             return parseFloat(thing.predicates[qudt.numericValue][0].value);
         },
     },

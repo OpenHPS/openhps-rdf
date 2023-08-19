@@ -243,7 +243,7 @@ export class SPARQLGenerator<T> {
                             ({
                                 type: 'group',
                                 patterns: this.createQuery(q),
-                            } as GroupPattern),
+                            }) as GroupPattern,
                     ),
                 );
                 break;

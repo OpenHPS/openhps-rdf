@@ -48,12 +48,10 @@ export class RDFSerializer extends DataSerializer {
         });
     }
 
-    protected static get options(): DataSerializerConfig {
-        return {
-            serializer: new InternalRDFSerializer(),
-            deserializer: new InternalRDFDeserializer(),
-        };
-    }
+    protected static options: DataSerializerConfig = {
+        serializer: new InternalRDFSerializer(),
+        deserializer: new InternalRDFDeserializer(),
+    };
 
     protected static registerRDFType<T>(type: Serializable<T>): void {
         // Map RDF types

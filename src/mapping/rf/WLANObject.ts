@@ -1,6 +1,6 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { SerializableObject } from '@openhps/core';
 import { WLANObject } from '@openhps/rf';
-import { poso, hardware } from '../../vocab';
+import { poso } from '../../vocab';
 
 SerializableObject({
     rdf: {

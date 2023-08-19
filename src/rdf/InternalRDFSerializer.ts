@@ -1,7 +1,6 @@
 import {
     ArrayTypeDescriptor,
     MapTypeDescriptor,
-    MemberOptionsBase,
     ObjectMemberMetadata,
     ObjectMetadata,
     Serializer,
@@ -179,7 +178,7 @@ export class InternalRDFSerializer extends Serializer {
                 (sourceObject as any)[memberOptions.key],
                 memberOptions.type(),
                 `${memberOptions.name}`,
-                memberOptions as MemberOptionsBase,
+                memberOptions,
                 { ...serializerOptions, sourceObject: sourceObject },
             );
 

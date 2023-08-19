@@ -5,7 +5,7 @@ import { QuantityValue } from './QuantityValue';
 // eslint-disable-next-line
 const wkt = require('wkt');
 import { DataFactory } from 'n3';
-import { geo } from '../vocab/schema';
+
 @SerializableObject({
     rdf: {
         type: ogc.Geometry,

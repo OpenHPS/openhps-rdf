@@ -1,4 +1,4 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { SerializableObject } from '@openhps/core';
 import { Fingerprint } from '@openhps/fingerprinting';
 import { poso } from '../../vocab';
 

@@ -7,7 +7,7 @@ import {
     Unit,
 } from '@openhps/core';
 import { IriString, Thing } from '../rdf';
-import { unit, qudt } from '../vocab';
+import { unit } from '../vocab';
 
 const UNIT_MAP = new Map<string, IriString>([
     /* Length units */

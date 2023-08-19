@@ -20,3 +20,7 @@ import './Accuracy';
 import './LinearVelocity';
 import './AngularVelocity';
 import './UnitValue';
+
+import './Model';
+import './Node';
+import './ProcessingNode';
