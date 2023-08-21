@@ -1,6 +1,7 @@
 import { SerializableObject } from '@openhps/core';
 import { FingerprintingNode, KNNFingerprintingNode } from '@openhps/fingerprinting';
 import { poso, posoc } from '../../../vocab';
+import { IriString } from '../../../rdf';
 
 SerializableObject({
     rdf: {
