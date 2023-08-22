@@ -178,8 +178,8 @@ describe('SPARQLDataDriver (N3 store)', () => {
                   ?spatialAccuracy qudt:numericValue ?value ;
                     qudt:unit ?unit .
                   ?unit qudt:conversionMultiplier ?multiplier .
-                  OPTIONAL { ?unit qudt:conversionOffset ?offset }
                   BIND(COALESCE(?offset, 0) as ?offset)
+                  OPTIONAL { ?unit qudt:conversionOffset ?offset }
                   BIND(((?value * ?multiplier) + ?offset) 
                     AS ?accuracy)
                   FILTER(?accuracy < 6)
