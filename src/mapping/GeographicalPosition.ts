@@ -45,16 +45,16 @@ SerializableMember({
         predicate: schema.latitude,
         datatype: xsd.double,
     },
-})(GeographicalPosition.prototype, 'latitude');
+})(GeographicalPosition.prototype, 'y');
 SerializableMember({
     rdf: {
         predicate: schema.longitude,
         datatype: xsd.double,
     },
-})(GeographicalPosition.prototype, 'longitude');
+})(GeographicalPosition.prototype, 'x');
 SerializableMember({
     rdf: {
         predicate: schema.elevation,
         datatype: xsd.double,
     },
-})(GeographicalPosition.prototype, 'altitude');
+})(GeographicalPosition.prototype, 'z');

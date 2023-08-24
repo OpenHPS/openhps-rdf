@@ -89,7 +89,7 @@
     "sparqljs": "^3.7.1"
   },
   "peerDependencies": {
-    "@openhps/core": ">=0.4.20",
+    "@openhps/core": ">=0.4.46",
     "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
@@ -106,7 +106,7 @@
     "@types/benchmark": "^2.1.2",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.5.1",
+    "@types/node": "^20.5.4",
     "@types/node-fetch": "^3.0.3",
     "@types/sparqljs": "^3.1.4",
     "@types/uuid": "^9.0.2",
