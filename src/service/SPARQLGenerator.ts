@@ -269,7 +269,7 @@ export class SPARQLGenerator<T> {
         } else if (key.includes('.')) {
             patterns.push(...this.generatePath(key, query, dataType));
         } else {
-            const rootMetadata = DataSerializerUtils.getRootMetadata(dataType);
+            const rootMetadata = DataSerializerUtils.getOwnMetadata(dataType);
 
             let member: ObjectMemberMetadata;
             rootMetadata.knownTypes.forEach((knownType) => {
@@ -290,8 +290,8 @@ export class SPARQLGenerator<T> {
                     ? rootMember
                     : undefined;
 
-            if (!memberOptions && memberOptions.options.rdf) {
-                return;
+            if (!memberOptions || !memberOptions.options.rdf) {
+                return [];
             }
 
             if (memberOptions.options.rdf.identifier) {
