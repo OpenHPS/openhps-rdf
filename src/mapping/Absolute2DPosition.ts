@@ -8,7 +8,7 @@ SerializableObject({
 })(Absolute2DPosition);
 SerializableMember({
     rdf: {
-        predicate: poso.xAxisValue,
+        predicate: [poso.xAxisValue],
         serializer: (value: number, object: Absolute2DPosition) => {
             return RDFBuilder.blankNode()
                 .add(rdf.type, qudt.QuantityValue)
@@ -23,7 +23,7 @@ SerializableMember({
 })(Absolute2DPosition.prototype, 'x');
 SerializableMember({
     rdf: {
-        predicate: poso.yAxisValue,
+        predicate: [poso.yAxisValue],
         serializer: (value: number, object: Absolute2DPosition) => {
             return RDFBuilder.blankNode()
                 .add(rdf.type, qudt.QuantityValue)

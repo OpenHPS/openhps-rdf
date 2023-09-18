@@ -219,6 +219,9 @@ export class RDFSerializer extends DataSerializer {
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
         const thing =
             (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, { baseUri });
+        if (!thing) {
+            return [];
+        }
         const subject =
             thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)

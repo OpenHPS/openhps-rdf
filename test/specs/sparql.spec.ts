@@ -179,7 +179,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         it('should support explicit path querying', (done) => {
             service.findAll({
                 position: {
-                    latitude: 50.20
+                    y: 50.20
                 }
             }).then(data => {
                 expect(data.length).to.equal(1);
@@ -231,14 +231,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         describe('expressions', () => {
             it('should check greater then: >', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $gt: 50.10,
                     }
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $gt: 50.20
                         }
                     });
@@ -250,14 +250,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should check lesser then: <', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $lt: 50.30
                     }
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $lt: 50.20
                         }
                     });
@@ -269,7 +269,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should check greater then and lesser then', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $gt: 50.10,
                         $lt: 50.30
                     }
@@ -277,7 +277,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $gt: 50.20,
                             $lt: 50.40
                         }
@@ -290,14 +290,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should check equality: =', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $eq: 50.20,
                     }
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $eq: 50.21,
                         }
                     });
@@ -309,14 +309,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should check gte: >=', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $gte: 50.20,
                     }
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $gte: 50.21,
                         }
                     });
@@ -328,14 +328,14 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should check lte: <=', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $lte: 50.20,
                     }
                 }).then(data => {
                     expect(data.length).to.equal(1);
                     expect(data[0].displayName).to.equal("John Doe");
                     return service.findAll({
-                        "position.latitude": {
+                        "position.y": {
                             $lte: 50.19,
                         }
                     });
@@ -347,10 +347,10 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
             it('should support combinations of expressions', (done) => {
                 service.findAll({
-                    "position.latitude": {
+                    "position.y": {
                         $lte: 50.20,
                     }, 
-                    "position.longitude": {
+                    "position.x": {
                         $lte: 50.20,
                     }
                 }).then(data => {
@@ -366,7 +366,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 $or: [
                     {
                         position: {
-                            latitude: 50.20
+                            y: 50.20
                         }
                     },
                     {
@@ -387,7 +387,7 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
 
         it('should support implicit path querying', (done) => {
             service.findAll({
-                "position.latitude": 50.20
+                "position.y": 50.20
             }).then(data => {
                 expect(data.length).to.equal(1);
                 expect(data[0].displayName).to.equal("John Doe");

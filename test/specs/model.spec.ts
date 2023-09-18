@@ -1,6 +1,6 @@
 import 'mocha';
 import { Absolute2DPosition, CallbackSinkNode, CallbackSourceNode, DataFrame, LengthUnit, Model, ModelBuilder } from '@openhps/core';
-import { RDFSerializer, Thing } from '../../src';
+import { RDFSerializer, RDFModelSerializer, Thing } from '../../src';
 
 describe('Model', () => {
     const object = new Absolute2DPosition(50.10, 20.5);
@@ -18,7 +18,7 @@ describe('Model', () => {
                 .to(new CallbackSinkNode())
                 .build().then(m => {
                     model = m;
-                    serialized = RDFSerializer.serialize(m);
+                    serialized = RDFModelSerializer.serialize(m);
                     done();
                 });
         });

@@ -109,9 +109,9 @@ export class InternalRDFSerializer extends Serializer {
         }
 
         const options =
-            metadata.options && metadata.options.rdf
+            metadata && metadata.options && metadata.options.rdf
                 ? metadata.options.rdf
-                : rootMetadata.options && rootMetadata.options.rdf
+                : rootMetadata && rootMetadata.options && rootMetadata.options.rdf
                 ? rootMetadata.options.rdf
                 : undefined;
         if (!options) {

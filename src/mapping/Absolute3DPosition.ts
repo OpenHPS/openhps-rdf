@@ -8,7 +8,7 @@ SerializableObject({
 })(Absolute3DPosition);
 SerializableMember({
     rdf: {
-        predicate: poso.zAxisValue,
+        predicate: [poso.zAxisValue],
         serializer: (value: number, object: Absolute3DPosition) => {
             return RDFBuilder.blankNode()
                 .add(rdf.type, qudt.QuantityValue)

@@ -42,19 +42,34 @@ SerializableObject({
 })(GeographicalPosition);
 SerializableMember({
     rdf: {
-        predicate: schema.latitude,
-        datatype: xsd.double,
+        predicate: [schema.latitude],
+        serializer: (value: number) => {
+            return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
+        },
+        deserializer: (thing: Thing) => {
+            return parseFloat(thing.value);
+        },
     },
 })(GeographicalPosition.prototype, 'y');
 SerializableMember({
     rdf: {
-        predicate: schema.longitude,
-        datatype: xsd.double,
+        predicate: [schema.longitude],
+        serializer: (value: number) => {
+            return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
+        },
+        deserializer: (thing: Thing) => {
+            return parseFloat(thing.value);
+        },
     },
 })(GeographicalPosition.prototype, 'x');
 SerializableMember({
     rdf: {
-        predicate: schema.elevation,
-        datatype: xsd.double,
+        predicate: [schema.elevation],
+        serializer: (value: number) => {
+            return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
+        },
+        deserializer: (thing: Thing) => {
+            return parseFloat(thing.value);
+        },
     },
 })(GeographicalPosition.prototype, 'z');

@@ -7,7 +7,16 @@ import {
     QuerySelector,
     Serializable,
 } from '@openhps/core';
-import { FilterPattern, GroupPattern, Pattern, UnionPattern, Generator, SparqlQuery, ConstructQuery } from 'sparqljs';
+import {
+    FilterPattern,
+    GroupPattern,
+    Pattern,
+    UnionPattern,
+    Generator,
+    SparqlQuery,
+    ConstructQuery,
+    BgpPattern,
+} from 'sparqljs';
 import { DataFactory, Quad_Subject } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { IriString, RDFSerializer } from '../rdf';
@@ -284,7 +293,7 @@ export class SPARQLGenerator<T> {
 
             const rootMember = rootMetadata.dataMembers.get(key);
             const memberOptions =
-                member.options && member.options.rdf
+                member && member.options && member.options.rdf
                     ? member
                     : rootMember && rootMember.options && rootMember.options.rdf
                     ? rootMember
@@ -308,87 +317,137 @@ export class SPARQLGenerator<T> {
                 return patterns;
             }
             const rdf: RDFObjectOptions = memberOptions.options.rdf as RDFObjectOptions;
-            const predicate = Array.isArray(rdf.predicate) ? rdf.predicate[0] : rdf.predicate;
 
             if (this.isRegexQuery(query)) {
                 const regexp = query.toString();
-                patterns.push({
-                    type: 'group',
-                    patterns: [
-                        {
-                            type: 'bgp',
-                            triples: [
-                                {
-                                    subject,
-                                    predicate: DataFactory.namedNode(predicate),
-                                    object: DataFactory.variable('object'),
-                                },
-                            ],
-                        },
-                        {
-                            type: 'filter',
-                            expression: {
-                                type: 'operation',
-                                operator: 'regex',
-                                args: [
-                                    DataFactory.variable('object'),
-                                    DataFactory.literal(
-                                        regexp.substring(regexp.indexOf('/') + 1, regexp.lastIndexOf('/')),
-                                    ),
-                                    DataFactory.literal('i'),
-                                ],
-                            },
-                        } as FilterPattern,
-                    ],
-                });
-            } else if (typeof query === 'object') {
-                const selectorPatterns = this.generateSelector(query, predicate, dataType, member, subject);
-                if (selectorPatterns.length > 0) {
-                    patterns.push(...selectorPatterns);
-                } else {
-                    const object = DataFactory.variable(`o${this.next}`);
-                    const pattern: GroupPattern = {
-                        type: 'group',
-                        patterns: [
+                const regexPatterns: Pattern[][] = (Array.isArray(rdf.predicate) ? rdf.predicate : [rdf.predicate]).map(
+                    (predicate) => {
+                        return [
                             {
                                 type: 'bgp',
                                 triples: [
                                     {
                                         subject,
                                         predicate: DataFactory.namedNode(predicate),
-                                        object,
+                                        object: DataFactory.variable('object'),
                                     },
                                 ],
-                            },
-                        ],
-                    };
-                    pattern.patterns.push(
-                        ...this.createQuery(query, member.type().ctor, object)
-                            .map((x) => (x.type === 'group' ? x.patterns : [x]))
-                            .flat(),
-                    );
-                    patterns.push(pattern);
-                }
+                            } as BgpPattern,
+                            {
+                                type: 'filter',
+                                expression: {
+                                    type: 'operation',
+                                    operator: 'regex',
+                                    args: [
+                                        DataFactory.variable('object'),
+                                        DataFactory.literal(
+                                            regexp.substring(regexp.indexOf('/') + 1, regexp.lastIndexOf('/')),
+                                        ),
+                                        DataFactory.literal('i'),
+                                    ],
+                                },
+                            } as FilterPattern,
+                        ];
+                    },
+                );
+
+                patterns.push(
+                    Array.isArray(rdf.predicate)
+                        ? {
+                              type: 'union',
+                              patterns: regexPatterns.map((patterns) => {
+                                  return {
+                                      type: 'group',
+                                      patterns,
+                                  };
+                              }),
+                          }
+                        : {
+                              type: 'group',
+                              patterns: regexPatterns[0],
+                          },
+                );
+            } else if (typeof query === 'object') {
+                const objectPatterns: Pattern[][] = (
+                    Array.isArray(rdf.predicate) ? rdf.predicate : [rdf.predicate]
+                ).map((predicate) => {
+                    const patterns: Pattern[] = [];
+                    const selectorPatterns = this.generateSelector(query, predicate, dataType, member, subject);
+                    if (selectorPatterns.length > 0) {
+                        patterns.push(...selectorPatterns);
+                    } else {
+                        const object = DataFactory.variable(`o${this.next}`);
+                        const pattern: GroupPattern = {
+                            type: 'group',
+                            patterns: [
+                                {
+                                    type: 'bgp',
+                                    triples: [
+                                        {
+                                            subject,
+                                            predicate: DataFactory.namedNode(predicate),
+                                            object,
+                                        },
+                                    ],
+                                },
+                            ],
+                        };
+                        pattern.patterns.push(
+                            ...this.createQuery(query, member.type().ctor, object)
+                                .map((x) => (x.type === 'group' ? x.patterns : [x]))
+                                .flat(),
+                        );
+                        patterns.push(pattern);
+                    }
+                    return patterns;
+                });
+                patterns.push(
+                    Array.isArray(rdf.predicate)
+                        ? {
+                              type: 'union',
+                              patterns: objectPatterns.map((patterns) => {
+                                  return {
+                                      type: 'group',
+                                      patterns,
+                                  };
+                              }),
+                          }
+                        : {
+                              type: 'group', // TODO: Does not have to be grouped
+                              patterns: objectPatterns[0],
+                          },
+                );
             } else {
                 const rdfLiteralOptions = rdf as RDFLiteralOptions;
-                const pattern: Pattern = {
-                    type: 'bgp',
-                    triples: [
-                        {
-                            subject,
-                            predicate: DataFactory.namedNode(predicate),
-                            object: DataFactory.literal(
-                                query,
-                                rdfLiteralOptions.language
-                                    ? rdfLiteralOptions.language
-                                    : rdfLiteralOptions.datatype
-                                    ? DataFactory.namedNode(rdfLiteralOptions.datatype)
-                                    : undefined,
-                            ),
-                        },
-                    ],
-                };
-                patterns.push(pattern);
+                const pattern: Pattern[] = (Array.isArray(rdf.predicate) ? rdf.predicate : [rdf.predicate]).map(
+                    (predicate) => {
+                        return {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject,
+                                    predicate: DataFactory.namedNode(predicate),
+                                    object: DataFactory.literal(
+                                        query,
+                                        rdfLiteralOptions.language
+                                            ? rdfLiteralOptions.language
+                                            : rdfLiteralOptions.datatype
+                                            ? DataFactory.namedNode(rdfLiteralOptions.datatype)
+                                            : undefined,
+                                    ),
+                                },
+                            ],
+                        };
+                    },
+                );
+                patterns.push(
+                    pattern.length > 1
+                        ? {
+                              type: 'union',
+                              patterns: pattern,
+                          }
+                        : pattern[0],
+                );
             }
         }
         return patterns;

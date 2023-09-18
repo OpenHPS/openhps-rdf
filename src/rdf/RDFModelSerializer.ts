@@ -22,7 +22,7 @@ export class RDFModelSerializer {
         return this.serializeNode(model as any);
     }
 
-    static serializeNode(node: Node<any, any>): any {
+    static serializeNode(node: Node<any, any>): Thing {
         this.initialize();
         return this.options.serialize(node);
     }
