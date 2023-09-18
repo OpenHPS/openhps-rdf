@@ -19,12 +19,17 @@ describe('Model', () => {
                 .build().then(m => {
                     model = m;
                     serialized = RDFModelSerializer.serialize(m);
+                    serialized.value = "https://test"
+                    serialized.termType = "NamedNode"
+                    console.log(serialized)
                     done();
-                });
+                }).catch(done);
         });
         
         it('should have nodes', async () => {
-            const turtle = await RDFSerializer.stringify(serialized);
+            const turtle = await RDFSerializer.stringify(serialized, {
+                prettyPrint: true
+            });
             console.log(turtle)
         });
 

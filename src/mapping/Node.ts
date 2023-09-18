@@ -1,5 +1,5 @@
-import { Node, SerializableMember, SerializableObject } from '@openhps/core';
-import { RDFBuilder, Thing } from '../rdf';
+import { Edge, Node, SerializableMember, SerializableObject } from '@openhps/core';
+import { RDFBuilder, Thing, RDFSerializer } from '../rdf';
 import { poso, rdf, sosa, ssn } from '../vocab';
 
 SerializableObject({
@@ -7,15 +7,20 @@ SerializableObject({
         type: sosa.Procedure,
         serializer: (node: Node<any, any>) => {
             const input = RDFBuilder.blankNode().add(rdf.type, ssn.Input);
-            node.inlets.forEach((inlet) => {
-                input.add(poso.madeByProcedure, inlet);
-            });
+            if (node.graph) {
+                node.inlets.forEach((inlet) => {
+                    input.add(poso.madeByProcedure, RDFSerializer.serialize((inlet as Edge<any>).inputNode));
+                });
+            }
             return {
                 predicates: {
                     [ssn.hasInput]: [input.build()],
                 },
             } as Thing;
         },
+        deserializer: (thing: Thing) => {
+            return undefined;
+        }
     },
 })(Node);
 SerializableMember({

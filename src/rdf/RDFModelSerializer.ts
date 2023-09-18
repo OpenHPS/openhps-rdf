@@ -13,8 +13,8 @@ export class RDFModelSerializer {
 
     protected static get options(): ModelSerializerConfig {
         return {
-            serialize: RDFSerializer.serialize,
-            deserialize: RDFSerializer.deserialize,
+            serialize: (object) => RDFSerializer.serialize(object),
+            deserialize: (thing) => RDFSerializer.deserialize(thing),
         };
     }
 
