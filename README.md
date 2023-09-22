@@ -46,7 +46,7 @@ npm install @openhps/rdf --save
 - `openhps-rdf.sparql.es.js`: ESM export of SPARQL data service and serialization
 - `openhps-rdf.all.es.js`: ESM export of RDF mappings, SPARQL data service and vocabularies
 
-Each export has a `*.min.js` version that is minified.
+Each export has a `*.min.js` version that is minified. For production environments it is recommended to use `openhps-rdf.minimal` in combination with a Comunica engine.
 
 ## Usage
 
@@ -138,6 +138,23 @@ export class Project {
 ### `SPARQLDataDriver`
 The SPARQL endpoint uses [Comunica](https://comunica.dev/) as its query engine while still
 using the query syntax from MongoDB.
+
+#### Remote SPARQL Server
+```typescript
+import { ModelBuilder, DataObject, DataObjectService } from '@openhps/core';
+import { SPARQLDataDriver, DefaultEngine } from '@openhps/rdf';
+
+ModelBuilder.create()
+    .addService(new DataObjectService(new SPARQLDataDriver(DataObject, {
+        httpAuth: "admin:test",
+        baseUri: "http://openhps.org/terms#",
+        sources: [{ type: 'sparql', value: "http://localhost:3030/openhps-rdf-1" }],
+        engine: DefaultEngine
+    })))
+    .from()
+    .to()
+    .build();
+```
 
 ## Contributors
 The framework is open source and is mainly developed by PhD Student Maxim Van de Wynckel as part of his research towards *Hybrid Positioning and Implicit Human-Computer Interaction* under the supervision of Prof. Dr. Beat Signer.

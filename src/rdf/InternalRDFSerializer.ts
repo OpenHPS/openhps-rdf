@@ -191,6 +191,10 @@ export class InternalRDFSerializer extends Serializer {
                 });
             }
         });
+
+        if (Object.values(thing.predicates).length === 0) {
+            return undefined;
+        }
         return thing;
     }
 
