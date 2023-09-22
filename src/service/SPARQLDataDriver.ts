@@ -23,7 +23,17 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
     constructor(dataType?: Constructor<T>, options?: SPARQLDriverOptions) {
         super(dataType, options);
         this.generator = new SPARQLGenerator(this.dataType, this.options.baseUri);
-        this.engine = new QueryEngine(this.options.engine);
+        if (this.options.engine !== undefined) {
+            this.engine = new QueryEngine(this.options.engine);
+        }
+
+        this.once('build', this._onBuild.bind(this));
+    }
+
+    private _onBuild(): void {
+        if (this.engine === undefined) {
+            throw new Error(`No comunica engine was defined for the SPARQLDataDriver!`);
+        }
     }
 
     invalidateCache(url?: IriString): void {
@@ -203,7 +213,7 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
     /**
      * Comunica query engine
      */
-    engine: ActorInitQueryBase;
+    engine?: ActorInitQueryBase;
 }
 
 export type { QueryStringContext, IQueryEngine, BindingsStream, Bindings };
