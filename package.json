@@ -97,7 +97,8 @@
   },
   "peerDependencies": {
     "@openhps/core": ">=0.5.7",
-    "reflect-metadata": ">=0.1.13"
+    "reflect-metadata": ">=0.1.13",
+    "wkt": "^0.1.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
@@ -148,8 +149,7 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.9.1",
-    "webpack-cli": "^5.1.4",
-    "wkt": "^0.1.1"
+    "webpack-cli": "^5.1.4"
   },
   "nyc": {
     "branches": 0,
