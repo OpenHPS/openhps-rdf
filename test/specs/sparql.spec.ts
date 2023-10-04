@@ -9,7 +9,7 @@ import {
     DataFrame
 } from '@openhps/core';
 import 'mocha';
-import { SPARQLDataDriver } from '../../src';
+import { DefaultEngine, SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 
 describe('SPARQLDataDriver (Fuseki endpoint)', () => {
@@ -34,11 +34,13 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
             httpAuth: "admin:test",
             baseUri: "http://openhps.org/terms#",
             sources: [{ type: 'sparql', value: "http://localhost:3030/openhps-rdf-1" }],
+            engine: DefaultEngine
         }));
         frameService = new DataFrameService(new SPARQLDataDriver(DataFrame, {
             httpAuth: "admin:test",
             baseUri: "http://openhps.org/terms#",
             sources: [{ type: 'sparql', value: "http://localhost:3030/openhps-rdf-2" }],
+            engine: DefaultEngine
         }));
         Promise.all([service.emitAsync('build'), frameService.emitAsync('build')]).then(() => {
             return Promise.all([service.deleteAll(), frameService.deleteAll()]);

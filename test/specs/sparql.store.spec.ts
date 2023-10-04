@@ -9,7 +9,7 @@ import {
     DataFrame
 } from '@openhps/core';
 import 'mocha';
-import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver } from '../../src';
+import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver, DefaultEngine } from '../../src';
 import { expect } from 'chai';
 const wkt = require('wkt');
 
@@ -31,11 +31,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
     before((done) => {
         service = new DataObjectService(new SPARQLDataDriver(DataObject, {
             sources: [new Store()],
-            baseUri: "http://openhps.org/terms#"
+            baseUri: "http://openhps.org/terms#",
+            engine: DefaultEngine
         }));
         frameService = new DataFrameService(new SPARQLDataDriver(DataFrame, {
             sources: [new Store()],
-            baseUri: "http://openhps.org/terms#"
+            baseUri: "http://openhps.org/terms#",
+            engine: DefaultEngine
         }));
         Promise.all([service.emitAsync('build'), frameService.emitAsync('build')]).then(() => {
             return Promise.all([service.deleteAll(), frameService.deleteAll()]);

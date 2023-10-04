@@ -1,5 +1,5 @@
 import { DataFrame, Model, ModelSerializerConfig, Node, Serializable, Service } from '@openhps/core';
-import { Thing } from './types';
+import { RDFSerializerConfig, Thing } from './types';
 
 import { RDFSerializer } from './RDFSerializer';
 
@@ -11,20 +11,20 @@ export class RDFModelSerializer {
     static SERVICES: Map<string, ClassDeclaration<Service>> = new Map();
     private static _modules = new Set();
 
-    protected static get options(): ModelSerializerConfig {
+    protected static get options(): ModelSerializerConfig & any {
         return {
-            serialize: (object) => RDFSerializer.serialize(object),
+            serialize: (object, options) => RDFSerializer.serialize(object, options),
             deserialize: (thing) => RDFSerializer.deserialize(thing),
         };
     }
 
-    static serialize(model: Model): Thing {
-        return this.serializeNode(model as any);
+    static serialize(model: Model, options?: RDFSerializerConfig): Thing {
+        return this.serializeNode(model as any, options);
     }
 
-    static serializeNode(node: Node<any, any>): Thing {
+    static serializeNode(node: Node<any, any>, options?: RDFSerializerConfig): Thing {
         this.initialize();
-        return this.options.serialize(node);
+        return this.options.serialize(node, options);
     }
 
     static deserialize<In extends DataFrame, Out extends DataFrame>(model: Thing): Model<In, Out> {

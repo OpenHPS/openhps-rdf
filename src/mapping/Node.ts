@@ -1,26 +1,43 @@
-import { Edge, Node, SerializableMember, SerializableObject } from '@openhps/core';
-import { RDFBuilder, Thing, RDFSerializer } from '../rdf';
-import { poso, rdf, sosa, ssn } from '../vocab';
+import { Edge, Node, ProcessingNode, SerializableMember, SerializableObject } from '@openhps/core';
+import { RDFBuilder, Thing, RDFSerializer, IriString } from '../rdf';
+import { poso, rdf, rdfs, sosa, ssn } from '../vocab';
+import { DataFactory } from 'n3';
 
 SerializableObject({
     rdf: {
-        type: sosa.Procedure,
-        serializer: (node: Node<any, any>) => {
+        serializer: (node: Node<any, any>, baseUri: IriString) => {
+            if (!(node instanceof ProcessingNode)) {
+                return undefined;
+            }
+
             const input = RDFBuilder.blankNode().add(rdf.type, ssn.Input);
+            let hasInput = false;
             if (node.graph) {
                 node.inlets.forEach((inlet) => {
-                    input.add(poso.madeByProcedure, RDFSerializer.serialize((inlet as Edge<any>).inputNode));
+                    const previousNode = (inlet as Edge<any>).inputNode;
+                    if (previousNode instanceof ProcessingNode) {
+                        hasInput = true;
+                        input.add(
+                            poso.madeByProcedure,
+                            RDFSerializer.serialize(previousNode, {
+                                baseUri,
+                            }),
+                        );
+                    }
                 });
             }
             return {
                 predicates: {
-                    [ssn.hasInput]: [input.build()],
+                    [rdf.type]: [DataFactory.namedNode(sosa.Procedure)],
+                    [rdfs.label]: [DataFactory.literal(node.constructor.name, 'en')],
+                    ...(hasInput
+                        ? {
+                              [ssn.hasInput]: [input.build()],
+                          }
+                        : {}),
                 },
             } as Thing;
         },
-        deserializer: (thing: Thing) => {
-            return undefined;
-        }
     },
 })(Node);
 SerializableMember({

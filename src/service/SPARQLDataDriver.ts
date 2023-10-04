@@ -13,19 +13,27 @@ import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
 import { SPARQLGenerator } from './SPARQLGenerator';
 import type { QueryStringContext, IQueryEngine, BindingsStream, Bindings } from '@comunica/types';
+import type { ActorInitQueryBase } from '@comunica/actor-init-query';
 
 export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
     protected generator: SPARQLGenerator<T>;
     protected options: SPARQLDriverOptions;
+    engine: QueryEngine;
 
     constructor(dataType?: Constructor<T>, options?: SPARQLDriverOptions) {
         super(dataType, options);
         this.generator = new SPARQLGenerator(this.dataType, this.options.baseUri);
-        this.options.engine = this.options.engine ?? new QueryEngine();
+        if (this.options.engine !== undefined) {
+            this.engine = new QueryEngine(this.options.engine);
+        }
+
+        this.once('build', this._onBuild.bind(this));
     }
 
-    get engine(): IQueryEngine {
-        return this.options.engine;
+    private _onBuild(): void {
+        if (this.engine === undefined) {
+            throw new Error(`No comunica engine was defined for the SPARQLDataDriver!`);
+        }
     }
 
     invalidateCache(url?: IriString): void {
@@ -204,9 +212,8 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
     httpAuth?: `${string}:${string}`;
     /**
      * Comunica query engine
-     * @default @comunica/query-sparql QueryEngine
      */
-    engine?: IQueryEngine;
+    engine?: ActorInitQueryBase;
 }
 
 export type { QueryStringContext, IQueryEngine, BindingsStream, Bindings };
