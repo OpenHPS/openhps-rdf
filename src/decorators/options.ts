@@ -1,9 +1,15 @@
-import { Serializable, SerializableObjectOptions, MemberOptionsBase } from '@openhps/core';
+import { Serializable, SerializableObjectOptions, MemberOptionsBase, DataObject } from '@openhps/core';
 import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 import { RDFIdentifierOptions, RDFLiteralOptions } from './types';
 
-export type { SerializableObjectOptions, MemberOptionsBase };
+export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
+
+declare module '@openhps/core/dist/types/data/object/DataObject' {
+    export interface DataObject {
+        rdf?: {}; // eslint-disable-line
+    }
+}
 
 declare module '@openhps/core/dist/types/data/decorators/options' {
     export interface SerializableObjectOptions<T> {

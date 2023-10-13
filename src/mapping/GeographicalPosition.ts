@@ -47,6 +47,9 @@ SerializableMember({
             return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
         },
         deserializer: (thing: Thing) => {
+            if (Number.isNaN(parseFloat(thing.value))) {
+                return undefined;
+            }
             return parseFloat(thing.value);
         },
     },
@@ -58,6 +61,9 @@ SerializableMember({
             return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
         },
         deserializer: (thing: Thing) => {
+            if (Number.isNaN(parseFloat(thing.value))) {
+                return undefined;
+            }
             return parseFloat(thing.value);
         },
     },
@@ -69,6 +75,9 @@ SerializableMember({
             return DataFactory.literal(value, DataFactory.namedNode(xsd.double));
         },
         deserializer: (thing: Thing) => {
+            if (Number.isNaN(parseFloat(thing.value))) {
+                return undefined;
+            }
             return parseFloat(thing.value);
         },
     },
