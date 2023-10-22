@@ -53,13 +53,17 @@ export class RDFSerializer extends DataSerializer {
         deserializer: new InternalRDFDeserializer(),
     };
 
-    protected static registerRDFType<T>(type: Serializable<T>): void {
+    static registerRDFType<T>(type: Serializable<T>, options?: MappedRDFTypeConverters<T>): void {
         // Map RDF types
         const meta = DataSerializerUtils.getOwnMetadata(type);
         if (!meta.options || !meta.options.rdf) {
             return;
         }
         const rdfOptions = meta.options.rdf;
+        if (options) {
+            rdfOptions.serializer = options.serializer;
+            rdfOptions.deserializer = options.deserializer;
+        }
         if (rdfOptions.predicates) {
             Object.entries(rdfOptions.predicates)
                 .filter(([k]) => k === rdf.type)
@@ -441,4 +445,15 @@ export interface WriterOptions extends N3WriterOptions {
      * @default false
      */
     prettyPrint?: boolean;
+}
+
+export interface MappedRDFTypeConverters<T> {
+    /**
+     * Custom (partial) serializer for this object.
+     */
+    serializer?: (object: T, baseUri?: IriString) => Partial<Thing> | Quad_Object;
+    /**
+     * Custom (partial) deserializer for this object.
+     */
+    deserializer?: (thing: Thing, instance?: T) => T;
 }

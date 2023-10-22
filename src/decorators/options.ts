@@ -31,7 +31,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this object.
              */
-            serializer?: (object: T, baseUri?: IriString) => Partial<Thing>;
+            serializer?: (object: T, baseUri?: IriString) => Partial<Thing> | Quad_Object;
             /**
              * Custom (partial) deserializer for this object.
              */

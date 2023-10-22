@@ -3,7 +3,7 @@ import { DataFactory } from 'n3';
 import { xsd } from '../decorators';
 import { Thing, RDFSerializer } from '../rdf';
 
-RDFSerializer.registerType(UUID, {
+RDFSerializer.registerRDFType(UUID, {
     serializer: (value: UUID) => {
         if (!value) {
             return undefined;
