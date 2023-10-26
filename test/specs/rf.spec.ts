@@ -25,7 +25,8 @@ describe('@openhps/rf', () => {
                 format: 'text/turtle',
                 prettyPrint: true
             });
-            //console.log(turtle);
+            const deserialize = RDFSerializer.deserializeFromString("https://maximvdw.solidweb.org/public/openhps.ttl#", turtle);
+            
         });
 
         

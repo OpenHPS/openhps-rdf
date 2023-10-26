@@ -37,7 +37,12 @@ SerializableMember({
         deserializer: (thing: Thing) => {
             if (thing.termType === 'BlankNode') {
                 const rss: Thing = thing.predicates[poso.hasRSS][0] as Thing;
-                return rss.predicates[qudt.numericValue][0].value;
+                const value = rss.predicates[qudt.numericValue][0].value;
+                if (thing.predicates[poso.hasRelativeDistance]) {
+                    const rd: Thing = thing.predicates[poso.hasRelativeDistance][0] as Thing; // eslint-disable-line
+                    const distance = rss.predicates[qudt.numericValue][0].value; // eslint-disable-line
+                }
+                return parseInt(value);
             } else {
                 return undefined;
             }
