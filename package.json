@@ -93,12 +93,12 @@
     "@comunica/query-sparql": "^2.9.0",
     "@types/n3": "^1.16.3",
     "n3": ">=1.17.1",
-    "sparqljs": "^3.7.1"
+    "sparqljs": "^3.7.1",
+    "wkt": "^0.1.1"
   },
   "peerDependencies": {
     "@openhps/core": ">=0.5.9",
-    "reflect-metadata": ">=0.1.13",
-    "wkt": "^0.1.1"
+    "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.1.0",
