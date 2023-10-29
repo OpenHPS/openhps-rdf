@@ -7,7 +7,9 @@ export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
 
 declare module '@openhps/core/dist/types/data/object/DataObject' {
     export interface DataObject {
-        rdf?: {}; // eslint-disable-line
+        rdf?: {
+            [predicate: string]: Quad_Object[];
+        };
     }
 }
 

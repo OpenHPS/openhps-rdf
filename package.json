@@ -48,6 +48,11 @@
       "require": "./dist/cjs/index.generator.js",
       "import": "./dist/esm/index.generator.js",
       "types": "./dist/types/index.generator.d.ts"
+    },
+    "./engine": {
+      "require": "./dist/cjs/index.engine.js",
+      "import": "./dist/esm/index.engine.js",
+      "types": "./dist/types/index.engine.d.ts"
     }
   },
   "unpkg": "dist/web/openhps-rdf.all.min.js",
@@ -90,23 +95,29 @@
     "linked data"
   ],
   "dependencies": {
-    "@comunica/query-sparql": "^2.9.0",
+    "@comunica/query-sparql": "^2.10.0",
     "@types/n3": "^1.16.3",
-    "n3": ">=1.17.1",
+    "n3": ">=1.17.2",
     "sparqljs": "^3.7.1",
     "wkt": "^0.1.1"
+  },
+  "optionalDependencies": {
+    "@openhps/fingerprinting": ">=0.1.5",
+    "@openhps/geospatial": ">=0.1.27",
+    "@openhps/rf": ">=0.1.61",
+    "@openhps/video": ">=0.1.11"
   },
   "peerDependencies": {
     "@openhps/core": ">=0.5.9",
     "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.1.0",
+    "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.1.0",
     "@comunica/query-sparql-link-traversal": "0.2.0",
-    "@comunica/query-sparql-rdfjs": "^2.9.0",
-    "@comunica/runner": "^2.8.2",
-    "@openhps/core": "^0.5.12",
+    "@comunica/query-sparql-rdfjs": "^2.10.0",
+    "@comunica/runner": "^2.10.0",
+    "@openhps/core": "^0.5.14",
     "@openhps/fingerprinting": "^0.1.5",
     "@openhps/geospatial": "^0.1.27",
     "@openhps/rf": "^0.1.61",
@@ -121,7 +132,7 @@
     "@types/uuid": "^9.0.6",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "benchmark": "^2.1.4",
     "buffer": "^6.0.3",
     "chai": "^4.3.10",

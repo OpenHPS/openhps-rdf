@@ -205,6 +205,7 @@ export class InternalRDFDeserializer extends Deserializer {
         }
 
         // Deserialize predicates
+        const usedPredicates: IriString[] = [];
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
             const memberOptions =
@@ -220,6 +221,7 @@ export class InternalRDFDeserializer extends Deserializer {
 
             const predicates = (memberOptions.options.rdf as RDFLiteralOptions).predicate;
             [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
+                usedPredicates.push(predicateIri);
                 if (!sourceObject.predicates[predicateIri]) {
                     return;
                 }
@@ -269,6 +271,15 @@ export class InternalRDFDeserializer extends Deserializer {
                         .filter((item) => this.isInstanceOf(item, memberOptions.type().ctor))[0];
                 }
             });
+        });
+
+        // Add unused predicates
+        const unusedPredicates = Object.keys(sourceObject.predicates)
+            .filter((predicate: IriString) => predicate !== rdf.type)
+            .filter((predicate: IriString) => !usedPredicates.includes(predicate));
+        targetObject.rdf = {};
+        unusedPredicates.forEach((predicate) => {
+            targetObject.rdf[predicate] = sourceObject.predicates[predicate];
         });
 
         return targetObject;
