@@ -130,7 +130,10 @@ export class RDFSerializer extends DataSerializer {
         const parser = new Parser();
         const quads: Quad[] = parser.parse(input);
         const store = new Store(quads);
-        return this.deserializeFromStore(DataFactory.namedNode(subject), store);
+        return this.deserializeFromStore(
+            subject ? DataFactory.namedNode(subject) : DataFactory.blankNode(quads[0].subject.value),
+            store,
+        );
     }
 
     static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {

@@ -273,14 +273,16 @@ export class InternalRDFDeserializer extends Deserializer {
             });
         });
 
-        // Add unused predicates
-        const unusedPredicates = Object.keys(sourceObject.predicates)
-            .filter((predicate: IriString) => predicate !== rdf.type)
-            .filter((predicate: IriString) => !usedPredicates.includes(predicate));
-        targetObject.rdf = {};
-        unusedPredicates.forEach((predicate) => {
-            targetObject.rdf[predicate] = sourceObject.predicates[predicate];
-        });
+        if (targetObject) {
+            // Add unused predicates
+            const unusedPredicates = Object.keys(sourceObject.predicates)
+                .filter((predicate: IriString) => predicate !== rdf.type)
+                .filter((predicate: IriString) => !usedPredicates.includes(predicate));
+            targetObject.rdf = {};
+            unusedPredicates.forEach((predicate) => {
+                targetObject.rdf[predicate] = sourceObject.predicates[predicate];
+            });
+        }
 
         return targetObject;
     }

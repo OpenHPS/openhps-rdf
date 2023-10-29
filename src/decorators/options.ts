@@ -8,7 +8,7 @@ export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
 declare module '@openhps/core/dist/types/data/object/DataObject' {
     export interface DataObject {
         rdf?: {
-            [predicate: string]: Quad_Object[];
+            [predicate: string]: (Quad_Object | Thing)[];
         };
     }
 }
