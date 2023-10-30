@@ -73,6 +73,13 @@ const bundle = (env, module, entry = 'index', suffix = '') => {
     externalsType: module ? "module" : undefined,
     externals: function (_, request, callback) {
       const knownExternals = {
+        '@openhps/core': {
+          module: "./openhps-core.es" + (env.prod ? ".min" : "") + ".js",
+          commonjs: '@openhps/core',
+          commonjs2: '@openhps/core',
+          amd: 'core',
+          root: ['OpenHPS', 'core']
+        },
         '@openhps/geospatial': module ?  "./openhps-geospatial.es" + (env.prod ? ".min" : "") + ".js" : {
           commonjs: '@openhps/geospatial',
           commonjs2: '@openhps/geospatial',

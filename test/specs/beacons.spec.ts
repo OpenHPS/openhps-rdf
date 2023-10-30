@@ -12,4 +12,13 @@ describe('openhps2021 beacons.ttl', () => {
             done();
         });
     });
+
+    it('should load a symbolic space', (done) => {
+        const uri = "https://sembeacon.org/examples/openhps2021/beacons.ttl";
+        axios.get(uri).then(res => {
+            const pl9 = RDFSerializer.deserializeFromString(`${uri}#pl9`, res.data);
+            console.log(pl9)
+            done();
+        });
+    });
 });
