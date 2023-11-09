@@ -92,13 +92,13 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    protected findAllSerialized(query?: FilterQuery<T>): Promise<Store> {
-        return this.queryQuads(this.generator.createFindAll(query));
+    protected findAllSerialized(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<Store> {
+        return this.queryQuads(this.generator.createFindAll(query), context);
     }
 
-    findAll(query?: FilterQuery<T>, options: FindOptions = {}): Promise<T[]> {
+    findAll(query?: FilterQuery<T>, options: FindOptions = {}, context?: Partial<QueryStringContext>): Promise<T[]> {
         return new Promise((resolve, reject) => {
-            this.findAllSerialized(query)
+            this.findAllSerialized(query, context)
                 .then((store) => {
                     if (store.size === 0) {
                         return resolve([]);
@@ -134,9 +134,9 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    count(query?: FilterQuery<T>): Promise<number> {
+    count(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.findAllSerialized(query)
+            this.findAllSerialized(query, context)
                 .then((store) => {
                     if (store.size === 0) {
                         return resolve(0);
@@ -160,9 +160,9 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    insert(_: IriString, object: T): Promise<T> {
+    insert(_: IriString, object: T, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.queryVoid(this.generator.createInsert(object))
+            this.queryVoid(this.generator.createInsert(object), context)
                 .then(() => {
                     resolve(object);
                 })
@@ -170,35 +170,43 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    delete(id: IriString): Promise<void> {
+    delete(id: IriString, context?: Partial<QueryStringContext>): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.queryVoid(this.generator.createDelete(id)).then(resolve).catch(reject);
+            this.queryVoid(this.generator.createDelete(id), context).then(resolve).catch(reject);
         });
     }
 
-    deleteAll(query?: FilterQuery<T>): Promise<void> {
+    deleteAll(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.queryVoid(this.generator.createDeleteAll(query)).then(resolve).catch(reject);
+            this.queryVoid(this.generator.createDeleteAll(query), context).then(resolve).catch(reject);
         });
     }
 
-    findByUID(id: IriString): Promise<T> {
+    findByUID(id: IriString, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
             const identifierMember = RDFSerializer.getUriMetadata(this.dataType);
-            this.findOne({
-                [identifierMember.key]: id,
-            } as any)
+            this.findOne(
+                {
+                    [identifierMember.key]: id,
+                } as any,
+                {},
+                context,
+            )
                 .then(resolve)
                 .catch(reject);
         });
     }
 
-    findOne(query?: FilterQuery<T>, options: FindOptions = {}): Promise<T> {
+    findOne(query?: FilterQuery<T>, options: FindOptions = {}, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.findAll(query, {
-                limit: 1,
-                sort: options.sort,
-            })
+            this.findAll(
+                query,
+                {
+                    limit: 1,
+                    sort: options.sort,
+                },
+                context,
+            )
                 .then((results) => {
                     resolve(results[0]);
                 })
