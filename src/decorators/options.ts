@@ -5,11 +5,28 @@ import { RDFIdentifierOptions, RDFLiteralOptions } from './types';
 
 export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
 
+export type RDFMetadata = {
+    /**
+     * Serialized or deserialized URI of the data object
+     */
+    uri?: IriString;
+    /**
+     * Unresolved predicates
+     */
+    predicates?: {
+        [predicate: string]: (Quad_Object | Thing)[];
+    };
+};
+
 declare module '@openhps/core/dist/types/data/object/DataObject' {
     export interface DataObject {
-        rdf?: {
-            [predicate: string]: (Quad_Object | Thing)[];
-        };
+        rdf?: RDFMetadata;
+    }
+}
+
+declare module '@openhps/core/dist/types/data/DataFrame' {
+    export interface DataFrame {
+        rdf?: RDFMetadata;
     }
 }
 
@@ -59,7 +76,12 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this member.
              */
-            serializer?: (value: any, object?: any, dataType?: Serializable<any>) => Partial<Thing | Quad_Object>;
+            serializer?: (
+                value: any,
+                object?: any,
+                dataType?: Serializable<any>,
+                baseUri?: IriString,
+            ) => Partial<Thing | Quad_Object>;
             /**
              * Custom (partial) deserializer for this member.
              */

@@ -6,6 +6,8 @@ import './GeographicalPosition';
 import './RelativePosition';
 import './RelativeAngle';
 import './RelativeDistance';
+import './Relative2DPosition';
+import './Relative3DPosition';
 
 import './DataObject';
 import './DataFrame';

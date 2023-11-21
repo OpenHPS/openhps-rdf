@@ -296,8 +296,8 @@ export class SPARQLGenerator<T> {
                 member && member.options && member.options.rdf
                     ? member
                     : rootMember && rootMember.options && rootMember.options.rdf
-                    ? rootMember
-                    : undefined;
+                      ? rootMember
+                      : undefined;
 
             if (!memberOptions || !memberOptions.options.rdf) {
                 return [];
@@ -432,8 +432,8 @@ export class SPARQLGenerator<T> {
                                         rdfLiteralOptions.language
                                             ? rdfLiteralOptions.language
                                             : rdfLiteralOptions.datatype
-                                            ? DataFactory.namedNode(rdfLiteralOptions.datatype)
-                                            : undefined,
+                                              ? DataFactory.namedNode(rdfLiteralOptions.datatype)
+                                              : undefined,
                                     ),
                                 },
                             ],

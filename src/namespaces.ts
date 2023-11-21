@@ -1,5 +1,4 @@
-export type Namespaces = { [alias: string]: string };
-export type Mirrors = { [namespace: string]: string };
+import { Mirrors, Namespaces } from './bin/types';
 
 const namespaces: Namespaces = {
     /**
@@ -30,6 +29,7 @@ const namespaces: Namespaces = {
     sosa: 'http://www.w3.org/ns/sosa/',
     ssn: 'http://www.w3.org/ns/ssn/',
     ssns: 'http://www.w3.org/ns/ssn/systems/',
+    // ssnx: 'http://purl.oclc.org/NET/ssnx/ssn#',
     poso: 'http://purl.org/poso/',
     posoc: 'http://purl.org/poso/common/',
     /**

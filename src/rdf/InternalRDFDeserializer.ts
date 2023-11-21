@@ -177,8 +177,8 @@ export class InternalRDFDeserializer extends Deserializer {
             metadata.options && metadata.options.rdf
                 ? metadata.options.rdf
                 : rootMetadata.options && rootMetadata.options.rdf
-                ? rootMetadata.options.rdf
-                : undefined;
+                  ? rootMetadata.options.rdf
+                  : undefined;
 
         if (!options) {
             return undefined;
@@ -212,8 +212,8 @@ export class InternalRDFDeserializer extends Deserializer {
                 member.options && member.options.rdf
                     ? member
                     : rootMember && rootMember.options && rootMember.options.rdf
-                    ? rootMember
-                    : undefined;
+                      ? rootMember
+                      : undefined;
 
             if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
                 return undefined;
@@ -278,9 +278,10 @@ export class InternalRDFDeserializer extends Deserializer {
             const unusedPredicates = Object.keys(sourceObject.predicates)
                 .filter((predicate: IriString) => predicate !== rdf.type)
                 .filter((predicate: IriString) => !usedPredicates.includes(predicate));
-            targetObject.rdf = {};
+            targetObject.rdf = { predicates: {} };
+            targetObject.rdf.uri = sourceObject.value;
             unusedPredicates.forEach((predicate) => {
-                targetObject.rdf[predicate] = sourceObject.predicates[predicate];
+                targetObject.rdf.predicates[predicate] = sourceObject.predicates[predicate];
             });
         }
 
@@ -379,8 +380,8 @@ export class InternalRDFDeserializer extends Deserializer {
                     metadata.options && metadata.options.rdf
                         ? metadata.options.rdf
                         : rootMetadata.options && rootMetadata.options.rdf
-                        ? rootMetadata.options.rdf
-                        : undefined;
+                          ? rootMetadata.options.rdf
+                          : undefined;
 
                 if (!options) {
                     return undefined;

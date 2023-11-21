@@ -298,8 +298,8 @@ export class RDFSerializer extends DataSerializer {
                     quad.object.termType === 'NamedNode'
                         ? quad.object.value
                         : quad.object.termType === 'Literal'
-                        ? quad.object.datatype.value
-                        : '',
+                          ? quad.object.datatype.value
+                          : '',
                 ];
                 usedNamespacesInQuad.map((namespace) => {
                     Object.keys(ns).forEach((n) => {
@@ -409,8 +409,8 @@ export class RDFSerializer extends DataSerializer {
             metadata.options && metadata.options.rdf
                 ? metadata.options.rdf
                 : rootMetadata.options && rootMetadata.options.rdf
-                ? rootMetadata.options.rdf
-                : undefined;
+                  ? rootMetadata.options.rdf
+                  : undefined;
 
         if (!options) {
             return undefined;

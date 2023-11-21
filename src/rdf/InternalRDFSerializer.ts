@@ -50,9 +50,12 @@ export class InternalRDFSerializer extends Serializer {
                 sourceObject,
                 serializerOptions.sourceObject,
                 typeDescriptor.ctor,
+                serializerOptions.rdf.baseUri,
             ) as Thing | Quad_Object;
             if (output.termType === 'Literal') {
                 return output as Literal;
+            } else if (output.termType === 'NamedNode') {
+                return output as NamedNode;
             } else {
                 return mergeDeep(
                     {
@@ -112,8 +115,8 @@ export class InternalRDFSerializer extends Serializer {
             metadata && metadata.options && metadata.options.rdf
                 ? metadata.options.rdf
                 : rootMetadata && rootMetadata.options && rootMetadata.options.rdf
-                ? rootMetadata.options.rdf
-                : undefined;
+                  ? rootMetadata.options.rdf
+                  : undefined;
         if (!options) {
             return undefined;
         }
@@ -138,6 +141,11 @@ export class InternalRDFSerializer extends Serializer {
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
                 ? serializerOptions.rdf.baseUri + uri
                 : DataFactory.blankNode(uri).value;
+
+        if (!(sourceObject as any).rdf) {
+            (sourceObject as any).rdf = { uri };
+        }
+
         let thing: Thing = {
             value: uri,
             predicates: options.predicates
@@ -169,8 +177,8 @@ export class InternalRDFSerializer extends Serializer {
                 member.options && member.options.rdf
                     ? member
                     : rootMember && rootMember.options && rootMember.options.rdf
-                    ? rootMember
-                    : undefined;
+                      ? rootMember
+                      : undefined;
             if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
                 return;
             }
