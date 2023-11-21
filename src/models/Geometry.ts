@@ -48,26 +48,34 @@ export abstract class Geometry {
     rdf: {
         type: ogc.Geometry,
         serializer: (geometry: PolygonGeometry) => {
+            const dimensions = (geometry.coords[0] ?? {}).altitude ? 3 : 2;
             return {
                 predicates: {
                     [ogc.asWKT]: [
-                        DataFactory.literal(
-                            `POLYGON Z((${geometry.coords
-                                .map((coord) => `${coord.longitude} ${coord.latitude} ${coord.altitude}`)
-                                .join(', ')}))`,
-                            DataFactory.namedNode(ogc.wktLiteral),
-                        ),
+                        dimensions === 3
+                            ? DataFactory.literal(
+                                  `POLYGON Z((${geometry.coords
+                                      .map((coord) => `${coord.longitude} ${coord.latitude} ${coord.altitude}`)
+                                      .join(', ')}))`,
+                                  DataFactory.namedNode(ogc.wktLiteral),
+                              )
+                            : DataFactory.literal(
+                                  `POLYGON((${geometry.coords
+                                      .map((coord) => `${coord.longitude} ${coord.latitude}`)
+                                      .join(', ')}))`,
+                                  DataFactory.namedNode(ogc.wktLiteral),
+                              ),
                     ],
-                    [ogc.coordinateDimension]: [DataFactory.literal(3)],
-                    [ogc.spatialDimension]: [DataFactory.literal(3)],
-                    [ogc.dimension]: [DataFactory.literal(3)],
+                    [ogc.coordinateDimension]: [DataFactory.literal(dimensions)],
+                    [ogc.spatialDimension]: [DataFactory.literal(dimensions)],
+                    [ogc.dimension]: [DataFactory.literal(dimensions)],
                 },
             };
         },
     },
 })
 export class PolygonGeometry extends Geometry {
-    coords: { latitude: number; longitude: number; altitude: number }[] = [];
+    coords: { latitude: number; longitude: number; altitude?: number }[] = [];
 }
 
 @SerializableObject({
@@ -98,7 +106,7 @@ export class PolygonGeometry extends Geometry {
 export class PointGeometry extends Geometry {
     latitude: number;
     longitude: number;
-    altitude: number;
+    altitude?: number;
 
     @SerializableMember({
         rdf: {
