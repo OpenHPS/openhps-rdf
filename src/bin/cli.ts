@@ -5,7 +5,6 @@ import '@openhps/rf';
 import * as path from 'path';
 import { input } from '@inquirer/prompts';
 import * as yargs from 'yargs';
-import { generateFiles } from './generateFiles';
 
 const args: [K: string] = yargs.argv as any;
 const data = {

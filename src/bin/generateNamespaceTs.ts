@@ -3,7 +3,7 @@
  * @see {@link https://gitlab.com/vincenttunru/rdf-namespaces}
  */
 
-import { Mirrors } from '../namespaces';
+import { Mirrors } from './types';
 import { getTs } from './getTs';
 import axios from 'axios';
 import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
