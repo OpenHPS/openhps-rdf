@@ -86,6 +86,6 @@ function main() {
     });
 }
 
-
-
 main();
+
+export { generateFiles };
