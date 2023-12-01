@@ -8,7 +8,7 @@
     "./**/mapping/**/*"
   ],
   "bin": {
-    "openhps-rdf": "./dist/cjs/bin/generator.js"
+    "openhps-rdf": "./dist/cjs/bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -67,7 +67,7 @@
     "*.d.ts"
   ],
   "scripts": {
-    "generator": "./dist/cjs/bin/generator.js",
+    "cli": "ts-node ./src/bin/cli.ts",
     "benchmark": "ts-node test/bench/serialization.bench.ts",
     "examples": "shx cp node_modules/@openhps/*/dist/web/*.* examples/common/ && shx cp dist/web/*.* examples/common/ && serve ./examples",
     "test": "mocha --config test/.mocharc.json",
