@@ -71,17 +71,26 @@ function main() {
         }
     }).then((namespaces: Namespaces) => {
         data.namespaces = namespaces;
+        console.log("The following namespaces will be fetched:");
+        Object.keys(data.namespaces).forEach(ns => {
+            console.log(`\t@prefix ${ns}: <${data.namespaces[ns]}> .`)
+        });
+
         if (args['m']) {
-            return Promise.resolve((args['m'] as string[]).map(m => {
-                const data = m.split(":");
-                return {
-                    [data[0]]: data[1]
-                };
-            }).reduce((a, b) => ({ ...a, ...b})));
+            const mirrors = {};
+            for (let i = 0 ; i < args['m'].length ; i += 2) {
+                mirrors[args['m'][i]] = args['m'][i + 1];
+            }
+            return Promise.resolve(mirrors);
         }
         return Promise.resolve(undefined);
     }).then(mirrors => {
         data.mirrors = mirrors;
+        console.log("The following mirrors will be used:");
+        Object.keys(data.mirrors).forEach(source => {
+            console.log(`\t<${source}> -> <${data.mirrors[source]}>`)
+        });
+
         return generateFiles(data.namespaces, { targetDir: data.directory, mirrors: data.mirrors });
     });
 }
