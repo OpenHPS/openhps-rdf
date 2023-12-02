@@ -131,12 +131,15 @@ export class InternalRDFSerializer extends Serializer {
             );
         })[0];
         let uri: string = undefined;
-        if (identifierMember) {
+        if ((sourceObject as any).rdf && (sourceObject as any).rdf.uri) {
+            uri = (sourceObject as any).rdf.uri;
+        } else if (identifierMember) {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             uri = rdfOptions.serializer
                 ? rdfOptions.serializer((sourceObject as any)[identifierMember.key] as string, sourceObject.constructor)
                 : ((sourceObject as any)[identifierMember.key] as string);
         }
+
         uri =
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
                 ? serializerOptions.rdf.baseUri + uri

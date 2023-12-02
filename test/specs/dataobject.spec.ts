@@ -44,6 +44,12 @@ describe('DataObject', () => {
             
         });
 
+        it('should serialize when the object contains a uri', () => {
+            const object = new DataObject("abc");
+            object.rdf = { uri: "http://test.com/abc" };
+            const serialized = RDFSerializer.serialize(object);
+            expect(serialized.value).to.eql("http://test.com/abc");
+        });
     });
 
     describe('deserialization', () => {
