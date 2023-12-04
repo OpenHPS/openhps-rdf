@@ -9,7 +9,7 @@ describe('Relative2DPosition', () => {
         .setPosition(new Absolute2DPosition(50.10, 20.5));
     object.position.unit = LengthUnit.METER;
     const virtual = new DataObject("abc")
-        .addRelativePosition(new Relative2DPosition(object, 1, 2, LengthUnit.METER));
+        .addRelativePosition(new Relative2DPosition(object, 1, 2, LengthUnit.CENTIMETER));
 
     describe('serialization', () => {
         let serialized = undefined;
@@ -43,6 +43,10 @@ describe('Relative2DPosition', () => {
         
         it('should deserialize to a relative2d', () => {
             expect(deserialized.getRelativePosition(object.uid)).to.be.instanceOf(Relative2DPosition);
+        });
+
+        it('should deserialize the value', () => {
+            expect((deserialized.getRelativePosition(object.uid) as Relative2DPosition).x).to.eql(0.01);
         });
     });
 

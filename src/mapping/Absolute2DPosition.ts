@@ -1,7 +1,6 @@
 import { SerializableObject, Absolute2DPosition, SerializableMember } from '@openhps/core';
-import { xsd } from '../decorators';
-import { Thing, RDFBuilder } from '../rdf';
-import { poso, qudt, rdf } from '../vocab';
+import { poso } from '../vocab';
+import { UnitValueOptions } from './UnitValue';
 
 SerializableObject({
     rdf: {},
@@ -9,30 +8,12 @@ SerializableObject({
 SerializableMember({
     rdf: {
         predicate: [poso.xAxisValue],
-        serializer: (value: number, object: Absolute2DPosition) => {
-            return RDFBuilder.blankNode()
-                .add(rdf.type, qudt.QuantityValue)
-                .add(qudt.unit, object.unit)
-                .add(qudt.numericValue, value, xsd.double)
-                .build();
-        },
-        deserializer: (thing: Thing) => {
-            return parseFloat(thing.predicates[qudt.numericValue][0].value);
-        },
+        ...UnitValueOptions,
     },
 })(Absolute2DPosition.prototype, 'x');
 SerializableMember({
     rdf: {
         predicate: [poso.yAxisValue],
-        serializer: (value: number, object: Absolute2DPosition) => {
-            return RDFBuilder.blankNode()
-                .add(rdf.type, qudt.QuantityValue)
-                .add(qudt.unit, object.unit)
-                .add(qudt.numericValue, value, xsd.double)
-                .build();
-        },
-        deserializer: (thing: Thing) => {
-            return parseFloat(thing.predicates[qudt.numericValue][0].value);
-        },
+        ...UnitValueOptions,
     },
 })(Absolute2DPosition.prototype, 'y');
