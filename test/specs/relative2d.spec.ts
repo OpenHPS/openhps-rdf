@@ -18,11 +18,6 @@ describe('Relative2DPosition', () => {
             serialized = RDFSerializer.serialize(virtual, {
                 baseUri: "http://example.org/"
             });
-            console.log(await RDFSerializer.stringify(serialized, {
-                prettyPrint: true,
-                baseUri: "http://example.org/"
-            }));
-            console.log(RDFSerializer.deserialize(serialized));
         });
         
         it('should have a feature of interest rdf type', () => {
@@ -33,6 +28,21 @@ describe('Relative2DPosition', () => {
         it('should have a position with a poso relative position rdf type', () => {
             expect(serialized.predicates[poso.hasPosition]).to.not.be.undefined;
             expect(serialized.predicates[poso.hasPosition][0].predicates[rdf.type][0].value).to.equal(poso.RelativePosition);
+        });
+    });
+
+    describe('deserialization', () => {
+        let deserialized = undefined;
+
+        before(async () => {
+            const serialized = RDFSerializer.serialize(virtual, {
+                baseUri: "http://example.org/"
+            });
+            deserialized = RDFSerializer.deserialize(serialized);
+        });
+        
+        it('should deserialize to a relative2d', () => {
+            expect(deserialized.getRelativePosition(object.uid)).to.be.instanceOf(Relative2DPosition);
         });
     });
 

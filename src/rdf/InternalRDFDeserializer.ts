@@ -66,12 +66,13 @@ export class InternalRDFDeserializer extends Deserializer {
                     const predicates = Array.from(metadata.dataMembers.values())
                         .map((member) => {
                             if (member.options && member.options.rdf) {
-                                return (member.options.rdf as RDFObjectOptions).predicate;
+                                const predicatesList = (member.options.rdf as RDFObjectOptions).predicate;
+                                return Array.isArray(predicatesList) ? predicatesList : [predicatesList];
                             } else {
-                                return undefined;
+                                return [];
                             }
                         })
-                        .filter((f) => f !== undefined);
+                        .reduce((a, b) => [...a, ...b], []);
                     const sourcePredicates = Object.keys(sourceObject.predicates);
                     const priority = sourcePredicates.filter((predicate) =>
                         predicates.includes(predicate as IriString),
