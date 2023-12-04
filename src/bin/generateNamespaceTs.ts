@@ -15,6 +15,7 @@ import * as https from 'https';
  * @param options
  */
 export async function generateNamespaceTs(
+    prefix: string,
     namespace: string,
     options = {
         mirrors: {} as Mirrors,
@@ -99,6 +100,7 @@ export async function generateNamespaceTs(
         })
         .map((entity) => getTs(entity, store, namespace, entityTypes))
         .join('');
-    const typescript = 'type IriString = `${\'http\' | \'https\'}://${string}`;\n' + typeAliases + '\n' + entityTs;
+    const typescript = 'type IriString = `${\'http\' | \'https\'}://${string}`;\n' + typeAliases + '\n' + entityTs + 
+    `\nexport const _BASE: IriString = '${namespace}';\nexport const _PREFIX: string = '${prefix}';`;
     return typescript;
 }

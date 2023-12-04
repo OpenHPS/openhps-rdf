@@ -57,7 +57,7 @@ async function generateFile(
     { targetDir = resolve(__dirname, '../dist'), mirrors = {} as Mirrors } = {},
 ) {
     try {
-        const contents = await generateNamespaceTs(namespace, { mirrors });
+        const contents = await generateNamespaceTs(filename, namespace, { mirrors });
         await fsWriteFile(resolve(targetDir, `${filename}.ts`), contents);
         return filename;
     } catch (e) {
