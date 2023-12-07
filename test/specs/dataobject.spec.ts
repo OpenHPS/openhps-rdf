@@ -71,6 +71,11 @@ describe('DataObject', () => {
             expect(deserialized.displayName).to.equal("Beat Signer");
             expect(deserialized.uid).to.equal("bsigner");
         });
+
+        
+        it('should deserialize an orientation', () => {
+            expect(deserialized.position.orientation).to.not.be.undefined;
+        });
     });
 
 });

@@ -35,11 +35,13 @@ describe('DataFrame', () => {
             console.log(turtle)
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
-            const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
+            const serializedOrientation = serializedObject.predicates[poso.hasOrientation][0] as Thing;
             serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
             const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
     
+            expect(serializedPosition).to.not.be.undefined;
+            expect(serializedOrientation).to.not.be.undefined;
             expect(frame.getObjects().length).to.equal(2);
             expect(frame['_objects'].size).to.equal(2);
             expect(serialized.predicates[sosa.hasFeatureOfInterest].length).to.equal(2);
@@ -55,20 +57,24 @@ describe('DataFrame', () => {
         it('should deserialize a data frame', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
-            const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
+            const serializedOrientation = serializedObject.predicates[poso.hasOrientation][0] as Thing;
             serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const deserialized: DataFrame = RDFSerializer.deserialize(serialized);
+            expect(serializedPosition).to.not.be.undefined;
+            expect(serializedOrientation).to.not.be.undefined;
             expect(deserialized).to.not.be.undefined;
         });
 
         it('should deserialize a data frame from store', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
-            const serializedOrientation = serializedPosition.predicates[poso.hasOrientation][0] as Thing;
+            const serializedOrientation = serializedObject.predicates[poso.hasOrientation][0] as Thing;
             serializedOrientation.predicates[qudt.unit][0] = DataFactory.namedNode(unit.RAD);
             const serializedQuads = RDFSerializer.serializeToQuads(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");    
             const store = new Store(serializedQuads);
             const deserializedFrame = RDFSerializer.deserializeFromStore(DataFactory.namedNode(serialized.value), store);
+            expect(serializedPosition).to.not.be.undefined;
+            expect(serializedOrientation).to.not.be.undefined;
             expect(deserializedFrame['_objects']).to.not.be.undefined;
             expect(deserializedFrame['_objects']).to.be.instanceOf(Map);
         });

@@ -13,6 +13,7 @@ import { IriString, Thing } from './types';
 import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, XmlSchemaTypeIri, xsd } from '../decorators/';
 import { mergeDeep } from './utils';
+import { MemberSerializerOptionsParent } from '../decorators/options';
 
 export class InternalRDFSerializer extends Serializer {
     serializationStrategy = new Map<Serializable<any>, SerializerFn<any, TypeDescriptor, any>>([
@@ -30,7 +31,7 @@ export class InternalRDFSerializer extends Serializer {
         typeDescriptor: TypeDescriptor,
         memberName: string,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions: any = {},
+        serializerOptions: InternalSerializerOptions = {},
     ): Thing | Literal {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
@@ -52,7 +53,7 @@ export class InternalRDFSerializer extends Serializer {
                 {
                     baseUri: serializerOptions.rdf.baseUri,
                     dataType: typeDescriptor.ctor,
-                    root: serializerOptions.root,
+                    parent: serializerOptions.parent
                 },
             ) as Thing | Quad_Object;
             if (output === undefined) {
@@ -105,7 +106,7 @@ export class InternalRDFSerializer extends Serializer {
         _: string,
         serializer: Serializer,
         __: ObjectMemberMetadata,
-        serializerOptions: any,
+        serializerOptions: InternalSerializerOptions,
     ): Thing {
         let metadata: ObjectMetadata | undefined;
         const rootMetadata = DataSerializerUtils.getRootMetadata(sourceObject.constructor);
@@ -173,6 +174,12 @@ export class InternalRDFSerializer extends Serializer {
         thing.termType = thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
 
         // Current thing
+        if (serializerOptions.current) {
+            serializerOptions.parent = {
+                thing: serializerOptions.current,
+                parent: serializerOptions.parent
+            };
+        }
         serializerOptions.current = thing;
 
         // Check for circular serialization
@@ -181,7 +188,8 @@ export class InternalRDFSerializer extends Serializer {
         } else if (serializerOptions.root.value === thing.value) {
             return undefined;
         }
-
+        serializerOptions.sourceObject = sourceObject;
+        
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
             const memberOptions =
@@ -190,15 +198,21 @@ export class InternalRDFSerializer extends Serializer {
                     : rootMember && rootMember.options && rootMember.options.rdf
                       ? rootMember
                       : undefined;
-            if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
+
+            if (!memberOptions || (
+                    !(
+                        memberOptions.options.rdf as RDFLiteralOptions).predicate
+                        && !memberOptions.options.rdf.serializer
+                    ) || memberOptions.options.rdf.identifier) {
                 return;
             }
+
             const object = serializer.convertSingleValue(
                 (sourceObject as any)[memberOptions.key],
                 memberOptions.type(),
                 `${memberOptions.name}`,
                 memberOptions,
-                { ...serializerOptions, sourceObject: sourceObject },
+                serializerOptions,
             );
 
             if (object) {
@@ -219,7 +233,7 @@ export class InternalRDFSerializer extends Serializer {
         memberName?: string,
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: any,
+        serializerOptions?: InternalSerializerOptions,
     ): (Literal | Thing)[] {
         return sourceObject.map((obj) => {
             return this.convertSingleValue(
@@ -238,7 +252,7 @@ export class InternalRDFSerializer extends Serializer {
         memberName?: string,
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: any,
+        serializerOptions?: InternalSerializerOptions,
     ): (Literal | Thing)[] {
         return Array.from(sourceObject.values()).map((obj) => {
             return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
@@ -310,5 +324,15 @@ export class InternalRDFSerializer extends Serializer {
 
     protected iriToNode(iri: IriString): NamedNode {
         return DataFactory.namedNode(iri);
+    }
+}
+
+interface InternalSerializerOptions {
+    sourceObject?: any;
+    root?: Thing;
+    current?: Thing;
+    parent?: MemberSerializerOptionsParent;
+    rdf?: {
+        baseUri: IriString;
     }
 }

@@ -1,6 +1,5 @@
 import {
     ArrayTypeDescriptor,
-    DataSerializerConfig,
     DataSerializerUtils,
     Deserializer,
     DeserializerFn,
@@ -15,6 +14,7 @@ import { Literal, NamedNode, Quad_Object } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions, xsd } from '../decorators';
 import { rdf } from '../vocab';
 import { IriString, RDFSerializerConfig, Thing } from './types';
+import { MemberDeserializerOptionsParent } from '../decorators/options';
 
 export class InternalRDFDeserializer extends Deserializer {
     deserializationStrategy = new Map<Serializable<any>, DeserializerFn<any, TypeDescriptor, any>>([
@@ -101,7 +101,7 @@ export class InternalRDFDeserializer extends Deserializer {
         knownTypes: Map<string, Serializable<any>>,
         memberName = 'object',
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: RDFSerializerConfig,
+        serializerOptions?: InternalDeserializerOptions,
     ): any {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
@@ -120,7 +120,8 @@ export class InternalRDFDeserializer extends Deserializer {
                 sourceObject,
                 serializerOptions.targetObject,
                 {
-                    dataType: typeDescriptor.ctor
+                    dataType: typeDescriptor.ctor,
+                    parent: serializerOptions.parent
                 }
             ) as any;
         }
@@ -164,7 +165,7 @@ export class InternalRDFDeserializer extends Deserializer {
         knownTypes: Map<string, Serializable<any>>,
         _: string,
         deserializer: Deserializer,
-        serializerOptions?: RDFSerializerConfig,
+        serializerOptions?: InternalDeserializerOptions,
     ): IndexedObject | T | undefined {
         const expectedSelfType = typeDescriptor.ctor;
         const typeFromRDF = this.rdfTypeResolver(sourceObject, knownTypes, serializerOptions.rdf.knownTypes);
@@ -207,6 +208,15 @@ export class InternalRDFDeserializer extends Deserializer {
                 : sourceObject.value;
         }
 
+        // Current object
+        if (serializerOptions.targetObject) {
+            serializerOptions.parent = {
+                object: serializerOptions.targetObject,
+                parent: serializerOptions.parent
+            };
+        }
+        serializerOptions.targetObject = targetObject;
+
         // Deserialize predicates
         const usedPredicates: IriString[] = [];
         metadata.dataMembers.forEach((member) => {
@@ -218,62 +228,76 @@ export class InternalRDFDeserializer extends Deserializer {
                       ? rootMember
                       : undefined;
 
-            if (!memberOptions || !(memberOptions.options.rdf as RDFLiteralOptions).predicate) {
-                return undefined;
+            if (!memberOptions || (
+                    !(memberOptions.options.rdf as RDFLiteralOptions).predicate
+                    && !memberOptions.options.rdf.deserializer
+                ) || memberOptions.options.rdf.identifier) {
+                return;
             }
 
             const predicates = (memberOptions.options.rdf as RDFLiteralOptions).predicate;
-            [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
-                usedPredicates.push(predicateIri);
-                if (!sourceObject.predicates[predicateIri]) {
-                    return;
-                }
-
-                if (memberOptions.type().ctor === Array) {
-                    targetObject[memberOptions.key] = this.deserializeArray(
-                        sourceObject.predicates[predicateIri] as Quad_Object[],
-                        memberOptions.type() as ArrayTypeDescriptor,
-                        knownTypes,
-                        memberOptions.name,
-                        this,
-                        memberOptions,
-                        serializerOptions,
-                    );
-                } else if (memberOptions.type().ctor === Map) {
-                    targetObject[memberOptions.key] = this.deserializeMap(
-                        sourceObject.predicates[predicateIri] as Quad_Object[],
-                        memberOptions.type() as MapTypeDescriptor,
-                        knownTypes,
-                        memberOptions.name,
-                        this,
-                        memberOptions,
-                        serializerOptions,
-                    );
-                } else if (memberOptions.type().ctor === Set) {
-                    targetObject[memberOptions.key] = this.deserializeSet(
-                        sourceObject.predicates[predicateIri] as Quad_Object[],
-                        memberOptions.type() as SetTypeDescriptor,
-                        knownTypes,
-                        memberOptions.name,
-                        this,
-                        memberOptions,
-                        serializerOptions,
-                    );
-                } else {
-                    targetObject[memberOptions.key] = sourceObject.predicates[predicateIri]
-                        .map((object) => {
-                            return deserializer.convertSingleValue(
-                                object,
-                                memberOptions.type(),
-                                knownTypes,
-                                memberOptions.name,
-                                memberOptions,
-                                { ...serializerOptions, targetObject: targetObject },
-                            );
-                        })
-                        .filter((item) => this.isInstanceOf(item, memberOptions.type().ctor))[0];
-                }
-            });
+            if (predicates !== undefined) {
+                [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
+                    usedPredicates.push(predicateIri);
+                    if (!sourceObject.predicates[predicateIri]) {
+                        return;
+                    }
+    
+                    if (memberOptions.type().ctor === Array) {
+                        targetObject[memberOptions.key] = this.deserializeArray(
+                            sourceObject.predicates[predicateIri] as Quad_Object[],
+                            memberOptions.type() as ArrayTypeDescriptor,
+                            knownTypes,
+                            memberOptions.name,
+                            this,
+                            memberOptions,
+                            serializerOptions,
+                        );
+                    } else if (memberOptions.type().ctor === Map) {
+                        targetObject[memberOptions.key] = this.deserializeMap(
+                            sourceObject.predicates[predicateIri] as Quad_Object[],
+                            memberOptions.type() as MapTypeDescriptor,
+                            knownTypes,
+                            memberOptions.name,
+                            this,
+                            memberOptions,
+                            serializerOptions,
+                        );
+                    } else if (memberOptions.type().ctor === Set) {
+                        targetObject[memberOptions.key] = this.deserializeSet(
+                            sourceObject.predicates[predicateIri] as Quad_Object[],
+                            memberOptions.type() as SetTypeDescriptor,
+                            knownTypes,
+                            memberOptions.name,
+                            this,
+                            memberOptions,
+                            serializerOptions,
+                        );
+                    } else {
+                        targetObject[memberOptions.key] = sourceObject.predicates[predicateIri]
+                            .map((object) => {
+                                return deserializer.convertSingleValue(
+                                    object,
+                                    memberOptions.type(),
+                                    knownTypes,
+                                    memberOptions.name,
+                                    memberOptions,
+                                    serializerOptions,
+                                );
+                            })
+                            .filter((item) => this.isInstanceOf(item, memberOptions.type().ctor))[0];
+                    }
+                });
+            } else {
+                targetObject[memberOptions.key] = memberOptions.options.rdf.deserializer(
+                    undefined,
+                    targetObject,
+                    {
+                        dataType: memberOptions.type() as any,
+                        parent: serializerOptions.parent,
+                    }
+                );
+            }
         });
 
         if (targetObject) {
@@ -317,7 +341,7 @@ export class InternalRDFDeserializer extends Deserializer {
         memberName: string,
         deserializer: Deserializer,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: RDFSerializerConfig,
+        serializerOptions?: InternalDeserializerOptions,
     ): any {
         if (!sourceObject) {
             return [];
@@ -356,7 +380,7 @@ export class InternalRDFDeserializer extends Deserializer {
         memberName: string,
         deserializer: Deserializer,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: DataSerializerConfig,
+        serializerOptions?: InternalDeserializerOptions,
     ): any {
         const result = new Map();
         if (!sourceObject) {
@@ -412,7 +436,7 @@ export class InternalRDFDeserializer extends Deserializer {
         memberName: string,
         deserializer: Deserializer,
         memberOptions?: ObjectMemberMetadata,
-        serializerOptions?: DataSerializerConfig,
+        serializerOptions?: InternalDeserializerOptions,
     ): any {
         const result = new Set();
         if (!sourceObject) {
@@ -435,4 +459,8 @@ export class InternalRDFDeserializer extends Deserializer {
             });
         return result;
     }
+}
+
+interface InternalDeserializerOptions extends RDFSerializerConfig {
+    parent?: MemberDeserializerOptionsParent;
 }
