@@ -50,6 +50,10 @@ describe('DataObject', () => {
             const serialized = RDFSerializer.serialize(object);
             expect(serialized.value).to.eql("http://test.com/abc");
         });
+
+        it('should serialize hasOrientation', () => {
+            expect(serialized.predicates[poso.hasOrientation]).to.not.be.undefined;
+        });
     });
 
     describe('deserialization', () => {

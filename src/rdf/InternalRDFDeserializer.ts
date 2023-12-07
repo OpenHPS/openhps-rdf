@@ -119,7 +119,9 @@ export class InternalRDFDeserializer extends Deserializer {
             return memberOptions.options.rdf.deserializer(
                 sourceObject,
                 serializerOptions.targetObject,
-                typeDescriptor.ctor,
+                {
+                    dataType: typeDescriptor.ctor
+                }
             ) as any;
         }
 

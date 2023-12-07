@@ -49,10 +49,15 @@ export class InternalRDFSerializer extends Serializer {
             const output = memberOptions.options.rdf.serializer(
                 sourceObject,
                 serializerOptions.sourceObject,
-                typeDescriptor.ctor,
-                serializerOptions.rdf.baseUri,
+                {
+                    baseUri: serializerOptions.rdf.baseUri,
+                    dataType: typeDescriptor.ctor,
+                    root: serializerOptions.root,
+                },
             ) as Thing | Quad_Object;
-            if (output.termType === 'Literal') {
+            if (output === undefined) {
+                return undefined;
+            } else if (output.termType === 'Literal') {
                 return output as Literal;
             } else if (output.termType === 'NamedNode') {
                 return output as NamedNode;
@@ -166,6 +171,9 @@ export class InternalRDFSerializer extends Serializer {
             thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
         }
         thing.termType = thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
+
+        // Current thing
+        serializerOptions.current = thing;
 
         // Check for circular serialization
         if (serializerOptions.root === undefined) {

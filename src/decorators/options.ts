@@ -79,13 +79,26 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             serializer?: (
                 value: any,
                 object?: any,
-                dataType?: Serializable<any>,
-                baseUri?: IriString,
+                options?: MemberSerializerOptions
             ) => Partial<Thing | Quad_Object>;
             /**
              * Custom (partial) deserializer for this member.
              */
-            deserializer?: (thing: Thing, targetObject?: any, dataType?: Serializable<any>) => any;
+            deserializer?: (thing: Thing, targetObject?: any, options?: MemberDeserializerOptions) => any;
         } & (RDFLiteralOptions | RDFIdentifierOptions);
     }
+}
+
+export interface MemberSerializerOptions {
+    dataType?: Serializable<any>;
+    baseUri?: IriString;
+    root?: Thing;
+    parent?: MemberSerializerOptionsParent;
+}
+
+type MemberSerializerOptionsParent =  { thing: Thing; parent: MemberSerializerOptionsParent };
+
+export interface MemberDeserializerOptions {
+    dataType?: Serializable<any>;
+    parentObject?: any;
 }
