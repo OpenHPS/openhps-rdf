@@ -116,14 +116,10 @@ export class InternalRDFDeserializer extends Deserializer {
             memberOptions.options.rdf &&
             memberOptions.options.rdf.deserializer
         ) {
-            return memberOptions.options.rdf.deserializer(
-                sourceObject,
-                serializerOptions.targetObject,
-                {
-                    dataType: typeDescriptor.ctor,
-                    parent: serializerOptions.parent
-                }
-            ) as any;
+            return memberOptions.options.rdf.deserializer(sourceObject, serializerOptions.targetObject, {
+                dataType: typeDescriptor.ctor,
+                parent: serializerOptions.parent,
+            }) as any;
         }
 
         const deserializer = this.deserializationStrategy.get(typeDescriptor.ctor);
@@ -209,13 +205,15 @@ export class InternalRDFDeserializer extends Deserializer {
         }
 
         // Current object
-        if (serializerOptions.targetObject) {
+        if (serializerOptions.currentObject) {
             serializerOptions.parent = {
-                object: serializerOptions.targetObject,
-                parent: serializerOptions.parent
+                thing: serializerOptions.currentThing,
+                object: serializerOptions.currentObject,
+                parent: serializerOptions.parent,
             };
         }
-        serializerOptions.targetObject = targetObject;
+        serializerOptions.currentObject = targetObject;
+        serializerOptions.currentThing = sourceObject;
 
         // Deserialize predicates
         const usedPredicates: IriString[] = [];
@@ -228,10 +226,12 @@ export class InternalRDFDeserializer extends Deserializer {
                       ? rootMember
                       : undefined;
 
-            if (!memberOptions || (
-                    !(memberOptions.options.rdf as RDFLiteralOptions).predicate
-                    && !memberOptions.options.rdf.deserializer
-                ) || memberOptions.options.rdf.identifier) {
+            if (
+                !memberOptions ||
+                (!(memberOptions.options.rdf as RDFLiteralOptions).predicate &&
+                    !memberOptions.options.rdf.deserializer) ||
+                memberOptions.options.rdf.identifier
+            ) {
                 return;
             }
 
@@ -242,7 +242,7 @@ export class InternalRDFDeserializer extends Deserializer {
                     if (!sourceObject.predicates[predicateIri]) {
                         return;
                     }
-    
+
                     if (memberOptions.type().ctor === Array) {
                         targetObject[memberOptions.key] = this.deserializeArray(
                             sourceObject.predicates[predicateIri] as Quad_Object[],
@@ -289,14 +289,10 @@ export class InternalRDFDeserializer extends Deserializer {
                     }
                 });
             } else {
-                targetObject[memberOptions.key] = memberOptions.options.rdf.deserializer(
-                    undefined,
-                    targetObject,
-                    {
-                        dataType: memberOptions.type() as any,
-                        parent: serializerOptions.parent,
-                    }
-                );
+                targetObject[memberOptions.key] = memberOptions.options.rdf.deserializer(undefined, targetObject, {
+                    dataType: memberOptions.type() as any,
+                    parent: serializerOptions.parent,
+                });
             }
         });
 
@@ -463,4 +459,6 @@ export class InternalRDFDeserializer extends Deserializer {
 
 interface InternalDeserializerOptions extends RDFSerializerConfig {
     parent?: MemberDeserializerOptionsParent;
+    currentObject?: any;
+    currentThing?: Thing;
 }

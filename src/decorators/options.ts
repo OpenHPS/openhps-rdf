@@ -76,11 +76,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
             /**
              * Custom (partial) serializer for this member.
              */
-            serializer?: (
-                value: any,
-                object?: any,
-                options?: MemberSerializerOptions
-            ) => Partial<Thing | Quad_Object>;
+            serializer?: (value: any, object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object>;
             /**
              * Custom (partial) deserializer for this member.
              */
@@ -95,9 +91,9 @@ export interface MemberSerializerOptions {
     parent?: MemberSerializerOptionsParent;
 }
 
-export type MemberSerializerOptionsParent =  { thing: Thing; parent: MemberSerializerOptionsParent };
+export type MemberSerializerOptionsParent = { thing: Thing; parent: MemberSerializerOptionsParent };
 
-export type MemberDeserializerOptionsParent =  { object: any; parent: MemberDeserializerOptionsParent };
+export type MemberDeserializerOptionsParent = { thing: Thing; object: any; parent: MemberDeserializerOptionsParent };
 
 export interface MemberDeserializerOptions {
     dataType?: Serializable<any>;

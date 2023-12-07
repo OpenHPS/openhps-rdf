@@ -47,15 +47,11 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions.options.rdf &&
             memberOptions.options.rdf.serializer
         ) {
-            const output = memberOptions.options.rdf.serializer(
-                sourceObject,
-                serializerOptions.sourceObject,
-                {
-                    baseUri: serializerOptions.rdf.baseUri,
-                    dataType: typeDescriptor.ctor,
-                    parent: serializerOptions.parent
-                },
-            ) as Thing | Quad_Object;
+            const output = memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
+                baseUri: serializerOptions.rdf.baseUri,
+                dataType: typeDescriptor.ctor,
+                parent: serializerOptions.parent,
+            }) as Thing | Quad_Object;
             if (output === undefined) {
                 return undefined;
             } else if (output.termType === 'Literal') {
@@ -177,7 +173,7 @@ export class InternalRDFSerializer extends Serializer {
         if (serializerOptions.current) {
             serializerOptions.parent = {
                 thing: serializerOptions.current,
-                parent: serializerOptions.parent
+                parent: serializerOptions.parent,
             };
         }
         serializerOptions.current = thing;
@@ -189,7 +185,7 @@ export class InternalRDFSerializer extends Serializer {
             return undefined;
         }
         serializerOptions.sourceObject = sourceObject;
-        
+
         metadata.dataMembers.forEach((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
             const memberOptions =
@@ -199,11 +195,12 @@ export class InternalRDFSerializer extends Serializer {
                       ? rootMember
                       : undefined;
 
-            if (!memberOptions || (
-                    !(
-                        memberOptions.options.rdf as RDFLiteralOptions).predicate
-                        && !memberOptions.options.rdf.serializer
-                    ) || memberOptions.options.rdf.identifier) {
+            if (
+                !memberOptions ||
+                (!(memberOptions.options.rdf as RDFLiteralOptions).predicate &&
+                    !memberOptions.options.rdf.serializer) ||
+                memberOptions.options.rdf.identifier
+            ) {
                 return;
             }
 
@@ -334,5 +331,5 @@ interface InternalSerializerOptions {
     parent?: MemberSerializerOptionsParent;
     rdf?: {
         baseUri: IriString;
-    }
+    };
 }

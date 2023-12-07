@@ -3,6 +3,7 @@ import { xsd } from '../decorators';
 import { dcterms, poso } from '../vocab';
 import { Thing } from '../rdf';
 import { DataFactory } from 'n3';
+import { MemberSerializerOptions } from '../decorators/options';
 
 SerializableObject({
     rdf: {
@@ -17,12 +18,14 @@ SerializableMember({
 })(RelativePosition.prototype, 'timestamp');
 SerializableMember({
     rdf: {
+        identifier: false,
         predicate: poso.isRelativeTo,
-        serializer: (uid: string, _1, _2, baseUri: string) => {
-            return DataFactory.namedNode(`${baseUri}${uid}`);
+        serializer: (uid: string, _, options: MemberSerializerOptions) => {
+            return DataFactory.namedNode(`${options.baseUri}${uid}`);
         },
-        deserializer: (thing: Thing) =>
-            thing.value.substring(Math.max(thing.value.lastIndexOf('/'), thing.value.lastIndexOf('#')) + 1),
+        deserializer: (thing: Thing) => {
+            return thing.value.substring(Math.max(thing.value.lastIndexOf('/'), thing.value.lastIndexOf('#')) + 1);
+        },
     },
 })(RelativePosition.prototype, 'referenceObjectUID');
 SerializableMember({

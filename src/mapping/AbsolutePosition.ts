@@ -2,7 +2,6 @@ import { AbsolutePosition, Orientation, SerializableMember, SerializableObject }
 import { xsd } from '../decorators';
 import { MemberDeserializerOptions, MemberSerializerOptions } from '../decorators/options';
 import { dcterms, poso } from '../vocab';
-import { DataFactory } from 'n3';
 import { RDFSerializer, Thing } from '../rdf';
 
 SerializableObject({
@@ -37,10 +36,14 @@ SerializableMember({
             }
             return undefined;
         },
-        deserializer: (thing: Thing, _, options: MemberDeserializerOptions) => {
-            if (options.parent) {
+        deserializer: (_1, _2, options: MemberDeserializerOptions) => {
+            if (options.parent && options.parent.thing) {
+                const predicate = options.parent.thing.predicates[poso.hasOrientation];
+                if (predicate) {
+                    return RDFSerializer.deserialize(predicate[0] as Thing);
+                }
             }
             return undefined;
-        }
+        },
     },
 })(AbsolutePosition.prototype, 'orientation');
