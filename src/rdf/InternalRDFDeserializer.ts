@@ -213,6 +213,7 @@ export class InternalRDFDeserializer extends Deserializer {
             };
         }
         serializerOptions.currentObject = targetObject;
+        serializerOptions.targetObject = targetObject;
         serializerOptions.currentThing = sourceObject;
 
         // Deserialize predicates

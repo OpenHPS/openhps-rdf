@@ -367,17 +367,17 @@ export class RDFSerializer extends DataSerializer {
         );
     }
 
-    static deserialize<T>(serializedData: Thing, dataType?: Constructor<T>): T;
-    static deserialize<T>(serializedData: any[], dataType?: Constructor<T>): T | T[];
+    static deserialize<T>(serializedData: Thing, dataType?: Serializable<T>): T;
+    static deserialize<T>(serializedData: any[], dataType?: Serializable<T>): T | T[];
     /**
      * Deserialize data
      * @param {any} serializedData Data to deserialze
-     * @param {Constructor} dataType Optional data type to specify deserialization type
+     * @param {Serializable} dataType Optional data type to specify deserialization type
      * @returns {any} Deserialized object
      */
-    static deserialize<T>(serializedData: any, dataType?: Constructor<T>): T | T[] {
+    static deserialize<T>(serializedData: any, dataType?: Serializable<T>): T | T[] {
         if (serializedData['predicates'] === undefined) {
-            return super.deserialize(serializedData, dataType);
+            return super.deserialize(serializedData, dataType as Constructor<T>);
         }
         const deserializer = new InternalRDFDeserializer();
         const finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);

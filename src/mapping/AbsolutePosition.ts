@@ -40,7 +40,7 @@ SerializableMember({
             if (options.parent && options.parent.thing) {
                 const predicate = options.parent.thing.predicates[poso.hasOrientation];
                 if (predicate) {
-                    return RDFSerializer.deserialize(predicate[0] as Thing);
+                    return RDFSerializer.deserialize(predicate[0] as Thing, options.dataType);
                 }
             }
             return undefined;
