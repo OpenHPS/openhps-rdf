@@ -1,6 +1,5 @@
 export * from './Geometry';
 export * from './QuantityValue';
-export * from './SerializableNamedNode';
 export * from './Address';
 export * from './FeatureOfInterest';
 export * from './ObservableProperty';
