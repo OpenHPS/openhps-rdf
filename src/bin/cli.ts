@@ -86,10 +86,12 @@ function main() {
         return Promise.resolve(undefined);
     }).then(mirrors => {
         data.mirrors = mirrors;
-        console.log("The following mirrors will be used:");
-        Object.keys(data.mirrors).forEach(source => {
-            console.log(`\t<${source}> -> <${data.mirrors[source]}>`)
-        });
+        if (data.mirrors) {
+            console.log("The following mirrors will be used:");
+            Object.keys(data.mirrors).forEach(source => {
+                console.log(`\t<${source}> -> <${data.mirrors[source]}>`)
+            });
+        }
 
         return generateFiles(data.namespaces, { targetDir: data.directory, mirrors: data.mirrors });
     });
