@@ -56,6 +56,11 @@
       "require": "./dist/cjs/index.engine.js",
       "import": "./dist/esm/index.engine.js",
       "types": "./dist/types/index.engine.d.ts"
+    },
+    "./models": {
+      "require": "./dist/cjs/index.models.js",
+      "import": "./dist/esm/index.models.js",
+      "types": "./dist/types/index.models.d.ts"
     }
   },
   "unpkg": "dist/web/openhps-rdf.all.min.js",

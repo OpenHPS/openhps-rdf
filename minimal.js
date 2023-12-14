@@ -1,1 +1,1 @@
-export * from './dist/esm/index.minimal';
+export * from './dist/esm/index.models';

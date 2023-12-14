@@ -143,4 +143,6 @@ module.exports = env => [
   bundle(env, false, 'index.serialization', '.serialization'),
   bundle(env, true, 'index.vocab', '.vocab'),
   bundle(env, false, 'index.vocab', '.vocab'),
+  bundle(env, true, 'index.models', '.models'),
+  bundle(env, false, 'index.models', '.models'),
 ];
