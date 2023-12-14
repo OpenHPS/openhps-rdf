@@ -67,7 +67,7 @@ jobs:
           key: ${{ runner.os }}-build-v1-${{ hashFiles('**/package-lock.json') }}-${{ github.run_number }}
       - name: Quality
         run: |
-          npm run lint
+          npm run lint -- --fix
 
   test_coverage:
     name: Unit tests
