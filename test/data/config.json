@@ -1,9 +1,10 @@
 {
     "namespaces": {
-        "europont": "http://elite.polito.it/ontologies/eupont.owl#"
+        "europont": "http://elite.polito.it/ontologies/eupont.owl#",
+        "example": "https://sembeacon.org/examples/openhps2021/beacons.ttl#"
     },
     "mirrors": {
-
+        "https://sembeacon.org/examples/openhps2021/beacons.ttl#": "file://./test/data/beacons.ttl"
     },
     "directory": "test/data/output"
 }

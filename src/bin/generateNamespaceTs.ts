@@ -9,36 +9,24 @@ import axios from 'axios';
 import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
 import { RdfXmlParser } from "rdfxml-streaming-parser";
 import * as https from 'https';
+import * as fs from 'fs';
+import * as path from 'path';
 
-/**
- * @param namespace
- * @param options
- */
-export async function generateNamespaceTs(
-    prefix: string,
-    namespace: string,
-    options = {
-        mirrors: {} as Mirrors,
-    },
-) {
-    const entityTypes = {
-        Property: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Property',
-        Class: 'http://www.w3.org/2000/01/rdf-schema#Class',
-        Datatype: 'http://www.w3.org/2000/01/rdf-schema#Datatype',
-        OwlClass: 'http://www.w3.org/2002/07/owl#Class',
-        OwlObjectProperty: 'http://www.w3.org/2002/07/owl#ObjectProperty',
-        OwlDatatypeProperty: 'http://www.w3.org/2002/07/owl#DatatypeProperty',
-        HydraResource: 'http://www.w3.org/ns/hydra/core#Resource',
-        HydraClass: 'http://www.w3.org/ns/hydra/core#Class',
-        HydraLink: 'http://www.w3.org/ns/hydra/core#Link',
-        HydraTemplatedLink: 'http://www.w3.org/ns/hydra/core#TemplatedLink',
-        HydraVariableRepresentation: 'http://www.w3.org/ns/hydra/core#VariableRepresentation',
-        OtherIndividual: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-        //XsdDatatype: 'http://www.w3.org/2001/XMLSchema'
-    };
+function fetchLocalData(filePath: string): Quad[] {
+    const localPath = path.normalize(filePath.replace("file://", ""));
+    const file =  fs.readFileSync(localPath, { encoding: "utf-8" });
+    let quads = [];
+    if (file.toLowerCase().endsWith("ttl")) {
+        const parser = new Parser({
+            format: "text/turtle"
+        });
+        quads = parser.parse(file);
+    }
+    return quads;
+}
 
-    const schemaLocation = options.mirrors[namespace] || namespace;
-    const response = await axios.get(schemaLocation, {
+async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> {
+    const response = await axios.get(url, {
         headers: {
             'Accept': 'text/turtle, application/rdf+xml, text/html',
         },
@@ -69,6 +57,39 @@ export async function generateNamespaceTs(
         });
         quads = parser.parse(file);
     }
+    return quads;
+}
+
+/**
+ * @param namespace
+ * @param options
+ */
+export async function generateNamespaceTs(
+    prefix: string,
+    namespace: string,
+    options = {
+        mirrors: {} as Mirrors,
+    },
+) {
+    const entityTypes = {
+        Property: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Property',
+        Class: 'http://www.w3.org/2000/01/rdf-schema#Class',
+        Datatype: 'http://www.w3.org/2000/01/rdf-schema#Datatype',
+        OwlClass: 'http://www.w3.org/2002/07/owl#Class',
+        OwlObjectProperty: 'http://www.w3.org/2002/07/owl#ObjectProperty',
+        OwlDatatypeProperty: 'http://www.w3.org/2002/07/owl#DatatypeProperty',
+        HydraResource: 'http://www.w3.org/ns/hydra/core#Resource',
+        HydraClass: 'http://www.w3.org/ns/hydra/core#Class',
+        HydraLink: 'http://www.w3.org/ns/hydra/core#Link',
+        HydraTemplatedLink: 'http://www.w3.org/ns/hydra/core#TemplatedLink',
+        HydraVariableRepresentation: 'http://www.w3.org/ns/hydra/core#VariableRepresentation',
+        OtherIndividual: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+        //XsdDatatype: 'http://www.w3.org/2001/XMLSchema'
+    };
+
+    const schemaLocation = options.mirrors[namespace] || namespace;
+    const fetchFn = schemaLocation.startsWith("file://") ? fetchLocalData : fetchRemoteData;
+    const quads: Quad[] = await fetchFn(schemaLocation, namespace);
     const store = new Store(quads);
 
     let entities: NamedNode[] = Object.values(entityTypes).reduce((entitiesSoFar, entityType) => {
