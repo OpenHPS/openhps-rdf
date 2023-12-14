@@ -9,7 +9,7 @@ import { foaf, vcard } from '../vocab';
 export class User {
     @SerializableMember({
         rdf: {
-            predicates: [vcard.given_name, foaf.name],
+            predicates: [vcard.given_name, foaf.givenname],
         },
     })
     firstName: string;
@@ -20,4 +20,29 @@ export class User {
         },
     })
     lastName: string;
+
+    @SerializableMember({
+        rdf: {
+            predicates: [vcard.fn, foaf.name],
+        },
+    })
+    private _formattedName: string;
+
+    get name(): string {
+        return this._formattedName ?? `${this.firstName} ${this.lastName}`;
+    }
+
+    @SerializableMember({
+        rdf: {
+            predicates: [foaf.nick],
+        },
+    })
+    nickname?: string;
+
+    @SerializableMember({
+        rdf: {
+            predicate: [vcard.hasPhoto],
+        },
+    })
+    picture?: string;
 }

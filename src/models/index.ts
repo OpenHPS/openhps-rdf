@@ -9,3 +9,4 @@ export * from './Place';
 export * from './Property';
 export * from './PropertyAccuracy';
 export * from './User';
+export * from './Event';

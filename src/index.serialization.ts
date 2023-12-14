@@ -1,6 +1,6 @@
 export * from './rdf';
 export * from './decorators';
-export * from './models';
+import * as Model from './models';
 import './mapping';
 // N3 useful classes
 export {
@@ -17,3 +17,4 @@ export {
     Parser,
     Writer,
 } from 'n3';
+export { Model };
