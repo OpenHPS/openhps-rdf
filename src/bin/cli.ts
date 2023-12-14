@@ -7,6 +7,7 @@ import { input } from '@inquirer/prompts';
 import * as yargs from 'yargs';
 import { Mirrors, Namespaces } from './types';
 import { generateFiles } from './generateFiles';
+import * as fs from 'fs';
 
 const args = yargs.option('d', {
     alias: 'dictionary',
@@ -25,6 +26,9 @@ const args = yargs.option('d', {
     array: true
 }).option('?', {
     alias: 'help',
+    default: undefined,
+}).option('c', {
+    alias: 'config',
     default: undefined,
 }).option('v', {
     alias: 'verbose',
@@ -46,14 +50,26 @@ const data: {
 function main() {
     console.log(chalk.redBright('OpenHPS RDF Generator'));
 
+    if (args['c']) {
+        const configPath = path.normalize(args['c']);
+        console.log(`Loading config: ${configPath}`);
+        const config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf-8" }));
+        data.mirrors = config.mirrors;
+        data.namespaces = config.namespaces;
+        data.directory = config.directory;
+    }
+
     Promise.resolve(
-        args['d'] ??
+        args['d'] ?? data.directory ??
             input({
                 message: 'Enter the output directory',
             }),
     ).then(async (directory) => {
         data.directory = path.normalize(directory);
-        if (args['n']) {
+
+        if (data.namespaces) {
+            return Promise.resolve(data.namespaces);
+        } else if (args['n']) {
             return Promise.resolve((args['n'] as string[]).map(ns => {
                 const i = ns.indexOf(":");
                 return {
@@ -76,7 +92,9 @@ function main() {
             console.log(`\t@prefix ${ns}: <${data.namespaces[ns]}> .`)
         });
 
-        if (args['m']) {
+        if (data.mirrors) {
+            return Promise.resolve(data.mirrors);
+        } else if (args['m']) {
             const mirrors = {};
             for (let i = 0 ; i < args['m'].length ; i += 2) {
                 mirrors[args['m'][i]] = args['m'][i + 1];

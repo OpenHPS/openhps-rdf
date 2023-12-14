@@ -9,3 +9,7 @@ export * from './Property';
 export * from './PropertyAccuracy';
 export * from './User';
 export * from './Event';
+export * from './Procedure';
+export * from './System';
+export * from './Platform';
+export * from './Deployment';

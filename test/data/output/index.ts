@@ -1,0 +1,1 @@
+import * as europontImport from './europont'; export const europont = europontImport;

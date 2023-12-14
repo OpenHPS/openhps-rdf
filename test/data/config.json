@@ -1,0 +1,9 @@
+{
+    "namespaces": {
+        "europont": "http://elite.polito.it/ontologies/eupont.owl#"
+    },
+    "mirrors": {
+
+    },
+    "directory": "test/data/output"
+}
