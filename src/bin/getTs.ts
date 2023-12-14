@@ -12,7 +12,8 @@ function getComment(node: NamedNode, store: Store): string {
         .filter((object: Literal) => object.language === "en");
     const dctermsDescription = store.getObjects(node, 'http://purl.org/dc/terms/description', null)
         .filter((object: Literal) => object.language === "en");
-    const comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : dctermsDescription.length > 0 ? dctermsDescription[0].value : undefined;
+    let comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : dctermsDescription.length > 0 ? dctermsDescription[0].value : undefined;
+    comment = sanitize(comment);
     return comment;
 }
 
@@ -21,8 +22,17 @@ function getLabel(node: NamedNode, store: Store): string {
         .filter((object: Literal) => object.language === "en");
     const skosLabels = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null)
         .filter((object: Literal) => object.language === "en");
-    const label = rdfLabels.length > 0 ? rdfLabels[0].value : skosLabels.length > 0 ? skosLabels[0].value : undefined;
+    let label = rdfLabels.length > 0 ? rdfLabels[0].value : skosLabels.length > 0 ? skosLabels[0].value : undefined;
+    label = sanitize(label);
     return label;
+}
+
+function sanitize(str: string): string {
+    if (!str) {
+        return str;
+    }
+    str = str.replace(/\u00A0/, " ");
+    return str;
 }
 
 const reservedWords = [

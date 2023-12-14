@@ -1,5 +1,5 @@
 import 'mocha';
-import { RDFSerializer } from '../../src';
+import { ogc, RDFSerializer } from '../../src';
 import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
 import { Building, Floor, Room, SymbolicSpace } from '@openhps/geospatial';
 import * as fs from 'fs';
@@ -108,6 +108,12 @@ describe('@openhps/geospatial', () => {
     
             it('should contain a geometry', () =>{
                 expect((deserialized as Room).getBounds().length).to.be.gt(4);
+            });
+
+
+            it('should use sfWithin on the parent', () =>{
+                expect(serialized.predicates[ogc.sfWithin]).to.not.be.undefined;
+                expect(deserialized.parentUID).to.not.be.undefined;
             });
     
             it('should still support geojson output', () => {

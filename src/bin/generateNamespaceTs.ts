@@ -85,7 +85,7 @@ export async function generateNamespaceTs(
         return entities.findIndex((entity) => entity.id === entityOfThisType.id) === -1;
     }));
     const typeAliases = Object.keys(entityTypes)
-        .map((alias) => `type ${alias} = IriString;`)
+        .map((alias) => `type ${alias} = IriString; // eslint-disable-line`)
         .join('\n');
     const entityTs = entities
         .filter((entity: NamedNode) => {
