@@ -27,19 +27,20 @@ SerializableMember({
         predicate: undefined,
         serializer: (value: Orientation, _, options?: MemberSerializerOptions) => {
             if (options.parent) {
-                let orientations = options.parent.thing.predicates[poso.hasOrientation];
-                if (!orientations) {
-                    orientations = [];
-                    options.parent.thing.predicates[poso.hasOrientation] = orientations;
-                }
-                orientations.push(RDFSerializer.serialize(value));
+                const orientations = options.parent.thing.predicates[poso.hasOrientation] || [];
+                orientations.push(
+                    RDFSerializer.serialize(value, {
+                        baseUri: options.baseUri,
+                    }),
+                );
+                options.parent.thing.predicates[poso.hasOrientation] = orientations;
             }
             return undefined;
         },
         deserializer: (_1, _2, options: MemberDeserializerOptions) => {
             if (options.parent && options.parent.thing) {
                 const predicate = options.parent.thing.predicates[poso.hasOrientation];
-                if (predicate) {
+                if (predicate && predicate[0]) {
                     return RDFSerializer.deserialize(predicate[0] as Thing, options.dataType);
                 }
             }

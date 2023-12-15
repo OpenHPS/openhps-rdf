@@ -31,6 +31,7 @@ describe('DataObject', () => {
                 format: 'text/turtle',
                 prettyPrint: false
             });
+            console.log(turtle)
             expect(serialized.predicates[rdf.type].length).to.equal(2);
         });
 

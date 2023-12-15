@@ -86,6 +86,7 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
 }
 
 export interface MemberSerializerOptions {
+    thing: Thing;
     dataType?: Serializable<any>;
     baseUri?: IriString;
     parent?: MemberSerializerOptionsParent;
@@ -96,6 +97,7 @@ export type MemberSerializerOptionsParent = { thing: Thing; parent: MemberSerial
 export type MemberDeserializerOptionsParent = { thing: Thing; object: any; parent: MemberDeserializerOptionsParent };
 
 export interface MemberDeserializerOptions {
+    thing: Thing;
     dataType?: Serializable<any>;
     parent?: MemberDeserializerOptionsParent;
 }

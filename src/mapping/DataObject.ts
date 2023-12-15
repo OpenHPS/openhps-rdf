@@ -4,10 +4,12 @@ import {
     SerializableMember,
     SerializableObject,
     RelativePosition,
+    RelativeOrientation,
 } from '@openhps/core';
 import { xsd } from '../decorators';
-import { Thing } from '../rdf';
+import { RDFSerializer, Thing } from '../rdf';
 import { dcterms, poso, rdfs, sosa, ogc } from '../vocab';
+import { MemberDeserializerOptions, MemberSerializerOptions } from '../decorators/options';
 
 SerializableObject({
     rdf: {
@@ -47,6 +49,53 @@ SerializableMember({
 })(DataObject.prototype, 'position');
 SerializableArrayMember(RelativePosition, {
     rdf: {
-        predicate: poso.hasPosition,
+        identifier: false,
+        predicate: undefined,
+        serializer: (value: RelativePosition[], _, options?: MemberSerializerOptions) => {
+            const orientations = options.thing.predicates[poso.hasOrientation] || [];
+            const positions = options.thing.predicates[poso.hasPosition] || [];
+
+            value.forEach((relPos) => {
+                if (relPos instanceof RelativeOrientation) {
+                    orientations.push(
+                        RDFSerializer.serialize(relPos, {
+                            baseUri: options.baseUri,
+                        }),
+                    );
+                } else {
+                    positions.push(
+                        RDFSerializer.serialize(relPos, {
+                            baseUri: options.baseUri,
+                        }),
+                    );
+                }
+            });
+
+            options.thing.predicates[poso.hasOrientation] = orientations;
+            options.thing.predicates[poso.hasPosition] = positions;
+            return undefined;
+        },
+        deserializer: (_1, _2, options: MemberDeserializerOptions) => {
+            const relativePositions: RelativePosition[] = [];
+            const orientations = options.thing.predicates[poso.hasOrientation];
+            if (orientations) {
+                orientations.forEach((item) => {
+                    const deserialized = RDFSerializer.deserialize(item as Thing);
+                    if (deserialized instanceof RelativePosition) {
+                        relativePositions.push(deserialized);
+                    }
+                });
+            }
+            const positions = options.thing.predicates[poso.hasPosition];
+            if (positions) {
+                positions.forEach((item) => {
+                    const deserialized = RDFSerializer.deserialize(item as Thing);
+                    if (deserialized instanceof RelativePosition) {
+                        relativePositions.push(deserialized);
+                    }
+                });
+            }
+            return relativePositions;
+        },
     },
 })(DataObject.prototype, 'relativePositions');

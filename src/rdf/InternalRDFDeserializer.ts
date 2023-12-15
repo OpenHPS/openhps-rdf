@@ -117,6 +117,7 @@ export class InternalRDFDeserializer extends Deserializer {
             memberOptions.options.rdf.deserializer
         ) {
             return memberOptions.options.rdf.deserializer(sourceObject, serializerOptions.targetObject, {
+                thing: sourceObject,
                 dataType: typeDescriptor.ctor,
                 parent: serializerOptions.parent,
             }) as any;
@@ -291,6 +292,7 @@ export class InternalRDFDeserializer extends Deserializer {
                 });
             } else {
                 targetObject[memberOptions.key] = memberOptions.options.rdf.deserializer(undefined, targetObject, {
+                    thing: sourceObject,
                     dataType: memberOptions.type() as any,
                     parent: serializerOptions.parent,
                 });

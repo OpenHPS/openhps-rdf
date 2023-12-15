@@ -8,6 +8,7 @@ import './RelativeAngle';
 import './RelativeDistance';
 import './Relative2DPosition';
 import './Relative3DPosition';
+import './RelativeOrientation';
 
 import './DataObject';
 import './DataFrame';

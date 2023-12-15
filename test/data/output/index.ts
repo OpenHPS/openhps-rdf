@@ -1,2 +1,2 @@
 import * as europontImport from './europont'; export const europont = europontImport;
-import * as exampleImport from './example'; export const example = exampleImport;
+import * as posoImport from './poso'; export const poso = posoImport;

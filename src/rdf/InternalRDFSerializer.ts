@@ -48,7 +48,8 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions.options.rdf.serializer
         ) {
             const output = memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
-                baseUri: serializerOptions.rdf.baseUri,
+                thing: serializerOptions.current,
+                baseUri: serializerOptions.rdf.baseUri ?? ('' as IriString),
                 dataType: typeDescriptor.ctor,
                 parent: serializerOptions.parent,
             }) as Thing | Quad_Object;
@@ -209,7 +210,7 @@ export class InternalRDFSerializer extends Serializer {
                 memberOptions.type(),
                 `${memberOptions.name}`,
                 memberOptions,
-                serializerOptions,
+                { ...serializerOptions },
             );
 
             if (object) {

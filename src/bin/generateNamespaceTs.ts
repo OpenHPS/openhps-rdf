@@ -16,7 +16,7 @@ function fetchLocalData(filePath: string): Quad[] {
     const localPath = path.normalize(filePath.replace("file://", ""));
     const file =  fs.readFileSync(localPath, { encoding: "utf-8" });
     let quads = [];
-    if (file.toLowerCase().endsWith("ttl")) {
+    if (filePath.toLowerCase().endsWith("ttl")) {
         const parser = new Parser({
             format: "text/turtle"
         });
