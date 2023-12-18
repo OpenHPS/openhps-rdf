@@ -1,6 +1,6 @@
 import 'mocha';
 import { Absolute3DPosition, Accuracy3D, AngleUnit, DataFrame, DataObject, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
-import { poso, sosa, qudt, unit, RDFSerializer, Thing } from '../../src';
+import { poso, sosa, qudt, unit, RDFSerializer, Thing, Subject, IriString } from '../../src';
 import { expect } from 'chai';
 import { DataFactory, Parser, Store } from 'n3';
 
@@ -50,10 +50,16 @@ describe('DataFrame', () => {
     });
 
     describe('deserialization', () => {
-        const serialized = RDFSerializer.serialize(frame, {
-            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
-        });
-     
+        let serialized: Thing = undefined;
+        let serializedSubjects: Subject[] = [];
+
+        before(() => {
+            serialized = RDFSerializer.serialize(frame, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
+            serializedSubjects = RDFSerializer.serializeToSubjects(frame, "https://maximvdw.solidweb.org/public/openhps.ttl#");
+        })
+
         it('should deserialize a data frame', () => {
             const serializedObject = serialized.predicates[sosa.hasFeatureOfInterest][0] as Thing;
             const serializedPosition = serializedObject.predicates[poso.hasPosition][0] as Thing;
@@ -63,6 +69,10 @@ describe('DataFrame', () => {
             expect(serializedPosition).to.not.be.undefined;
             expect(serializedOrientation).to.not.be.undefined;
             expect(deserialized).to.not.be.undefined;
+
+            const deserializedSubjects: DataFrame = RDFSerializer.deserializeFromSubjects(serialized.value as IriString, serializedSubjects);
+            expect(deserializedSubjects).to.not.be.undefined;
+            expect(deserialized.getObjects().length).to.eql(deserializedSubjects.getObjects().length);
         });
 
         it('should deserialize a data frame from store', () => {

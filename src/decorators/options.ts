@@ -11,6 +11,10 @@ export type RDFMetadata = {
      */
     uri?: IriString;
     /**
+     * Path relative to base URI
+     */
+    path?: string;
+    /**
      * Unresolved predicates
      */
     predicates?: {

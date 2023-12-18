@@ -367,6 +367,52 @@ export class RDFSerializer extends DataSerializer {
         );
     }
 
+    static deserializeFromSubjects<T>(subject: IriString, subjects: Subject[]): T {
+        const mainSubject = subjects.find((s) => s.url === subject);
+        /**
+         *
+         * @param subjectQuad
+         * @param subjectPredicates
+         */
+        function deserializeToQuads(subjectQuad: Quad_Subject, subjectPredicates: any): Quad[] {
+            const quads: Quad[] = [];
+            Object.keys(subjectPredicates).forEach((key) => {
+                const predicateQuad = DataFactory.namedNode(key);
+                const predicates = subjectPredicates[key];
+                // Literals
+                Object.keys(predicates.literals).forEach((dataType) => {
+                    const value = predicates.literals[dataType];
+                    const dataTypeQuad = DataFactory.namedNode(dataType);
+                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, dataTypeQuad)));
+                });
+                // Language strings
+                Object.keys(predicates.langStrings).forEach((language) => {
+                    const value = predicates.langStrings[language];
+                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, language)));
+                });
+                // Named nodes
+                predicates.namedNodes.forEach((namedNode) => {
+                    const otherSubject = subjects.find((s) => s.url === namedNode);
+                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.namedNode(namedNode)));
+                    if (otherSubject) {
+                        quads.push(
+                            ...deserializeToQuads(DataFactory.namedNode(otherSubject.url), otherSubject.predicates),
+                        );
+                    }
+                });
+                // Blank nodes
+                predicates.blankNodes.forEach((predicates) => {
+                    const blankNode = DataFactory.blankNode();
+                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, blankNode));
+                    quads.push(...deserializeToQuads(blankNode, predicates));
+                });
+            });
+            return quads;
+        }
+        const quads = deserializeToQuads(DataFactory.namedNode(mainSubject.url), mainSubject.predicates);
+        return this.deserializeFromStore(DataFactory.namedNode(subject), new Store(quads));
+    }
+
     static deserialize<T>(serializedData: Thing, dataType?: Serializable<T>): T;
     static deserialize<T>(serializedData: any[], dataType?: Serializable<T>): T | T[];
     /**

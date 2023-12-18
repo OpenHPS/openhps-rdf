@@ -136,6 +136,8 @@ export class InternalRDFSerializer extends Serializer {
         let uri: string = undefined;
         if ((sourceObject as any).rdf && (sourceObject as any).rdf.uri) {
             uri = (sourceObject as any).rdf.uri;
+        } else if ((sourceObject as any).rdf && (sourceObject as any).rdf.path) {
+            uri = (sourceObject as any).rdf.path;
         } else if (identifierMember) {
             const rdfOptions = identifierMember.options.rdf as RDFIdentifierOptions;
             uri = rdfOptions.serializer
