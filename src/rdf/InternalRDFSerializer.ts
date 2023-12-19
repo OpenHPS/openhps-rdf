@@ -147,7 +147,7 @@ export class InternalRDFSerializer extends Serializer {
 
         uri =
             uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
-                ? serializerOptions.rdf.baseUri + uri
+                ? (serializerOptions.rdf.baseUri + uri).replace('//', '/')
                 : DataFactory.blankNode(uri).value;
 
         if (!(sourceObject as any).rdf) {

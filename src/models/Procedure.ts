@@ -1,13 +1,14 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { Node, SerializableMember, SerializableObject } from '@openhps/core';
 import { SerializableNamedNode } from './SerializableNamedNode';
 import { sosa, rdfs } from '../vocab';
+import { applyMixins } from './utils';
 
 @SerializableObject({
     rdf: {
         type: sosa.Procedure,
     },
 })
-export class Procedure extends SerializableNamedNode {
+export class Procedure extends SerializableNamedNode { // eslint-disable-line
     @SerializableMember({
         rdf: {
             predicate: rdfs.label,
@@ -24,3 +25,6 @@ export class Procedure extends SerializableNamedNode {
     })
     comment?: string;
 }
+export interface Procedure extends SerializableNamedNode, Node<any, any> {} // eslint-disable-line
+
+applyMixins(Procedure, [Node]);
