@@ -72,6 +72,19 @@ export abstract class Geometry {
                 },
             };
         },
+        deserializer: (thing: Thing, instance: PolygonGeometry) => {
+            if (thing.predicates[ogc.asWKT]) {
+                const wktLiteral = thing.predicates[ogc.asWKT][0].value;
+                const geojson = wkt.parse(wktLiteral);
+                const geometry = new PolygonGeometry();
+                geometry.spatialAccuracy = instance.spatialAccuracy;
+                geometry.coords = geojson.coordinates[0].map((coord) => {
+                    return { latitude: coord[1], longitude: coord[0], altitude: coord[2] };
+                });
+                return geometry;
+            }
+            return instance;
+        },
     },
 })
 export class PolygonGeometry extends Geometry {

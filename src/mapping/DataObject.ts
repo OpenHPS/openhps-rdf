@@ -9,7 +9,7 @@ import {
 import { xsd } from '../decorators';
 import { RDFSerializer, Thing } from '../rdf';
 import { dcterms, poso, rdfs, sosa, ogc } from '../vocab';
-import { MemberDeserializerOptions, MemberSerializerOptions } from '../decorators/options';
+import { MemberDeserializerOptions, MemberSerializerOptions, RDFMetadata } from '../decorators/options';
 
 SerializableObject({
     rdf: {
@@ -99,3 +99,35 @@ SerializableArrayMember(RelativePosition, {
         },
     },
 })(DataObject.prototype, 'relativePositions');
+
+/** RDF Specific Data **/
+DataObject.prototype.rdf = {};
+SerializableMember({
+    name: "__rdf",
+    constructor: () => String,
+    serializer: (rdf: RDFMetadata) => {
+        const serializedPredicates = Object.keys(rdf.predicates).map((predicate) => {
+            return {
+                [predicate]: rdf.predicates[predicate].map((item) => {
+                    if (item['toJSON'] !== undefined && typeof item['toJSON'] === 'function') {
+                        return item['toJSON']();
+                    } else {
+                        return item;
+                    }
+                })
+            };
+        }).reduce((a, b) => ({ ...a, ...b }));
+        return {
+            path: rdf.path,
+            uri: rdf.uri,
+            predicates: serializedPredicates
+        };
+    },
+    deserializer: (object: any) => {
+        return {
+            path: object.path,
+            uri: object.uri,
+            predicates: object.predicates
+        } as RDFMetadata;
+    }
+})(DataObject.prototype, 'rdf');
