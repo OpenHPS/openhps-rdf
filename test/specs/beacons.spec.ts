@@ -1,5 +1,5 @@
 import 'mocha';
-import { RDFSerializer, schema } from '../../src';
+import { RDFSerializer, ogc, schema } from '../../src';
 import axios from 'axios';
 import { expect } from 'chai';
 import { DataSerializer } from '@openhps/core';
@@ -31,13 +31,19 @@ describe('openhps2021 beacons.ttl', () => {
             const pl9_3 = RDFSerializer.deserializeFromString(`${uri}#pl9_3`, res.data);
             expect(pl9_3).to.not.be.undefined;
             expect((pl9_3 as any).rdf.predicates[schema.hasMap]).to.not.be.undefined;
+            expect((pl9_3 as any).rdf
+                .predicates[schema.hasMap][0]
+                .predicates[schema.spatialCoverage]).to.not.be.undefined;
+            expect((pl9_3 as any).rdf
+                .predicates[schema.hasMap][0]
+                .predicates[schema.spatialCoverage][0]
+                .predicates[ogc.hasGeometry]).to.not.be.undefined;
             const serialized = DataSerializer.serialize(pl9_3);
-            console.log(serialized);
+            expect(serialized.__rdf).to.not.be.undefined;
             const deserialized = DataSerializer.deserialize(serialized);
             expect(deserialized).to.not.be.undefined;
             expect((deserialized as any).rdf.predicates[schema.hasMap]).to.not.be.undefined;
-            console.log(deserialized)
             done();
-        });
+        }).catch(done);
     });
 });

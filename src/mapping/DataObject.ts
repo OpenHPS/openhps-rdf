@@ -100,34 +100,51 @@ SerializableArrayMember(RelativePosition, {
     },
 })(DataObject.prototype, 'relativePositions');
 
-/** RDF Specific Data **/
-DataObject.prototype.rdf = {};
-// SerializableMember({
-//     name: "__rdf",
-//     constructor: () => String,
-//     serializer: (rdf: RDFMetadata) => {
-//         const serializedPredicates = Object.keys(rdf.predicates).map((predicate) => {
-//             return {
-//                 [predicate]: rdf.predicates[predicate].map((item) => {
-//                     if (item['toJSON'] !== undefined && typeof item['toJSON'] === 'function') {
-//                         return item['toJSON']();
-//                     } else {
-//                         return item;
-//                     }
-//                 })
-//             };
-//         }).reduce((a, b) => ({ ...a, ...b }));
-//         return {
-//             path: rdf.path,
-//             uri: rdf.uri,
-//             predicates: serializedPredicates
-//         };
-//     },
-//     deserializer: (object: any) => {
-//         return {
-//             path: object.path,
-//             uri: object.uri,
-//             predicates: object.predicates
-//         } as RDFMetadata;
-//     }
-// })(DataObject.prototype, 'rdf');
+/** RDF Specific Data */
+Object.defineProperty(DataObject.prototype, 'rdf', {
+    enumerable: false,
+    configurable: false,
+    writable: true,
+    value: undefined,
+});
+Reflect.defineMetadata('design:type', Object, DataObject.prototype, 'rdf');
+SerializableMember({
+    name: '__rdf',
+    serializer: (rdf: RDFMetadata) => {
+        if (!rdf) {
+            return undefined;
+        }
+
+        const serializedPredicates = rdf.predicates
+            ? Object.keys(rdf.predicates)
+                  .map((predicate) => {
+                      return {
+                          [predicate]: rdf.predicates[predicate].map((item) => {
+                              if (item['toJSON'] !== undefined && typeof item['toJSON'] === 'function') {
+                                  return item['toJSON']();
+                              } else {
+                                  return item;
+                              }
+                          }),
+                      };
+                  })
+                  .reduce((a, b) => ({ ...a, ...b }))
+            : undefined;
+        return {
+            path: rdf.path,
+            uri: rdf.uri,
+            predicates: serializedPredicates,
+        };
+    },
+    deserializer: (object: any) => {
+        if (!object) {
+            return undefined;
+        }
+
+        return {
+            path: object.path,
+            uri: object.uri,
+            predicates: object.predicates,
+        } as RDFMetadata;
+    },
+})(DataObject.prototype, 'rdf');
