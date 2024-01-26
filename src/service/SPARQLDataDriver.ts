@@ -93,7 +93,11 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
     }
 
     protected findAllSerialized(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<Store> {
-        return this.queryQuads(this.generator.createFindAll(query), context);
+        const sparqlQuery = this.generator.createFindAll(query);
+        if (sparqlQuery === undefined) {
+            throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
+        }
+        return this.queryQuads(sparqlQuery, context);
     }
 
     findAll(query?: FilterQuery<T>, options: FindOptions = {}, context?: Partial<QueryStringContext>): Promise<T[]> {

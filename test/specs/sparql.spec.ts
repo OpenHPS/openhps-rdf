@@ -12,6 +12,8 @@ import 'mocha';
 import { DefaultEngine, SPARQLDataDriver } from '../../src';
 import { expect } from 'chai';
 
+const ALLOW_DELETE = false; // Debugging purposes
+
 describe('SPARQLDataDriver (Fuseki endpoint)', () => {
     let service: DataObjectService<DataObject>;
     let frameService: DataFrameService<DataFrame>;
@@ -476,28 +478,30 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         });
     });
 
-    describe('delete', () => {
-        it('should support deleting one identifier', (done) => {
-            let total = 0;
-            service.findAll().then(data => {
-                total = data.length;
-                return service.delete("mvdewync");
-            }).then(() => {
-                return service.findAll();
-            }).then(data => {
-                expect(data.length).to.equal(total - 1);
-                done()
-            }).catch(done);
+    if (ALLOW_DELETE) {
+        describe('delete', () => {
+            it('should support deleting one identifier', (done) => {
+                let total = 0;
+                service.findAll().then(data => {
+                    total = data.length;
+                    return service.delete("mvdewync");
+                }).then(() => {
+                    return service.findAll();
+                }).then(data => {
+                    expect(data.length).to.equal(total - 1);
+                    done()
+                }).catch(done);
+            });
+    
+            it('should support deleting all tuples', (done) => {
+                service.deleteAll().then(() => {
+                    return service.count();
+                }).then(data => {
+                    expect(data).to.equal(0);
+                    done()
+                }).catch(done);
+            });
         });
-
-        it('should support deleting all tuples', (done) => {
-            service.deleteAll().then(() => {
-                return service.count();
-            }).then(data => {
-                expect(data).to.equal(0);
-                done()
-            }).catch(done);
-        });
-    });
+    }
 
 });

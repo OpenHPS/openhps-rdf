@@ -104,7 +104,7 @@
     "linked data"
   ],
   "dependencies": {
-    "@comunica/query-sparql": "^2.10.2",
+    "@comunica/query-sparql": "^2.10.1",
     "@inquirer/prompts": "^3.3.0",
     "@types/n3": "^1.16.4",
     "axios": "^1.6.5",
