@@ -12,7 +12,7 @@ import {
     GroupPattern,
     Pattern,
     UnionPattern,
-    Generator,
+    Generator as SparqlGenerator,
     SparqlQuery,
     ConstructQuery,
     BgpPattern,
@@ -37,7 +37,7 @@ export class SPARQLGenerator<T> {
 
     createInsert(object: T): string {
         const quads = RDFSerializer.serializeToQuads(object, this.baseUri);
-        const generator = new Generator();
+        const generator = new SparqlGenerator();
         const query: SparqlQuery = {
             type: 'update',
             prefixes: {
@@ -59,7 +59,7 @@ export class SPARQLGenerator<T> {
     }
 
     createDelete(id: IriString): string {
-        const generator = new Generator();
+        const generator = new SparqlGenerator();
         const identifierMember = RDFSerializer.getUriMetadata(this.dataType);
         const query: SparqlQuery = {
             type: 'update',
@@ -109,7 +109,7 @@ export class SPARQLGenerator<T> {
     }
 
     createDeleteAll(query: FilterQuery<T>): string {
-        const generator = new Generator();
+        const generator = new SparqlGenerator();
         const sparqlQuery: SparqlQuery = {
             type: 'update',
             prefixes: {
@@ -151,7 +151,7 @@ export class SPARQLGenerator<T> {
     }
 
     createFindAll(query: FilterQuery<T>): string {
-        const generator = new Generator();
+        const generator = new SparqlGenerator();
         return generator.stringify(this.createConstruct(query));
     }
 

@@ -166,7 +166,11 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 
     insert(_: IriString, object: T, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.queryVoid(this.generator.createInsert(object), context)
+            const insertQuery = this.generator.createInsert(object);
+            if (insertQuery === undefined) {
+                throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
+            }
+            this.queryVoid(insertQuery, context)
                 .then(() => {
                     resolve(object);
                 })
@@ -176,7 +180,11 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 
     delete(id: IriString, context?: Partial<QueryStringContext>): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.queryVoid(this.generator.createDelete(id), context).then(resolve).catch(reject);
+            const deleteQuery = this.generator.createDelete(id);
+            if (deleteQuery === undefined) {
+                throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
+            }
+            this.queryVoid(deleteQuery, context).then(resolve).catch(reject);
         });
     }
 

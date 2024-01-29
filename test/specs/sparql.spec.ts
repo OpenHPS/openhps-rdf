@@ -75,6 +75,10 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 service.insertObject(obj2),
                 service.insertObject(obj3),
             ]).then(() => {
+                // Verify that the objects are inserted
+                return service.findAll();
+            }).then(data => {
+                expect(data.length).to.equal(3);
                 done()
             }).catch(done);
         });
@@ -85,7 +89,11 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
                 frameService.insertFrame(frame2),
                 frameService.insertFrame(frame3),
             ]).then(() => {
-                done()
+                // Verify that the objects are inserted
+                return frameService.findAll();
+            }).then(data => {
+                expect(data.length).to.equal(3);
+                done();
             }).catch(done);
         });
 
