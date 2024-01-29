@@ -315,6 +315,9 @@ export class InternalRDFDeserializer extends Deserializer {
     }
 
     deserializeLiteral(sourceObject: Literal): any {
+        if (!sourceObject.toJSON) {
+            return undefined;
+        }
         const jsonObject: Literal = sourceObject.toJSON() as Literal;
         switch (jsonObject.datatype.value) {
             case xsd.dateTime:
