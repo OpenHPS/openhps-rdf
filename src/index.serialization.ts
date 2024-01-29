@@ -2,6 +2,7 @@ export * from './rdf';
 export * from './decorators';
 export { SerializableNamedNode } from './models/SerializableNamedNode';
 import './mapping';
+export * from './models';
 // N3 useful classes
 export {
     NamedNode,
