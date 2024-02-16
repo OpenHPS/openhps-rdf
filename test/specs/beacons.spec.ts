@@ -4,27 +4,35 @@ import axios from 'axios';
 import { expect } from 'chai';
 import { DataObject, DataSerializer, SerializableMember, SerializableObject } from '@openhps/core';
 import { Geometry } from '../../src/models/Geometry';
-import { SymbolicSpace } from '@openhps/geospatial';
+import { Building, SymbolicSpace } from '@openhps/geospatial';
+import { BLEBeaconObject } from '@openhps/rf';
 
 describe('openhps2021 beacons.ttl', () => {
     it('should load a beacon', (done) => {
         const uri = "https://sembeacon.org/examples/openhps2021/beacons.ttl";
         axios.get(uri).then(res => {
-            const beacon07 = RDFSerializer.deserializeFromString(`${uri}#BEACON_07`, res.data);
-            const beacon11 = RDFSerializer.deserializeFromString(`${uri}#BEACON_11`, res.data);
+            const beacon07 = RDFSerializer.deserializeFromString(`${uri}#BEACON_07`, res.data) as BLEBeaconObject;
+            const beacon11 = RDFSerializer.deserializeFromString(`${uri}#BEACON_11`, res.data) as BLEBeaconObject;
             expect(beacon07).to.not.be.undefined;
             expect(beacon11).to.not.be.undefined;
+            expect(beacon07.position).to.not.be.undefined;
+            expect(beacon11.position).to.not.be.undefined;
+            expect(beacon07.position.toVector3().x).to.not.be.undefined;
+            expect(beacon11.position.toVector3().x).to.not.be.undefined;
+            expect(beacon07.position.toVector3().x).to.not.eq(0);
+            expect(beacon11.position.toVector3().x).to.not.eq(0);
             done();
-        });
+        }).catch(done);
     });
 
     it('should load a symbolic space', (done) => {
         const uri = "https://sembeacon.org/examples/openhps2021/beacons.ttl";
         axios.get(uri).then(res => {
-            const pl9 = RDFSerializer.deserializeFromString(`${uri}#pl9`, res.data);
+            const pl9 = RDFSerializer.deserializeFromString(`${uri}#pl9`, res.data) as Building;
             expect(pl9).to.not.be.undefined;
+            expect(pl9.coordinates.length).to.be.greaterThan(0);
             done();
-        });
+        }).catch(done);
     });
 
     it('should serialize all environments', (done) => {

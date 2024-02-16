@@ -4,6 +4,8 @@ import { PolygonGeometry } from './Geometry';
 import { Platform } from './Platform';
 import { Address } from './Address';
 import { SerializableNamedNode } from './SerializableNamedNode';
+import { applyMixins } from './utils';
+import { SymbolicSpace } from '@openhps/geospatial';
 
 @SerializableObject({
     rdf: {
@@ -56,3 +58,5 @@ export class Deployment extends SerializableNamedNode {
     })
     within?: Deployment;
 }
+
+applyMixins(Deployment, [SymbolicSpace]);
