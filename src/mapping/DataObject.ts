@@ -150,8 +150,8 @@ SerializableMember({
             return Object.keys(predicates)
                 .map((predicate: any) => {
                     return {
-                        [predicate]: object.predicates[predicate].map((item: any) => {
-                            if (item.termType && item.predicates === undefined) {
+                        [predicate]: predicates[predicate].map((item: any) => {
+                            if (item.predicates === undefined) {
                                 switch (item.termType) {
                                     case 'BlankNode':
                                         return DataFactory.blankNode(item.value);
@@ -176,7 +176,7 @@ SerializableMember({
                         }),
                     };
                 })
-                .reduce((a, b) => ({ ...a, ...b }));
+                .reduce((a, b) => ({ ...a, ...b }), {});
         }
 
         const deserializedPredicates = object.predicates ? deserializePredicates(object.predicates) : {};
