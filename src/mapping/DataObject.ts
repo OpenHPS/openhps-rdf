@@ -142,10 +142,41 @@ SerializableMember({
             return undefined;
         }
 
+        const deserializedPredicates = object.predicates
+            ? Object.keys(object.predicates)
+                  .map((predicate: any) => {
+                      return {
+                          [predicate]: object.predicates[predicate].map((item: any) => {
+                              if (item.termType && item.predicates === undefined) {
+                                  switch (item.termType) {
+                                      case 'BlankNode':
+                                          return DataFactory.blankNode(item.value);
+                                      case 'Literal':
+                                          const literal = DataFactory.literal(
+                                              item.value,
+                                              item.language ?? item.datatype
+                                                  ? DataFactory.namedNode(item.datatype.value)
+                                                  : undefined,
+                                          );
+                                          return literal;
+                                      case 'NamedNode':
+                                          return DataFactory.namedNode(item.value);
+                                      default:
+                                          return item;
+                                  }
+                              } else {
+                                  return item;
+                              }
+                          }),
+                      };
+                  })
+                  .reduce((a, b) => ({ ...a, ...b }))
+            : {};
+        console.log('deserializedPredicates', deserializedPredicates);
         return {
             path: object.path,
             uri: object.uri,
-            predicates: object.predicates,
+            predicates: deserializedPredicates,
         } as RDFMetadata;
     },
 })(DataObject.prototype, 'rdf');
