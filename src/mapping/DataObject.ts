@@ -142,37 +142,44 @@ SerializableMember({
             return undefined;
         }
 
-        const deserializedPredicates = object.predicates
-            ? Object.keys(object.predicates)
-                  .map((predicate: any) => {
-                      return {
-                          [predicate]: object.predicates[predicate].map((item: any) => {
-                              if (item.termType && item.predicates === undefined) {
-                                  switch (item.termType) {
-                                      case 'BlankNode':
-                                          return DataFactory.blankNode(item.value);
-                                      case 'Literal':
-                                          const literal = DataFactory.literal(
-                                              item.value,
-                                              item.language ?? item.datatype
-                                                  ? DataFactory.namedNode(item.datatype.value)
-                                                  : undefined,
-                                          );
-                                          return literal;
-                                      case 'NamedNode':
-                                          return DataFactory.namedNode(item.value);
-                                      default:
-                                          return item;
-                                  }
-                              } else {
-                                  return item;
-                              }
-                          }),
-                      };
-                  })
-                  .reduce((a, b) => ({ ...a, ...b }))
-            : {};
-        console.log('deserializedPredicates', deserializedPredicates);
+        /**
+         *
+         * @param predicates
+         */
+        function deserializePredicates(predicates: any) {
+            return Object.keys(predicates)
+                .map((predicate: any) => {
+                    return {
+                        [predicate]: object.predicates[predicate].map((item: any) => {
+                            if (item.termType && item.predicates === undefined) {
+                                switch (item.termType) {
+                                    case 'BlankNode':
+                                        return DataFactory.blankNode(item.value);
+                                    case 'Literal':
+                                        return DataFactory.literal(
+                                            item.value,
+                                            item.language ?? item.datatype
+                                                ? DataFactory.namedNode(item.datatype.value)
+                                                : undefined,
+                                        );
+                                    case 'NamedNode':
+                                        return DataFactory.namedNode(item.value);
+                                    default:
+                                        return item;
+                                }
+                            } else {
+                                return {
+                                    predicates: deserializePredicates(item.predicates),
+                                    ...item,
+                                };
+                            }
+                        }),
+                    };
+                })
+                .reduce((a, b) => ({ ...a, ...b }));
+        }
+
+        const deserializedPredicates = object.predicates ? deserializePredicates(object.predicates) : {};
         return {
             path: object.path,
             uri: object.uri,
