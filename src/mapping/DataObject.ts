@@ -10,6 +10,7 @@ import { xsd } from '../decorators';
 import { RDFSerializer, Thing } from '../rdf';
 import { dcterms, poso, rdfs, sosa, ogc } from '../vocab';
 import { MemberDeserializerOptions, MemberSerializerOptions, RDFMetadata } from '../decorators/options';
+import { DataFactory } from 'n3';
 
 SerializableObject({
     rdf: {
@@ -148,3 +149,14 @@ SerializableMember({
         } as RDFMetadata;
     },
 })(DataObject.prototype, 'rdf');
+SerializableMember({
+    rdf: {
+        predicate: ogc.sfWithin,
+        serializer: (uid: string, _, options: MemberSerializerOptions) => {
+            return DataFactory.namedNode(`${options.baseUri}${uid}`);
+        },
+        deserializer: (thing: Thing) => {
+            return thing.value.substring(Math.max(thing.value.lastIndexOf('/'), thing.value.lastIndexOf('#')) + 1);
+        },
+    },
+})(DataObject.prototype, 'parentUID');
