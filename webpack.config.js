@@ -38,6 +38,7 @@ const defaultConfig = env => ({
         parallel: true,
         terserOptions: {
           keep_classnames: true,
+          keep_fnames: true,
           sourceMap: true,
         }
       })
