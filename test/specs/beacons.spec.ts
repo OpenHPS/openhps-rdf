@@ -1,5 +1,5 @@
 import 'mocha';
-import { DataFactory, DefaultEngine, IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, ogc, schema, xsd } from '../../src';
+import { DataFactory, DefaultEngine, IriString, Literal, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, ogc, schema, xsd } from '../../src';
 import axios from 'axios';
 import { expect } from 'chai';
 import { DataObject, DataSerializer, SerializableMember, SerializableObject } from '@openhps/core';
@@ -99,6 +99,12 @@ describe('openhps2021 beacons.ttl', () => {
                 .predicates[schema.spatialCoverage]).to.not.be.undefined;
             expect((deserialized as any).rdf
                 .predicates[schema.hasMap][0]
+                .predicates[schema.image]).to.not.be.undefined;
+            expect((deserialized as any).rdf
+                .predicates[schema.hasMap][0]
+                .predicates[schema.image][0]).to.be.instanceOf(Literal);
+            expect((deserialized as any).rdf
+                .predicates[schema.hasMap][0]
                 .predicates[schema.spatialCoverage][0]
                 .predicates[ogc.hasGeometry]).to.not.be.undefined;
             done();
@@ -174,8 +180,10 @@ describe('openhps2021 beacons.ttl', () => {
                 .predicates[ogc.hasGeometry]).to.not.be.undefined;
             const mapObject = RDFSerializer.deserialize((deserialized as any).rdf.predicates[schema.hasMap][0], MapObject);
             expect(mapObject).to.not.be.undefined;
+            expect(mapObject.image).to.not.be.undefined;
             const mapObject2 = RDFSerializer.deserialize((pl9_3 as any).rdf.predicates[schema.hasMap][0], MapObject);
             expect(mapObject2).to.not.be.undefined;
+            expect(mapObject2.image).to.not.be.undefined;
             done();
         }).catch(done);
     });

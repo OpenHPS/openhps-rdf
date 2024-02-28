@@ -170,8 +170,9 @@ SerializableMember({
                             } else {
                                 return {
                                     predicates: deserializePredicates(item.predicates),
-                                    ...item,
-                                };
+                                    value: item.value,
+                                    termType: item.termType,
+                                } as Thing;
                             }
                         }),
                     };
