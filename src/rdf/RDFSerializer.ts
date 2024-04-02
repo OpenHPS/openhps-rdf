@@ -367,6 +367,10 @@ export class RDFSerializer extends DataSerializer {
         );
     }
 
+    static deserializeFromSubject<T>(subject: Subject & { url: IriString }): T {
+        return this.deserializeFromSubjects(subject.url, [subject]);
+    }
+
     static deserializeFromSubjects<T>(subject: IriString, subjects: Subject[]): T {
         const mainSubject = subjects.find((s) => s.url === subject);
         /**
