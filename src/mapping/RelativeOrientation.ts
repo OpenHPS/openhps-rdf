@@ -2,7 +2,7 @@ import { SerializableObject, RelativeOrientation, AngleUnit, Orientation } from 
 import { poso, qudt, unit as qudt_unit } from '../vocab';
 import { Thing } from '../rdf';
 import { DataFactory } from 'n3';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 
 SerializableObject({
     rdf: {

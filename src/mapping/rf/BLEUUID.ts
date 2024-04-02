@@ -1,6 +1,6 @@
 import { BLEUUID } from '@openhps/rf';
 import { DataFactory } from 'n3';
-import { xsd } from '../../decorators';
+import { xsd } from '../../rdf/types';
 import { Thing, RDFSerializer } from '../../rdf';
 
 RDFSerializer.registerRDFType(BLEUUID, {

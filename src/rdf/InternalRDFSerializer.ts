@@ -9,9 +9,9 @@ import {
     Serializable,
     DataSerializerUtils,
 } from '@openhps/core';
-import { IriString, Thing } from './types';
+import { IriString, Thing, XmlSchemaTypeIri, xsd } from './types';
 import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
-import { RDFIdentifierOptions, RDFLiteralOptions, XmlSchemaTypeIri, xsd } from '../decorators/';
+import { RDFIdentifierOptions, RDFLiteralOptions } from '../decorators/';
 import { mergeDeep } from './utils';
 import { MemberSerializerOptionsParent } from '../decorators/options';
 

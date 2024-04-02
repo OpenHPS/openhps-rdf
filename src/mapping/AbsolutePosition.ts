@@ -1,5 +1,5 @@
 import { AbsolutePosition, Orientation, SerializableMember, SerializableObject } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { MemberDeserializerOptions, MemberSerializerOptions } from '../decorators/options';
 import { dcterms, poso } from '../vocab';
 import { RDFSerializer, Thing } from '../rdf';

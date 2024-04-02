@@ -11,9 +11,9 @@ import {
     TypeDescriptor,
 } from '@openhps/core';
 import { Literal, NamedNode, Quad_Object } from 'n3';
-import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions, xsd } from '../decorators';
+import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { rdf } from '../vocab';
-import { IriString, RDFSerializerConfig, Thing } from './types';
+import { IriString, RDFSerializerConfig, Thing, xsd } from './types';
 import { MemberDeserializerOptionsParent } from '../decorators/options';
 
 export class InternalRDFDeserializer extends Deserializer {

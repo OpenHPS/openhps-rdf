@@ -2,7 +2,7 @@ import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BLEiBeacon, BLEUUID } from '@openhps/rf';
 import { DataFactory } from 'n3';
 import { Thing } from '../../rdf';
-import { xsd } from '../../decorators';
+import { xsd } from '../../rdf/types';
 import { posoc } from '../../vocab';
 
 SerializableObject({

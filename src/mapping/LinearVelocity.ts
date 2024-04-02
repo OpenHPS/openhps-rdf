@@ -1,5 +1,5 @@
 import { LinearVelocity, SerializableMember, SerializableObject } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { dcterms, poso, quantitykind, qudt } from '../vocab';
 
 SerializableObject({

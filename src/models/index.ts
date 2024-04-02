@@ -7,6 +7,7 @@ export * from './ActuableProperty';
 export * from './Place';
 export * from './Property';
 export * from './PropertyAccuracy';
+export * from './Agent';
 export * from './User';
 export * from './Event';
 export * from './Procedure';

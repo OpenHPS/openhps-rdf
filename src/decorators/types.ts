@@ -1,5 +1,5 @@
 import { Serializable } from '@openhps/core';
-import { IriString, Thing } from '../rdf/types';
+import { IriString, Thing, XmlSchemaTypeIri } from '../rdf/types';
 
 export interface RDFIdentifierOptions {
     identifier: true;
@@ -33,19 +33,3 @@ export interface RDFLiteralOptions extends RDFObjectOptions {
      */
     language?: string;
 }
-
-export const xsd = {
-    boolean: 'http://www.w3.org/2001/XMLSchema#boolean',
-    dateTime: 'http://www.w3.org/2001/XMLSchema#dateTime',
-    date: 'http://www.w3.org/2001/XMLSchema#date',
-    time: 'http://www.w3.org/2001/XMLSchema#time',
-    decimal: 'http://www.w3.org/2001/XMLSchema#decimal',
-    anyURI: 'http://www.w3.org/2001/XMLSchema#anyURI',
-    integer: 'http://www.w3.org/2001/XMLSchema#integer',
-    string: 'http://www.w3.org/2001/XMLSchema#string',
-    double: 'http://www.w3.org/2001/XMLSchema#double',
-    langString: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
-    hexBinary: 'http://www.w3.org/2001/XMLSchema#hexBinary',
-} as const;
-
-export type XmlSchemaTypeIri = (typeof xsd)[keyof typeof xsd];

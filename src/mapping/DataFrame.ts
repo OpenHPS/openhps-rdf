@@ -1,5 +1,5 @@
 import { DataFrame, DataObject, SerializableMapMember, SerializableMember, SerializableObject } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { Thing } from '../rdf';
 import { dcterms, sosa } from '../vocab';
 

@@ -6,7 +6,7 @@ import {
     RelativePosition,
     RelativeOrientation,
 } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { RDFSerializer, Thing } from '../rdf';
 import { dcterms, poso, rdfs, sosa, ogc } from '../vocab';
 import { MemberDeserializerOptions, MemberSerializerOptions, RDFMetadata } from '../decorators/options';

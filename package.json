@@ -78,7 +78,7 @@
     "test": "mocha --config test/.mocharc.json",
     "cover": "nyc mocha --config test/.mocharc.json && nyc report --reporter=cobertura",
     "cover:ci": "nyc mocha --config test/.mocharc.json --reporter mocha-multi-reporters && nyc report --reporter=cobertura",
-    "lint": "eslint src/ --ignore-pattern bin --ignore-pattern engine-*.js --ignore-pattern vocab/*.ts",
+    "lint": "eslint src/ --ignore-pattern bin --ignore-pattern engine-*.js --ignore-pattern **/vocab/*.ts",
     "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
     "build": "npm run clean && npm-run-all --parallel build:comunica build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
     "build:comunica": "npm-run-all --parallel build:comunica:*",

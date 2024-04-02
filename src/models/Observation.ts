@@ -4,7 +4,7 @@ import { FeatureOfInterest } from './FeatureOfInterest';
 import { ObservableProperty } from './ObservableProperty';
 import { IriString, Thing } from '../rdf';
 import { SerializableNamedNode } from './SerializableNamedNode';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { DataFactory } from 'n3';
 
 @SerializableObject({

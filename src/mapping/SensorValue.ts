@@ -8,7 +8,7 @@ import {
     SerializableObject,
 } from '@openhps/core';
 import { RDFBuilder, Thing, IriString } from '../rdf';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { poso, sosa, rdf, qudt, schema, m3lite } from '../vocab';
 import { DataFactory } from 'n3';
 

@@ -1,7 +1,7 @@
 import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { BLEObject, MACAddress } from '@openhps/rf';
 import { DataFactory } from 'n3';
-import { xsd } from '../../decorators';
+import { xsd } from '../../rdf/types';
 import { Thing, RDFBuilder } from '../../rdf';
 import { poso, posoc, hardware, rdf, qudt, unit } from '../../vocab';
 

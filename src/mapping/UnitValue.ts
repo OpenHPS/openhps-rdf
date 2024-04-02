@@ -1,5 +1,5 @@
 import { LengthUnit, SerializableMember, SerializableObject, UnitValue } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { RDFBuilder, RDFSerializer, Thing } from '../rdf';
 import { qudt, rdf } from '../vocab';
 

@@ -1,5 +1,5 @@
 import { RelativePosition, SerializableMember, SerializableObject } from '@openhps/core';
-import { xsd } from '../decorators';
+import { xsd } from '../rdf/types';
 import { dcterms, poso } from '../vocab';
 import { Thing } from '../rdf';
 import { DataFactory } from 'n3';

@@ -9,7 +9,7 @@ import {
 } from '@openhps/core';
 import { InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
-import { IriString, Thing, Subject, RDFSerializerConfig } from './types';
+import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates } from './types';
 import {
     NamedNode,
     BlankNode,
@@ -378,38 +378,48 @@ export class RDFSerializer extends DataSerializer {
          * @param subjectQuad
          * @param subjectPredicates
          */
-        function deserializeToQuads(subjectQuad: Quad_Subject, subjectPredicates: any): Quad[] {
+        function deserializeToQuads(subjectQuad: Quad_Subject, subjectPredicates: SubjectPredicates): Quad[] {
             const quads: Quad[] = [];
             Object.keys(subjectPredicates).forEach((key) => {
                 const predicateQuad = DataFactory.namedNode(key);
                 const predicates = subjectPredicates[key];
                 // Literals
-                Object.keys(predicates.literals).forEach((dataType) => {
-                    const value = predicates.literals[dataType];
-                    const dataTypeQuad = DataFactory.namedNode(dataType);
-                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, dataTypeQuad)));
-                });
-                // Language strings
-                Object.keys(predicates.langStrings).forEach((language) => {
-                    const value = predicates.langStrings[language];
-                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, language)));
-                });
-                // Named nodes
-                predicates.namedNodes.forEach((namedNode) => {
-                    const otherSubject = subjects.find((s) => s.url === namedNode);
-                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.namedNode(namedNode)));
-                    if (otherSubject) {
+                if (predicates.literals) {
+                    Object.keys(predicates.literals).forEach((dataType) => {
+                        const value = predicates.literals[dataType];
+                        const dataTypeQuad = DataFactory.namedNode(dataType);
                         quads.push(
-                            ...deserializeToQuads(DataFactory.namedNode(otherSubject.url), otherSubject.predicates),
+                            DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, dataTypeQuad)),
                         );
-                    }
-                });
+                    });
+                }
+                // Language strings
+                if (predicates.langStrings) {
+                    Object.keys(predicates.langStrings).forEach((language) => {
+                        const value = predicates.langStrings[language];
+                        quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.literal(value, language)));
+                    });
+                }
+                // Named nodes
+                if (predicates.namedNodes) {
+                    predicates.namedNodes.forEach((namedNode) => {
+                        const otherSubject = subjects.find((s) => s.url === namedNode);
+                        quads.push(DataFactory.quad(subjectQuad, predicateQuad, DataFactory.namedNode(namedNode)));
+                        if (otherSubject) {
+                            quads.push(
+                                ...deserializeToQuads(DataFactory.namedNode(otherSubject.url), otherSubject.predicates),
+                            );
+                        }
+                    });
+                }
                 // Blank nodes
-                predicates.blankNodes.forEach((predicates) => {
-                    const blankNode = DataFactory.blankNode();
-                    quads.push(DataFactory.quad(subjectQuad, predicateQuad, blankNode));
-                    quads.push(...deserializeToQuads(blankNode, predicates));
-                });
+                if (predicates.blankNodes) {
+                    predicates.blankNodes.forEach((predicates) => {
+                        const blankNode = DataFactory.blankNode();
+                        quads.push(DataFactory.quad(subjectQuad, predicateQuad, blankNode));
+                        quads.push(...deserializeToQuads(blankNode, predicates));
+                    });
+                }
             });
             return quads;
         }

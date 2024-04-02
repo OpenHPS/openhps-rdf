@@ -1,7 +1,6 @@
 import { SerializableObject, GeographicalPosition, SerializableMember } from '@openhps/core';
 import { DataFactory } from 'n3';
-import { Thing } from '../rdf/types';
-import { xsd } from '../decorators';
+import { Thing, xsd } from '../rdf/types';
 import { geo, schema, ogc } from '../vocab';
 
 SerializableObject({
