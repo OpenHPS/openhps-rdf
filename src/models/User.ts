@@ -1,40 +1,48 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { foaf, vcard } from '../vocab';
+import { foaf, schema, vcard } from '../vocab';
+import { IriString } from '../rdf';
 
 @SerializableObject({
     rdf: {
-        type: foaf.Person,
+        type: [foaf.Person, vcard.Individual, schema.Person],
     },
 })
 export class User {
     @SerializableMember({
         rdf: {
-            predicates: [vcard.given_name, foaf.givenname],
+            predicate: [vcard.given_name, foaf.givenname, foaf.firstName],
         },
     })
     firstName: string;
 
     @SerializableMember({
         rdf: {
-            predicates: [vcard.family_name, foaf.surname],
+            predicate: [vcard.family_name, foaf.surname, foaf.familyName],
         },
     })
     lastName: string;
 
     @SerializableMember({
         rdf: {
-            predicates: [vcard.fn, foaf.name],
+            predicate: [vcard.fn, vcard.hasName, foaf.name],
         },
     })
     private _formattedName: string;
 
     get name(): string {
-        return this._formattedName ?? `${this.firstName} ${this.lastName}`;
+        if (this._formattedName !== undefined) {
+            return this._formattedName;
+        } else if (this.firstName !== undefined) {
+            return this.lastName ? `${this.firstName} ${this.lastName}` : this.firstName;
+        } else if (this.nickname) {
+            return this.nickname;
+        }
+        return undefined;
     }
 
     @SerializableMember({
         rdf: {
-            predicates: [foaf.nick],
+            predicate: [foaf.nick, vcard.nickname],
         },
     })
     nickname?: string;
@@ -44,5 +52,5 @@ export class User {
             predicate: [vcard.hasPhoto],
         },
     })
-    picture?: string;
+    picture?: IriString;
 }

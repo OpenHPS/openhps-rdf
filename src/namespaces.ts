@@ -44,7 +44,9 @@ const namespaces: Namespaces = {
 };
 
 const mirrors: Mirrors = {
-    'http://www.opengis.net/ont/geosparql#': 'https://opengeospatial.github.io/ogc-geosparql/geosparql11/geo.ttl',
+    'http://www.opengis.net/ont/geosparql#':
+        'https://raw.githubusercontent.com/opengeospatial/ogc-geosparql/master/vocabularies/geo.ttl',
+    //'http://www.opengis.net/ont/geosparql#': 'https://opengeospatial.github.io/ogc-geosparql/geosparql11/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
     'http://purl.org/dc/terms/':
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
