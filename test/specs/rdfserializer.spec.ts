@@ -2,7 +2,7 @@ import { Accelerometer, SerializableArrayMember, SerializableMember, Serializabl
 import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode } from '../../src';
-import { xsd } from '../../src/decorators';
+import { xsd } from '../../src/rdf';
 
 describe('RDFSerializer', () => {
 
