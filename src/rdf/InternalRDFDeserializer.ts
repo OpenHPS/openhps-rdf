@@ -314,15 +314,26 @@ export class InternalRDFDeserializer extends Deserializer {
         return targetObject;
     }
 
-    deserializeLiteral(sourceObject: Literal): any {
+    deserializeLiteral(sourceObject: Literal, typeDescriptor: TypeDescriptor): any {
+        if ((sourceObject as unknown as NamedNode).termType === 'NamedNode') {
+            return sourceObject.value;
+        }
+
         if (!sourceObject.toJSON) {
             return undefined;
         }
         const jsonObject: Literal = sourceObject.toJSON() as Literal;
         switch (jsonObject.datatype.value) {
             case xsd.dateTime:
+            case xsd.date: {
                 // Return timestamp
-                return new Date(jsonObject.value).getTime();
+                const date = new Date(jsonObject.value);
+                if (typeDescriptor.ctor === Date) {
+                    return date;
+                } else {
+                    return date.getTime();
+                }
+            }
             case xsd.decimal:
             case xsd.double:
             case xsd.integer:

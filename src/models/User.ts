@@ -1,6 +1,7 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { foaf, schema, vcard } from '../vocab';
-import { IriString } from '../rdf';
+import { IriString, xsd } from '../rdf';
+import { DataFactory } from 'n3';
 
 @SerializableObject({
     rdf: {
@@ -14,6 +15,14 @@ export class User {
         },
     })
     firstName: string;
+
+    @SerializableMember({
+        rdf: {
+            predicate: [schema.birthDate, vcard.bday, foaf.birthday],
+            datatype: xsd.date,
+        },
+    })
+    birthDate: Date;
 
     @SerializableMember({
         rdf: {
@@ -50,6 +59,9 @@ export class User {
     @SerializableMember({
         rdf: {
             predicate: [vcard.hasPhoto],
+            serializer: (value: string) => {
+                return DataFactory.namedNode(value);
+            },
         },
     })
     picture?: IriString;
