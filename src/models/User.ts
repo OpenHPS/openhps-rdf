@@ -33,7 +33,7 @@ export class User {
 
     @SerializableMember({
         rdf: {
-            predicate: [vcard.fn, vcard.hasName, foaf.name],
+            predicate: [vcard.fn, vcard.hasName, foaf.name, schema.name],
         },
     })
     private _formattedName: string;
@@ -58,7 +58,7 @@ export class User {
 
     @SerializableMember({
         rdf: {
-            predicate: [vcard.hasPhoto],
+            predicate: [vcard.hasPhoto, foaf.img, schema.image],
             serializer: (value: string) => {
                 return DataFactory.namedNode(value);
             },
