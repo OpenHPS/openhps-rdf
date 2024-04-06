@@ -2,13 +2,14 @@ import { SerializableMember, SerializableObject } from '@openhps/core';
 import { foaf, schema, vcard } from '../vocab';
 import { IriString, xsd } from '../rdf';
 import { DataFactory } from 'n3';
+import { SerializableNamedNode } from './SerializableNamedNode';
 
 @SerializableObject({
     rdf: {
         type: [foaf.Person, vcard.Individual, schema.Person],
     },
 })
-export class User {
+export class User extends SerializableNamedNode {
     @SerializableMember({
         rdf: {
             predicate: [vcard.given_name, foaf.givenname, foaf.firstName],

@@ -73,13 +73,13 @@ describe('User', () => {
             const user: User = RDFSerializer.deserializeFromString("https://solid.maximvdw.be/profile/card#me", profile);
             expect(user).to.not.be.undefined;
             expect(user.name).to.equal("Maxim Van de Wynckel");
-            console.log(user.birthDate);
             expect(user.picture).to.equal("https://solid.maximvdw.be/profile/1568226501835_Maxim_square.jpg");
         });
 
         it('should deserialize a user profile from subject', () => {
             const user: User = RDFSerializer.deserializeFromSubject(profileSubject);
             expect(user).to.not.be.undefined;
+            expect(user.id).to.equal("https://id.inrupt.com/maximvdw");
         });
     });
 
