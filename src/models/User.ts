@@ -39,6 +39,7 @@ export class User extends SerializableThing {
     })
     private _formattedName: string;
 
+    @SerializableMember()
     get name(): string {
         if (this._formattedName !== undefined) {
             return this._formattedName;

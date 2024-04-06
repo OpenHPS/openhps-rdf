@@ -1,4 +1,4 @@
-import { SerializableObject } from '@openhps/core';
+import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
 
 @SerializableObject({
@@ -15,6 +15,7 @@ import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
 })
 export class SerializableThing {
     termType: 'NamedNode' | 'BlankNode';
+    @SerializableMember()
     id: IriString | BlankNodeId;
 
     toThing(): Thing {
