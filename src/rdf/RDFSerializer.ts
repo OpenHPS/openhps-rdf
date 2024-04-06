@@ -148,6 +148,30 @@ export class RDFSerializer extends DataSerializer {
             });
             quads = parser.parse(input);
         }
+        const subjectUri = new URL(subject);
+        subjectUri.hash = '';
+        const containerUri = new URL(subjectUri.href.slice(0, subjectUri.href.lastIndexOf('/') + 1));
+        quads = quads.map((quad) => {
+            let subject = quad.subject;
+            let predicate = quad.predicate;
+            let object = quad.object;
+            if (subject.termType === 'NamedNode' && subject.value.startsWith('#')) {
+                subject = DataFactory.namedNode(new URL(subject.value, subjectUri).href);
+            } else if (subject.termType === 'NamedNode' && !subject.value.startsWith('http')) {
+                subject = DataFactory.namedNode(new URL(subject.value, containerUri).href);
+            }
+            if (predicate.termType === 'NamedNode' && predicate.value.startsWith('#')) {
+                predicate = DataFactory.namedNode(new URL(predicate.value, subjectUri).href);
+            } else if (subject.termType === 'NamedNode' && !subject.value.startsWith('http')) {
+                predicate = DataFactory.namedNode(new URL(predicate.value, containerUri).href);
+            }
+            if (object.termType === 'NamedNode' && object.value.startsWith('#')) {
+                object = DataFactory.namedNode(new URL(object.value, subjectUri).href);
+            } else if (object.termType === 'NamedNode' && !object.value.startsWith('http')) {
+                object = DataFactory.namedNode(new URL(object.value, containerUri).href);
+            }
+            return DataFactory.quad(subject, predicate, object);
+        });
         const store = new Store(quads);
         return this.deserializeFromStore(
             subject ? DataFactory.namedNode(subject) : DataFactory.blankNode(quads[0].subject.value),

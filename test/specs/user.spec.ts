@@ -1,6 +1,26 @@
 import { expect } from "chai";
 import { IriString, RDFSerializer, Subject, User } from "../../src";
 
+const otherProfile: string = `
+@prefix : <#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+@prefix pro: <./>.
+@prefix sol: </>.
+
+pro:card a foaf:PersonalProfileDocument; foaf:maker :me; foaf:primaryTopic :me.
+
+:me
+    a foaf:Person;
+    vcard:fn "Jan Hofmann";
+    vcard:hasPhoto <QR%20jh%20solid.jpg>;
+    vcard:hasURL "https://www.scs.fraunhofer.de/en/vision/data-spaces-iot.html";
+    vcard:organization-name
+    "Center for Applied Research on Supply Chain Services at Fraunhofer IIS";
+    vcard:role "Data Spaces & IoT Solutions";
+    solid:oidcIssuer sol: .
+`;
 const profile: string = `
 @prefix : <https://solid.maximvdw.be/profile/card#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
@@ -72,9 +92,13 @@ describe('User', () => {
         it('should deserialize a user profile from string', () => {
             const user: User = RDFSerializer.deserializeFromString("https://solid.maximvdw.be/profile/card#me", profile);
             expect(user).to.not.be.undefined;
-            console.log(user);
             expect(user.name).to.equal("Maxim Van de Wynckel");
             expect(user.picture).to.equal("https://solid.maximvdw.be/profile/1568226501835_Maxim_square.jpg");
+
+            const user2: User = RDFSerializer.deserializeFromString("https://solid.dyn.hofmannsnet.de/jan/profile/card#me", otherProfile);
+            expect(user2).to.not.be.undefined;
+            expect(user2.name).to.equal("Jan Hofmann");
+            expect(user2.picture).to.equal("https://solid.dyn.hofmannsnet.de/jan/profile/QR%20jh%20solid.jpg");
         });
 
         it('should deserialize a user profile from subject', () => {
