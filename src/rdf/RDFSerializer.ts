@@ -27,6 +27,7 @@ import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
+import { RdfXmlParser } from 'rdfxml-streaming-parser';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -126,9 +127,27 @@ export class RDFSerializer extends DataSerializer {
         } as any);
     }
 
-    static deserializeFromString<T>(subject: IriString, input: string): T {
-        const parser = new Parser();
-        const quads: Quad[] = parser.parse(input);
+    static deserializeFromString<T>(subject: IriString, input: string, contentType: string = 'text/turtle'): T {
+        let quads: Quad[] = [];
+        if (contentType.includes('application/rdf+xml') || input.startsWith('<?xml version=')) {
+            const parser = new RdfXmlParser({
+                baseIRI: subject,
+            });
+            parser.on('data', (data: Quad) => {
+                quads.push(data);
+            });
+            parser.on('error', (err) => {
+                throw new Error('An error occured during RDF parsing: ' + err);
+            });
+            parser.write(input);
+            parser.end();
+        } else {
+            const mimetype = contentType.substring(0, contentType.indexOf(';'));
+            const parser = new Parser({
+                format: mimetype,
+            });
+            quads = parser.parse(input);
+        }
         const store = new Store(quads);
         return this.deserializeFromStore(
             subject ? DataFactory.namedNode(subject) : DataFactory.blankNode(quads[0].subject.value),
