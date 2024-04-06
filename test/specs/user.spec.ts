@@ -72,6 +72,7 @@ describe('User', () => {
         it('should deserialize a user profile from string', () => {
             const user: User = RDFSerializer.deserializeFromString("https://solid.maximvdw.be/profile/card#me", profile);
             expect(user).to.not.be.undefined;
+            console.log(user);
             expect(user.name).to.equal("Maxim Van de Wynckel");
             expect(user.picture).to.equal("https://solid.maximvdw.be/profile/1568226501835_Maxim_square.jpg");
         });

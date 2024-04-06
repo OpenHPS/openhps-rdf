@@ -15,3 +15,4 @@ export * from './System';
 export * from './Platform';
 export * from './Deployment';
 export * from './Action';
+export * from './SerializableThing';

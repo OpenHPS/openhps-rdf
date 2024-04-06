@@ -2,14 +2,14 @@ import { SerializableMember, SerializableObject } from '@openhps/core';
 import { rdfs, ssn, dcterms } from '../vocab';
 import { DataFactory } from 'n3';
 import { IriString, Thing } from '../rdf';
-import { SerializableNamedNode } from './SerializableNamedNode';
+import { SerializableThing } from './SerializableThing';
 
 @SerializableObject({
     rdf: {
         type: ssn.Property,
     },
 })
-export class Property extends SerializableNamedNode {
+export class Property extends SerializableThing {
     @SerializableMember({
         rdf: {
             predicate: rdfs.label,

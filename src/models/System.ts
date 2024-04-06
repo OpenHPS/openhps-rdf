@@ -1,17 +1,17 @@
 import { Model, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
-import { SerializableNamedNode } from './SerializableNamedNode';
 import { rdfs, ssn } from '../vocab';
 import { Procedure } from './Procedure';
 import { Deployment } from './Deployment';
 import { ModelGraph } from '@openhps/core/internal';
 import { applyMixins } from './utils';
+import { SerializableThing } from './SerializableThing';
 
 @SerializableObject({
     rdf: {
         type: ssn.System,
     },
 })
-export class System extends SerializableNamedNode { // eslint-disable-line
+export class System extends SerializableThing { // eslint-disable-line
     @SerializableMember({
         rdf: {
             predicate: rdfs.label,
@@ -50,5 +50,5 @@ export class System extends SerializableNamedNode { // eslint-disable-line
     })
     procedures?: Procedure[] = [];
 }
-export interface System extends SerializableNamedNode, Model<any, any> {} // eslint-disable-line
+export interface System extends SerializableThing, Model<any, any> {} // eslint-disable-line
 applyMixins(System, [ModelGraph]);

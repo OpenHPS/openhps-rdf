@@ -1,14 +1,14 @@
 import { SerializableMember, SerializableObject, Unit } from '@openhps/core';
 import { schema, ssn, ssns, rdfs } from '../vocab';
-import { SerializableNamedNode } from './SerializableNamedNode';
 import { ObservableProperty } from './ObservableProperty';
+import { SerializableThing } from './SerializableThing';
 
 @SerializableObject({
     rdf: {
         type: ssns.Accuracy,
     },
 })
-export class PropertyAccuracy extends SerializableNamedNode {
+export class PropertyAccuracy extends SerializableThing {
     @SerializableMember({
         rdf: {
             predicate: rdfs.label,

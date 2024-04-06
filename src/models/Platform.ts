@@ -1,5 +1,5 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { SerializableNamedNode } from './SerializableNamedNode';
+import { SerializableThing } from './SerializableThing';
 import { sosa, rdfs } from '../vocab';
 
 @SerializableObject({
@@ -7,7 +7,7 @@ import { sosa, rdfs } from '../vocab';
         type: sosa.Platform,
     },
 })
-export class Platform extends SerializableNamedNode {
+export class Platform extends SerializableThing {
     @SerializableMember({
         rdf: {
             predicate: rdfs.label,
