@@ -51,6 +51,10 @@ export class User extends SerializableThing {
         return undefined;
     }
 
+    set name(value: string) {
+        this._formattedName = value;
+    }
+
     @SerializableMember({
         rdf: {
             predicate: [foaf.nick, vcard.nickname],
