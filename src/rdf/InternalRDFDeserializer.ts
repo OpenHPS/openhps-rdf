@@ -241,10 +241,6 @@ export class InternalRDFDeserializer extends Deserializer {
             if (predicates !== undefined) {
                 [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
                     usedPredicates.push(predicateIri);
-                    if (!sourceObject.predicates) {
-                        // Named node or blank node
-                        return;
-                    }
 
                     if (!sourceObject.predicates[predicateIri]) {
                         return;

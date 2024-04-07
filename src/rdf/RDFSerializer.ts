@@ -190,7 +190,11 @@ export class RDFSerializer extends DataSerializer {
          */
         function quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
             if (processedSubjects.includes(subject.value)) {
-                return subject;
+                return {
+                    termType: subject.termType,
+                    value: subject.value,
+                    predicates: {},
+                };
             }
             processedSubjects.push(subject.value);
             return {
