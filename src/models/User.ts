@@ -1,4 +1,4 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { foaf, schema, vcard } from '../vocab';
 import { IriString, xsd } from '../rdf';
 import { DataFactory } from 'n3';
@@ -10,6 +10,13 @@ import { SerializableThing } from './SerializableThing';
     },
 })
 export class User extends SerializableThing {
+    @SerializableMember({
+        rdf: {
+            predicate: [foaf.title, vcard.title],
+        },
+    })
+    title?: string;
+
     @SerializableMember({
         rdf: {
             predicate: [vcard.given_name, foaf.givenname, foaf.firstName],
@@ -71,4 +78,11 @@ export class User extends SerializableThing {
         },
     })
     picture?: IriString;
+
+    @SerializableArrayMember(String, {
+        rdf: {
+            predicate: [foaf.account],
+        },
+    })
+    account?: string[];
 }

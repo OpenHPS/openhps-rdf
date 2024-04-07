@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { IriString, RDFSerializer, Subject, User } from "../../src";
+import axios from "axios";
 
 const otherProfile: string = `
 @prefix : <#>.
@@ -89,7 +90,7 @@ const profileSubject: Subject & { url: IriString } = {
 
 describe('User', () => {
     describe('deserialize', () => {
-        it('should deserialize a user profile from string', () => {
+        it('should deserialize a user profile from string', (done) => {
             const user: User = RDFSerializer.deserializeFromString("https://solid.maximvdw.be/profile/card#me", profile);
             expect(user).to.not.be.undefined;
             expect(user.name).to.equal("Maxim Van de Wynckel");
@@ -99,6 +100,13 @@ describe('User', () => {
             expect(user2).to.not.be.undefined;
             expect(user2.name).to.equal("Jan Hofmann");
             expect(user2.picture).to.equal("https://solid.dyn.hofmannsnet.de/jan/profile/QR%20jh%20solid.jpg");
+
+            axios.get("https://ruben.verborgh.org/profile/#me").then((response) => {
+              const user3: User = RDFSerializer.deserializeFromString("https://ruben.verborgh.org/profile/#me", response.data);
+              expect(user3).to.not.be.undefined;
+              expect(user3.name).to.equal("Ruben Verborgh");
+              done();
+            }).catch(done);
         });
 
         it('should deserialize a user profile from subject', () => {

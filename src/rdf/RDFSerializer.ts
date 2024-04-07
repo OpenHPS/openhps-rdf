@@ -182,12 +182,17 @@ export class RDFSerializer extends DataSerializer {
     }
 
     static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
+        const processedSubjects: string[] = [];
         /**
          * @param {NamedNode | BlankNode} subject Subject of quad
          * @param {Store} store Quad store
          * @returns {Thing} Thing from quads
          */
         function quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
+            if (processedSubjects.includes(subject.value)) {
+                return subject;
+            }
+            processedSubjects.push(subject.value);
             return {
                 termType: subject.termType,
                 value: subject.value,

@@ -241,6 +241,11 @@ export class InternalRDFDeserializer extends Deserializer {
             if (predicates !== undefined) {
                 [...(Array.isArray(predicates) ? predicates : [predicates])].forEach((predicateIri: IriString) => {
                     usedPredicates.push(predicateIri);
+                    if (!sourceObject.predicates) {
+                        // Named node or blank node
+                        return;
+                    }
+
                     if (!sourceObject.predicates[predicateIri]) {
                         return;
                     }
@@ -299,7 +304,7 @@ export class InternalRDFDeserializer extends Deserializer {
             }
         });
 
-        if (targetObject) {
+        if (targetObject && sourceObject.predicates) {
             // Add unused predicates
             const unusedPredicates = Object.keys(sourceObject.predicates)
                 .filter((predicate: IriString) => predicate !== rdf.type)
