@@ -85,7 +85,7 @@ export class User extends SerializableThing {
 
     @SerializableMember({
         rdf: {
-            predicate: [vcard.hasPhoto, foaf.img, schema.image],
+            predicate: [vcard.hasPhoto, foaf.img, schema.image, foaf.depiction],
             serializer: (value: string) => {
                 return DataFactory.namedNode(value);
             },
@@ -99,4 +99,11 @@ export class User extends SerializableThing {
         },
     })
     account?: string[];
+
+    @SerializableMember({
+        rdf: {
+            predicate: [foaf.workplaceHomepage],
+        },
+    })
+    workplaceHomepage?: IriString;
 }

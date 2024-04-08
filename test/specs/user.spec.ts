@@ -102,9 +102,20 @@ describe('User', () => {
             expect(user2.picture).to.equal("https://solid.dyn.hofmannsnet.de/jan/profile/QR%20jh%20solid.jpg");
 
             axios.get("https://ruben.verborgh.org/profile/#me").then((response) => {
-              const user3: User = RDFSerializer.deserializeFromString("https://ruben.verborgh.org/profile/#me", response.data);
-              expect(user3).to.not.be.undefined;
-              expect(user3.name).to.equal("Ruben Verborgh");
+              const user: User = RDFSerializer.deserializeFromString(
+                "https://ruben.verborgh.org/profile/#me", 
+                response.data);
+              expect(user).to.not.be.undefined;
+              expect(user.name).to.equal("Ruben Verborgh");
+              return axios.get("https://beatsigner.com/foaf.rdf#me");
+            }).then(response => {
+              const user: User = RDFSerializer.deserializeFromString(
+                "https://beatsigner.com/foaf.rdf#me", 
+                response.data,
+                response.headers["content-type"]);
+              expect(user).to.not.be.undefined;
+              expect(user.name).to.equal("Beat Signer");
+              expect(user.picture).to.not.be.undefined;
               done();
             }).catch(done);
         });
