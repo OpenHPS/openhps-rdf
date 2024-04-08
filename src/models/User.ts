@@ -41,6 +41,20 @@ export class User extends SerializableThing {
 
     @SerializableMember({
         rdf: {
+            predicate: [vcard.role, vcard.title, schema.jobTitle],
+        },
+    })
+    jobTitle?: string;
+
+    @SerializableMember({
+        rdf: {
+            predicate: [vcard.hasEmail, foaf.mbox, schema.email],
+        },
+    })
+    email?: string;
+
+    @SerializableMember({
+        rdf: {
             predicate: [vcard.fn, vcard.hasName, foaf.name, schema.name],
         },
     })
