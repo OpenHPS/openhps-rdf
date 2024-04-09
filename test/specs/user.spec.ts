@@ -128,8 +128,18 @@ describe('User', () => {
     });
 
     describe('serialize', () => {
-      it('should correctly serialize the profile', () => {
-
+      it('should correctly serialize the profile', (done) => {
+        axios.get("https://beatsigner.com/foaf.rdf#me").then(response => {
+          const user: User = RDFSerializer.deserializeFromString(
+            "https://beatsigner.com/foaf.rdf#me", 
+            response.data,
+            response.headers["content-type"]);
+          expect(user).to.not.be.undefined;
+          expect(user.name).to.equal("Beat Signer");
+          expect(user.picture).to.not.be.undefined;
+          const serialized = RDFSerializer.serialize(user);
+          done();
+        }).catch(done);
       });
     });
 });

@@ -3,9 +3,6 @@ import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
 
 @SerializableObject({
     rdf: {
-        serializer: (object: SerializableThing) => {
-            return object.toThing();
-        },
         deserializer: (thing: Thing, object: SerializableThing) => {
             object.id = thing.value as IriString | BlankNodeId;
             object.termType = thing.termType;
@@ -15,7 +12,11 @@ import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
 })
 export class SerializableThing {
     termType: 'NamedNode' | 'BlankNode';
-    @SerializableMember()
+    @SerializableMember({
+        rdf: {
+            identifier: true,
+        },
+    })
     id: IriString | BlankNodeId;
 
     toThing(): Thing {

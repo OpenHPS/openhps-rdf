@@ -27,11 +27,21 @@ describe('DataObject', () => {
         });
 
         it('should have two rdf types', async () => {
-            const turtle = await RDFSerializer.stringify(serialized, {
-                format: 'text/turtle',
-                prettyPrint: false
+            let turtle = await RDFSerializer.stringify(object, {
+                format: 'turtle',
+                prettyPrint: true,
+                prefixes: {
+                    sembeacon: 'http://purl.org/sembeacon/',
+                },
             });
             console.log(turtle)
+            turtle = await RDFSerializer.stringify(serialized, {
+                format: 'turtle',
+                prettyPrint: true,
+                prefixes: {
+                    sembeacon: 'http://purl.org/sembeacon/',
+                },
+            });
             expect(serialized.predicates[rdf.type].length).to.equal(2);
         });
 
