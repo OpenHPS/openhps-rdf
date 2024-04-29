@@ -1,5 +1,5 @@
 import 'mocha';
-import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance } from '@openhps/core';
+import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance, createChangeLog } from '@openhps/core';
 import { poso, rdf, RDFSerializer } from '../../src';
 import { expect } from 'chai';
 
@@ -86,6 +86,19 @@ describe('DataObject', () => {
         
         it('should deserialize an orientation', () => {
             expect(deserialized.position.orientation).to.not.be.undefined;
+        });
+    });
+
+    describe('changelog', () => {
+        it('should have a changelog', () => {
+            const object = new DataObject();
+            object.displayName = "Beat Signer";
+            object.position = new GeographicalPosition(50.40, 10.20, 15);
+            const objectWithChangeLog = createChangeLog(object);
+            objectWithChangeLog.displayName = "Maxim Van de Wynckel";
+            objectWithChangeLog.position = new GeographicalPosition(50.40, 10.20, 10);
+            const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
+            console.log(changelog);
         });
     });
 

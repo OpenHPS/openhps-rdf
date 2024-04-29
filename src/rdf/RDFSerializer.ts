@@ -28,6 +28,7 @@ import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
+import { QuadChangeLog, getChangeLog } from './ChangeLog';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -275,6 +276,10 @@ export class RDFSerializer extends DataSerializer {
                 };
             });
         return subjects;
+    }
+
+    static serializeToChangeLog<T>(data: T, baseUri?: IriString): QuadChangeLog {
+        return getChangeLog(data, (data) => this.serializeToQuads(data, baseUri));
     }
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
