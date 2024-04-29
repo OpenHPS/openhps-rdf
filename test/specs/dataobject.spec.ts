@@ -97,8 +97,7 @@ describe('DataObject', () => {
             const objectWithChangeLog = createChangeLog(object);
             objectWithChangeLog.displayName = "Maxim Van de Wynckel";
             objectWithChangeLog.position = new GeographicalPosition(50.40, 10.20, 10);
-            const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
-            console.log(changelog);
+        
         });
     });
 

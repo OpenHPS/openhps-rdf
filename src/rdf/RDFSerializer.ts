@@ -28,7 +28,6 @@ import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
-import { QuadChangeLog, getChangeLog } from './ChangeLog';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -278,18 +277,17 @@ export class RDFSerializer extends DataSerializer {
         return subjects;
     }
 
-    static serializeToChangeLog<T>(data: T, baseUri?: IriString): QuadChangeLog {
-        return getChangeLog(data, (data) => this.serializeToQuads(data, baseUri));
-    }
-
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
         const thing =
             (data as any)['predicates'] !== undefined ? (data as unknown as Thing) : this.serialize(data, { baseUri });
         if (!thing) {
             return [];
         }
-        const subject =
-            thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
+        return this.thingToQuads(thing);
+    }
+
+    protected static thingToQuads(thing: Thing): Quad[] {
+        const subject = thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)
             .map((predicateIri) => {
                 const predicate = DataFactory.namedNode(predicateIri);
@@ -304,7 +302,7 @@ export class RDFSerializer extends DataSerializer {
                     ) {
                         return [
                             DataFactory.quad(subject, predicate, object as Quad_Object),
-                            ...this.serializeToQuads(object as Thing),
+                            ...this.thingToQuads(object as Thing),
                         ];
                     } else {
                         return [DataFactory.quad(subject, predicate, object as Quad_Object)];

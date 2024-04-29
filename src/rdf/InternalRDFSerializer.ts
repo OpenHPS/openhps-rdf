@@ -8,6 +8,9 @@ import {
     TypeDescriptor,
     Serializable,
     DataSerializerUtils,
+    CHANGELOG_METADATA_KEY,
+    ChangeLog,
+    MemberOptionsBase,
 } from '@openhps/core';
 import { IriString, Thing, XmlSchemaTypeIri, xsd } from './types';
 import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
@@ -191,7 +194,11 @@ export class InternalRDFSerializer extends Serializer {
         }
         serializerOptions.sourceObject = sourceObject;
 
-        metadata.dataMembers.forEach((member) => {
+        const changelog: ChangeLog = sourceObject[CHANGELOG_METADATA_KEY];
+        if (changelog) {
+            const changes = changelog.getLatestChanges();
+        }
+        const data: ObjectMemberMetadata[] = Object.values(metadata.dataMembers).map((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
             const memberOptions =
                 member.options && member.options.rdf
@@ -206,9 +213,13 @@ export class InternalRDFSerializer extends Serializer {
                     !memberOptions.options.rdf.serializer) ||
                 memberOptions.options.rdf.identifier
             ) {
-                return;
+                return undefined;
             }
 
+            return memberOptions;
+        }).filter((entry) => entry !== undefined);
+
+        data.forEach((memberOptions) => {
             const object = serializer.convertSingleValue(
                 (sourceObject as any)[memberOptions.key],
                 memberOptions.type(),
@@ -334,6 +345,7 @@ interface InternalSerializerOptions {
     root?: Thing;
     current?: Thing;
     parent?: MemberSerializerOptionsParent;
+    changelog?: boolean;
     rdf?: {
         baseUri: IriString;
     };
