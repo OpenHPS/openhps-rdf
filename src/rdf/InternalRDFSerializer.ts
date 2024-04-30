@@ -11,6 +11,7 @@ import {
     CHANGELOG_METADATA_KEY,
     ChangeLog,
     MemberOptionsBase,
+    Change,
 } from '@openhps/core';
 import { IriString, Thing, XmlSchemaTypeIri, xsd } from './types';
 import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
@@ -195,10 +196,14 @@ export class InternalRDFSerializer extends Serializer {
         serializerOptions.sourceObject = sourceObject;
 
         const changelog: ChangeLog = sourceObject[CHANGELOG_METADATA_KEY];
-        if (changelog) {
-            const changes = changelog.getLatestChanges();
+        const changes: Change[] = [];
+        let changedProperties = undefined;
+        if (changelog && serializerOptions.changelog) {
+            changes.push(...changelog.getLatestChanges());
+            changedProperties = changes.map(c => c.property);
         }
-        const data: ObjectMemberMetadata[] = Object.values(metadata.dataMembers).map((member) => {
+        
+        const data: ObjectMemberMetadata[] = Array.from(metadata.dataMembers.values()).map((member) => {
             const rootMember = rootMetadata.dataMembers.get(member.key);
             const memberOptions =
                 member.options && member.options.rdf
@@ -217,11 +222,23 @@ export class InternalRDFSerializer extends Serializer {
             }
 
             return memberOptions;
-        }).filter((entry) => entry !== undefined);
+        }).filter((entry) => entry !== undefined).filter(entry => {
+            return changedProperties && changedProperties.includes(entry.key);
+        });
 
         data.forEach((memberOptions) => {
+            let value = (sourceObject as any)[memberOptions.key];
+            if (changelog && serializerOptions.changelog) {
+                // Get the value of the changelog
+                const change = changes.find((c) => c.property === memberOptions.key);
+                if (change) {
+                    // Set the value the old of new value depending on if we want to get the quads
+                    // for additions or deletions
+                    value = serializerOptions.changelog === ChangeLogType.ADDITIONS ? change.newValue : change.oldValue;
+                }
+            }
             const object = serializer.convertSingleValue(
-                (sourceObject as any)[memberOptions.key],
+                value,
                 memberOptions.type(),
                 `${memberOptions.name}`,
                 memberOptions,
@@ -345,8 +362,14 @@ interface InternalSerializerOptions {
     root?: Thing;
     current?: Thing;
     parent?: MemberSerializerOptionsParent;
-    changelog?: boolean;
+    changelog?: ChangeLogType;
     rdf?: {
         baseUri: IriString;
     };
+}
+
+export enum ChangeLogType {
+    NONE,
+    ADDITIONS,
+    DELETIONS
 }

@@ -7,7 +7,7 @@ import {
     ObjectMemberMetadata,
     DataSerializerUtils,
 } from '@openhps/core';
-import { InternalRDFSerializer } from './InternalRDFSerializer';
+import { ChangeLogType, InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
 import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates } from './types';
 import {
@@ -125,6 +125,42 @@ export class RDFSerializer extends DataSerializer {
             },
             ...this.options,
         } as any);
+    }
+
+    /**
+     * Serialize data to changelog
+     * @param {any} data Data to serialize
+     * @param {RDFSerializerConfig} [config] RDF serializer configuration
+     * @returns {Thing} Serialized data
+     */
+    static serializeToChangeLog<T>(data: T, config?: RDFSerializerConfig): { additions?: Quad[], deletions?: Quad[] } {
+        const additions = super.serialize(data, {
+            rdf: {
+                baseUri: config ? config.baseUri : undefined,
+            },
+            ...this.options,
+            changelog: ChangeLogType.ADDITIONS,
+        } as any);
+        const deletions = super.serialize(data, {
+            rdf: {
+                baseUri: config ? config.baseUri : undefined,
+            },
+            ...this.options,
+            changelog: ChangeLogType.DELETIONS,
+        } as any);
+        const additionsQuads = this.thingToQuads(additions);
+        const deletionsQuads = this.thingToQuads(deletions);
+        // Remove the unchanged quads froom the deletions and additions
+        const filteredAdditions = additionsQuads.filter(
+            (addition) => !deletionsQuads.some((deletion) => deletion.equals(addition)),
+        );
+        const filteredDeletions = deletionsQuads.filter(
+            (deletion) => !additionsQuads.some((addition) => addition.equals(deletion)),
+        );
+        return {
+            additions: filteredAdditions,
+            deletions: filteredDeletions,
+        };
     }
 
     static deserializeFromString<T>(subject: IriString, input: string, contentType: string = 'text/turtle'): T {
