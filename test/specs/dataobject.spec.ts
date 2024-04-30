@@ -1,6 +1,6 @@
 import 'mocha';
 import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance, createChangeLog } from '@openhps/core';
-import { poso, rdf, RDFSerializer } from '../../src';
+import { poso, rdf, RDFSerializer, Store } from '../../src';
 import { expect } from 'chai';
 
 describe('DataObject', () => {
@@ -94,11 +94,15 @@ describe('DataObject', () => {
             const object = new DataObject();
             object.displayName = "Beat Signer";
             object.position = new GeographicalPosition(50.40, 10.20, 15);
+            const store = new Store();
+            store.addQuads(RDFSerializer.serializeToQuads(object));
             const objectWithChangeLog = createChangeLog(object);
             objectWithChangeLog.displayName = "Maxim Van de Wynckel";
             objectWithChangeLog.position = new GeographicalPosition(50.40, 10.20, 10);
-            const serialized = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
-            console.log(serialized.additions, serialized.deletions);
+            const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
+            store.addQuads(changelog.additions);
+            store.removeQuads(changelog.deletions);
+            const deserialized = RDFSerializer.deserializeFromStore(undefined, store);
         });
     });
 

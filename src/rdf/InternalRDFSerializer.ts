@@ -10,7 +10,6 @@ import {
     DataSerializerUtils,
     CHANGELOG_METADATA_KEY,
     ChangeLog,
-    MemberOptionsBase,
     Change,
 } from '@openhps/core';
 import { IriString, Thing, XmlSchemaTypeIri, xsd } from './types';
@@ -29,6 +28,16 @@ export class InternalRDFSerializer extends Serializer {
         [Map, this.serializeMap.bind(this)],
         [Set, this.serializeSet.bind(this)],
     ]);
+
+    private blankNode(uri: string, options: InternalSerializerOptions) {
+        if (uri) {
+            return DataFactory.blankNode(uri);
+        }
+        if (options.blankNodeCounter === undefined) {
+            return DataFactory.blankNode();
+        }
+        return DataFactory.blankNode(`n3-${options.blankNodeCounter++}`);
+    }
 
     convertSingleValue(
         sourceObject: any,
@@ -67,7 +76,7 @@ export class InternalRDFSerializer extends Serializer {
                 return mergeDeep(
                     {
                         termType: 'BlankNode',
-                        value: DataFactory.blankNode().value,
+                        value: this.blankNode(undefined, serializerOptions).value,
                         predicates: {},
                     },
                     output,
@@ -154,7 +163,7 @@ export class InternalRDFSerializer extends Serializer {
                 ? serializerOptions.rdf.baseUri.endsWith('/') && uri.startsWith('/')
                     ? serializerOptions.rdf.baseUri + uri.substring(1)
                     : serializerOptions.rdf.baseUri + uri
-                : DataFactory.blankNode(uri).value;
+                : this.blankNode(uri, serializerOptions).value;
 
         if (!(sourceObject as any).rdf) {
             (sourceObject as any).rdf = { uri };
@@ -200,31 +209,34 @@ export class InternalRDFSerializer extends Serializer {
         let changedProperties = undefined;
         if (changelog && serializerOptions.changelog) {
             changes.push(...changelog.getLatestChanges());
-            changedProperties = changes.map(c => c.property);
+            changedProperties = changes.map((c) => c.property);
         }
-        
-        const data: ObjectMemberMetadata[] = Array.from(metadata.dataMembers.values()).map((member) => {
-            const rootMember = rootMetadata.dataMembers.get(member.key);
-            const memberOptions =
-                member.options && member.options.rdf
-                    ? member
-                    : rootMember && rootMember.options && rootMember.options.rdf
-                      ? rootMember
-                      : undefined;
 
-            if (
-                !memberOptions ||
-                (!(memberOptions.options.rdf as RDFLiteralOptions).predicate &&
-                    !memberOptions.options.rdf.serializer) ||
-                memberOptions.options.rdf.identifier
-            ) {
-                return undefined;
-            }
+        const data: ObjectMemberMetadata[] = Array.from(metadata.dataMembers.values())
+            .map((member) => {
+                const rootMember = rootMetadata.dataMembers.get(member.key);
+                const memberOptions =
+                    member.options && member.options.rdf
+                        ? member
+                        : rootMember && rootMember.options && rootMember.options.rdf
+                          ? rootMember
+                          : undefined;
 
-            return memberOptions;
-        }).filter((entry) => entry !== undefined).filter(entry => {
-            return changedProperties && changedProperties.includes(entry.key);
-        });
+                if (
+                    !memberOptions ||
+                    (!(memberOptions.options.rdf as RDFLiteralOptions).predicate &&
+                        !memberOptions.options.rdf.serializer) ||
+                    memberOptions.options.rdf.identifier
+                ) {
+                    return undefined;
+                }
+
+                return memberOptions;
+            })
+            .filter((entry) => entry !== undefined)
+            .filter((entry) => {
+                return (changedProperties && changedProperties.includes(entry.key)) || !changedProperties;
+            });
 
         data.forEach((memberOptions) => {
             let value = (sourceObject as any)[memberOptions.key];
@@ -366,10 +378,11 @@ interface InternalSerializerOptions {
     rdf?: {
         baseUri: IriString;
     };
+    blankNodeCounter?: number;
 }
 
 export enum ChangeLogType {
     NONE,
     ADDITIONS,
-    DELETIONS
+    DELETIONS,
 }

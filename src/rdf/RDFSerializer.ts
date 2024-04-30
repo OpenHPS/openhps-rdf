@@ -133,12 +133,13 @@ export class RDFSerializer extends DataSerializer {
      * @param {RDFSerializerConfig} [config] RDF serializer configuration
      * @returns {Thing} Serialized data
      */
-    static serializeToChangeLog<T>(data: T, config?: RDFSerializerConfig): { additions?: Quad[], deletions?: Quad[] } {
+    static serializeToChangeLog<T>(data: T, config?: RDFSerializerConfig): { additions?: Quad[]; deletions?: Quad[] } {
         const additions = super.serialize(data, {
             rdf: {
                 baseUri: config ? config.baseUri : undefined,
             },
             ...this.options,
+            blankNodeCounter: 1,
             changelog: ChangeLogType.ADDITIONS,
         } as any);
         const deletions = super.serialize(data, {
@@ -146,6 +147,7 @@ export class RDFSerializer extends DataSerializer {
                 baseUri: config ? config.baseUri : undefined,
             },
             ...this.options,
+            blankNodeCounter: 1,
             changelog: ChangeLogType.DELETIONS,
         } as any);
         const additionsQuads = this.thingToQuads(additions);
@@ -257,6 +259,7 @@ export class RDFSerializer extends DataSerializer {
                 },
             };
         }
+        subject = subject ?? (store.getQuads(null, null, null, null)[0].subject as NamedNode | BlankNode);
         const thing = quadsToThing(subject, store);
         return this.deserialize(thing);
     }
@@ -323,7 +326,8 @@ export class RDFSerializer extends DataSerializer {
     }
 
     protected static thingToQuads(thing: Thing): Quad[] {
-        const subject = thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
+        const subject =
+            thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)
             .map((predicateIri) => {
                 const predicate = DataFactory.namedNode(predicateIri);
@@ -336,10 +340,8 @@ export class RDFSerializer extends DataSerializer {
                         (object as any)['predicates'] !== undefined &&
                         Object.values((object as any)['predicates']).length > 0
                     ) {
-                        return [
-                            DataFactory.quad(subject, predicate, object as Quad_Object),
-                            ...this.thingToQuads(object as Thing),
-                        ];
+                        const quads = this.thingToQuads(object as Thing);
+                        return [DataFactory.quad(subject, predicate, quads[0].subject), ...quads];
                     } else {
                         return [DataFactory.quad(subject, predicate, object as Quad_Object)];
                     }
