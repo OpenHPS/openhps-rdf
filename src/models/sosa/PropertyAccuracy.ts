@@ -1,7 +1,7 @@
 import { SerializableMember, SerializableObject, Unit } from '@openhps/core';
-import { schema, ssn, ssns, rdfs } from '../vocab';
+import { schema, ssn, ssns, rdfs } from '../../vocab';
 import { ObservableProperty } from './ObservableProperty';
-import { SerializableThing } from './SerializableThing';
+import { SerializableThing } from '../SerializableThing';
 
 @SerializableObject({
     rdf: {

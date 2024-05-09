@@ -1,6 +1,6 @@
 import { DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { ActuableProperty } from './ActuableProperty';
-import { dcterms, rdfs, ssn } from '../vocab';
+import { dcterms, rdfs, ssn } from '../../vocab';
 import { ObservableProperty } from './ObservableProperty';
 import { Property } from './Property';
 

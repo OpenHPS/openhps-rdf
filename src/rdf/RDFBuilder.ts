@@ -29,13 +29,20 @@ export class RDFBuilder {
         return new RDFBuilder(thing);
     }
 
-    add(predicate: IriString, object: Quad_Object | Thing | IriString | object): RDFBuilder;
+    add(predicate: IriString, object: Quad_Object | Thing | IriString | IriString[] | object): RDFBuilder;
     add(predicate: IriString, object: number | string, languageOrDatatype?: string | IriString): RDFBuilder;
     add(
         predicate: IriString,
-        object: Quad_Object | Thing | number | string | IriString | object,
+        object: Quad_Object | Thing | number | string | IriString | IriString[] | object,
         languageOrDatatype?: string | IriString,
     ): RDFBuilder {
+        if (object === undefined) {
+            return this;
+        }
+        if (Array.isArray(object)) {
+            object.forEach((obj) => this.add(predicate, obj, languageOrDatatype));
+            return this;
+        }
         let obj = object;
         if (typeof object === 'string') {
             if (object.startsWith('http') && languageOrDatatype === undefined) {

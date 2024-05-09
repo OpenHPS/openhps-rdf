@@ -1,9 +1,9 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { rdfs, ssn, ogc, vcard } from '../vocab';
-import { PolygonGeometry } from './Geometry';
-import { Platform } from './Platform';
-import { Address } from './Address';
-import { SerializableNamedNode } from './SerializableNamedNode';
+import { rdfs, ssn, ogc, vcard } from '../../vocab';
+import { PolygonGeometry } from '../Geometry';
+import { Platform } from '../Platform';
+import { Address } from '../Address';
+import { SerializableNamedNode } from '../SerializableNamedNode';
 
 @SerializableObject({
     rdf: {

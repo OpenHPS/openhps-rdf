@@ -1,7 +1,7 @@
 import { Node, SerializableMember, SerializableObject } from '@openhps/core';
-import { sosa, rdfs } from '../vocab';
-import { applyMixins } from './utils';
-import { SerializableThing } from './SerializableThing';
+import { sosa, rdfs } from '../../vocab';
+import { applyMixins } from '../utils';
+import { SerializableThing } from '../SerializableThing';
 
 @SerializableObject({
     rdf: {

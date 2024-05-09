@@ -1,10 +1,10 @@
 import { Model, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
-import { rdfs, ssn } from '../vocab';
+import { rdfs, ssn } from '../../vocab';
 import { Procedure } from './Procedure';
 import { Deployment } from './Deployment';
 import { ModelGraph } from '@openhps/core/internal';
-import { applyMixins } from './utils';
-import { SerializableThing } from './SerializableThing';
+import { applyMixins } from '../utils';
+import { SerializableThing } from '../SerializableThing';
 
 @SerializableObject({
     rdf: {

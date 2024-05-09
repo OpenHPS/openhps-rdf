@@ -1,8 +1,8 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { rdfs, ssn, dcterms } from '../vocab';
+import { rdfs, ssn, dcterms } from '../../vocab';
 import { DataFactory } from 'n3';
-import { IriString, Thing } from '../rdf';
-import { SerializableThing } from './SerializableThing';
+import { IriString, Thing } from '../../rdf';
+import { SerializableThing } from '../SerializableThing';
 
 @SerializableObject({
     rdf: {

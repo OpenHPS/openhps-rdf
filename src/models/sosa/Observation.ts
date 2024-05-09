@@ -1,10 +1,10 @@
 import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
-import { sosa } from '../vocab';
+import { sosa } from '../../vocab';
 import { FeatureOfInterest } from './FeatureOfInterest';
 import { ObservableProperty } from './ObservableProperty';
-import { IriString, Thing } from '../rdf';
-import { SerializableThing } from './SerializableThing';
-import { xsd } from '../rdf/types';
+import { IriString, Thing } from '../../rdf';
+import { SerializableThing } from '../SerializableThing';
+import { xsd } from '../../rdf/types';
 import { DataFactory } from 'n3';
 
 @SerializableObject({

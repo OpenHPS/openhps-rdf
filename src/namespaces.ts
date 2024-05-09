@@ -41,9 +41,14 @@ const namespaces: Namespaces = {
     seas: 'https://w3id.org/seas/',
     //indoorgml: 'http://www.opengis.net/indoorgml/1.0/core',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
+    sh: 'http://www.w3.org/ns/shacl#',
+    tree: 'https://w3id.org/tree#',
+    ldes: 'https://w3id.org/ldes#',
+    ldp: 'http://www.w3.org/ns/ldp#'
 };
 
 const mirrors: Mirrors = {
+    'http://www.w3.org/ns/shacl#': 'https://www.w3.org/ns/shacl.ttl',
     'http://www.opengis.net/ont/geosparql#':
         'https://raw.githubusercontent.com/opengeospatial/ogc-geosparql/master/vocabularies/geo.ttl',
     //'http://www.opengis.net/ont/geosparql#': 'https://opengeospatial.github.io/ogc-geosparql/geosparql11/geo.ttl',
