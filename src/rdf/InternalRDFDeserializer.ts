@@ -74,9 +74,8 @@ export class InternalRDFDeserializer extends Deserializer {
                         })
                         .reduce((a, b) => [...a, ...b], []);
                     const sourcePredicates = Object.keys(sourceObject.predicates);
-                    const priority = sourcePredicates.filter((predicate) =>
-                        predicates.includes(predicate as IriString),
-                    ).length;
+                    const priority =
+                        sourcePredicates.filter((predicate) => predicates.includes(predicate as IriString)).length * 5;
                     const negativePriority =
                         predicates.filter((predicate) => !sourcePredicates.includes(predicate as IriString)).length /
                         10;
