@@ -13,6 +13,31 @@ export class ProjectGenerator {
     private static _modules: Set<string> = new Set();
     private static _packages: Set<string> = new Set();
 
+    static findAllModules(dir: string): NodeModule[] {
+        const packageFile = path.join(dir, 'package.json');
+        if (fs.existsSync(packageFile)) {
+            const packageJson = JSON.parse(fs.readFileSync(packageFile, { encoding: 'utf-8' }));
+            const dependencies = packageJson.dependencies;
+            const devDependencies = packageJson.devDependencies;
+            
+            // Combine dependencies and devDependencies
+            const allDependencies = {...dependencies, ...devDependencies};
+            
+            // Get the names of all modules
+            const allModuleNames = Object.keys(allDependencies);
+            const allModules = allModuleNames.map(name => {
+                try {
+                    require(name);
+                    return require.cache[require.resolve(name)];
+                } catch (error) {
+                    return null;
+                }
+            }).filter(Boolean) as NodeModule[];
+            return allModules;
+        }
+
+    }
+
     static findModule(dir: string): string {
         const packageFile = path.join(dir, 'package.json');
         if (fs.existsSync(packageFile)) {
@@ -25,23 +50,28 @@ export class ProjectGenerator {
         }
     }
 
-    static loadClasses(classes: any[], module: NodeModule = require.main) {
+    static loadClasses(classes: any[], module?: NodeModule) {
         if (module === undefined) {
             // Use cache instead
-            Object.values(require.cache).map((m) => this.loadClasses(classes, m));
+            [require.main]
+                .concat(Object.values(require.cache))
+                .concat(this.findAllModules("./"))
+                .forEach((m) => this.loadClasses(classes, m));
             return;
         }
-        this._modules.add(module.id);
-        Object.keys(module.exports).forEach((key) => {
-            const childModule = module.exports[key];
-            if (childModule && childModule.prototype && childModule.prototype instanceof Node) {
-                childModule.prototype._module = this.findModule(path.dirname(require.resolve(module.id)));
-                childModule.prototype._file = key;
-                childModule.prototype._filePath = require.resolve(module.id);
-                classes.push(childModule);
-                this._packages.add(childModule.prototype._module);
-            }
-        });
+        if (!this._modules.has(module.id) && module.exports) {
+            this._modules.add(module.id);
+            Object.keys(module.exports).forEach((key) => {
+                const childModule = module.exports[key];
+                if (childModule && childModule.prototype && childModule.prototype instanceof Node) {
+                    childModule.prototype._module = this.findModule(path.dirname(require.resolve(module.id)));
+                    childModule.prototype._file = key;
+                    childModule.prototype._filePath = require.resolve(module.id);
+                    classes.push(childModule);
+                    this._packages.add(childModule.prototype._module);
+                }
+            });
+        }
         module.children.forEach((module) => {
             if (!this._modules.has(module.id)) {
                 this.loadClasses(classes, module);

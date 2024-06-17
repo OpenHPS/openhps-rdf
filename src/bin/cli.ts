@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as chalk from 'chalk';
-import '@openhps/rf';
 import * as path from 'path';
 import { input } from '@inquirer/prompts';
 import * as yargs from 'yargs';
@@ -33,7 +32,7 @@ const args = yargs.option('d', {
     default: undefined,
 }).option('v', {
     alias: 'verbose',
-    default: undefined,
+    type: 'boolean',
     description: "Verbose logging"
 }).option('g', {
     alias: 'generate',
