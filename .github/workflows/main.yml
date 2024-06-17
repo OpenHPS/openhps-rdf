@@ -28,7 +28,7 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Installing dependencies
         run: |
           yarn install
@@ -64,7 +64,7 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Quality
         run: |
           npm run lint -- --fix
@@ -99,14 +99,14 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Load test and coverage cache
         uses: actions/cache@v2
         with:
           path: |
             **/test-results.xml
             **/coverage
-          key: ${{ runner.os }}-test-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-test-v1-${{ github.run_number }}
       - name: Test
         run: |
           npm run cover:ci
@@ -129,13 +129,13 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Load document cache
         uses: actions/cache@v2
         with:
           path: |
             **/docs/out
-          key: ${{ runner.os }}-docs-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-docs-v1-${{ github.run_number }}
       - name: Build documentation
         run: |
           npm run build:typedoc
@@ -153,7 +153,7 @@ jobs:
         with:
           path: |
             **/docs/out
-          key: ${{ runner.os }}-docs-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-docs-v1-${{ github.run_number }}
       - name: Publish Documentation
         uses: actions/upload-artifact@v2
         with:
@@ -179,7 +179,7 @@ jobs:
           path: |
             **/test-results.xml
             **/coverage
-          key: ${{ runner.os }}-test-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-test-v1-${{ github.run_number }}
       - name: Publish unit test results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -213,7 +213,7 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Configure Publish
         run: |
           git config --global user.name 'CI'
@@ -253,7 +253,7 @@ jobs:
           path: |
             **/dist
             **/src/vocab
-          key: ${{ runner.os }}-build-v1-${{ hashFiles('**/yarn.lock') }}-${{ github.run_number }}
+          key: ${{ runner.os }}-build-v1-${{ github.run_number }}
       - name: Configure Publish
         run: |
           git config --global user.name 'CI'
