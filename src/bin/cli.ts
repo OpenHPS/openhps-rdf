@@ -8,6 +8,7 @@ import * as yargs from 'yargs';
 import { Mirrors, Namespaces } from './types';
 import { generateFiles } from './generateFiles';
 import * as fs from 'fs';
+import { ProjectGenerator } from './ProjectGenerator';
 
 const args = yargs.option('d', {
     alias: 'dictionary',
@@ -34,6 +35,10 @@ const args = yargs.option('d', {
     alias: 'verbose',
     default: undefined,
     description: "Verbose logging"
+}).option('g', {
+    alias: 'generate',
+    type: 'boolean',
+    description: "Generate RDF definitions for OpenHPS procedures",
 }).argv;
 
 const data: {
@@ -66,8 +71,13 @@ function main() {
             }),
     ).then(async (directory) => {
         data.directory = path.normalize(directory);
-
-        if (data.namespaces) {
+        if (args['g']) {
+            // Generate RDF definitions for procedures
+            ProjectGenerator.buildProject(data.directory, {
+                logLevel: args['v'] ? 3 : 2,
+            });
+            throw undefined;
+        } else if (data.namespaces) {
             return Promise.resolve(data.namespaces);
         } else if (args['n']) {
             return Promise.resolve((args['n'] as string[]).map(ns => {
@@ -112,6 +122,10 @@ function main() {
         }
 
         return generateFiles(data.namespaces, { targetDir: data.directory, mirrors: data.mirrors });
+    }).catch((error) => {
+        if (error) {
+            console.error(error);
+        }
     });
 }
 

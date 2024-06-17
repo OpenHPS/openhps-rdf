@@ -37,7 +37,9 @@ export class RDFBuilder {
         languageOrDatatype?: string | IriString,
     ): RDFBuilder {
         let obj = object;
-        if (typeof object === 'string') {
+        if (obj === undefined) {
+            return this;
+        } else if (typeof object === 'string') {
             if (object.startsWith('http') && languageOrDatatype === undefined) {
                 // Named node
                 obj = DataFactory.namedNode(object);

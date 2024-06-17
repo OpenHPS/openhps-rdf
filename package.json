@@ -109,10 +109,11 @@
     "@types/n3": "^1.16.4",
     "axios": "^1.6.5",
     "chalk": "^4",
+    "jsdoc3-parser": "^3.0.0",
     "n3": "^1.17.2",
+    "rdfxml-streaming-parser": "^2.4.0",
     "sparqljs": "^3.7.1",
-    "wkt": "^0.1.1",
-    "rdfxml-streaming-parser": "^2.4.0"
+    "wkt": "^0.1.1"
   },
   "optionalDependencies": {
     "@openhps/fingerprinting": ">=0.1.7",
@@ -130,8 +131,8 @@
     "@comunica/query-sparql-link-traversal": "0.2.0",
     "@comunica/query-sparql-rdfjs": "^2.10.1",
     "@comunica/runner": "^2.10.0",
-    "@openhps/core": "^0.7.2",
-    "@openhps/fingerprinting": "^0.1.7",
+    "@openhps/core": "^0.7.5",
+    "@openhps/fingerprinting": "^0.1.8",
     "@openhps/geospatial": "^0.1.29",
     "@openhps/rf": "^0.1.61",
     "@openhps/video": "^0.1.14",

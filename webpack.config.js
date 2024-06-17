@@ -12,6 +12,8 @@ const defaultConfig = env => ({
   devtool: 'source-map',
   resolve: {
     alias: {
+      'chalk': false,
+      'ts-migrate': false,
       typescript: false,
       'readable-stream': path.join(__dirname, 'node_modules/readable-stream'),
       //'lru-cache': path.join(__dirname, 'node_modules/lru-cache'),

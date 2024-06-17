@@ -60,6 +60,10 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              */
             deserializer?: (thing: Thing, instance?: T) => T;
             /**
+             * Custom SPARQL query to deserialize this object
+             */
+            query?: string;
+            /**
              * Type resolver for deserialized thing. Return true
              * if the type matches and false if the type does not match.
              */
