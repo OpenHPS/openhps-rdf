@@ -28,7 +28,7 @@ function fetchLocalData(filePath: string): Quad[] {
 async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> {
     const response = await axios.get(url, {
         headers: {
-            'Accept': 'text/turtle; application/rdf+xml; text/html',
+            'Accept': 'text/turtle;q=0.9, application/rdf+xml;q=0.8',
         },
         timeout: 60000,
         httpsAgent: new https.Agent({  
