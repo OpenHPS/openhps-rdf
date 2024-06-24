@@ -48,13 +48,6 @@ describe('SPARQLDataDriver (N3 store)', () => {
 
     describe('insert', () => {
         it('should support inserting new dataobjects', (done) => {
-            const pos = new GeographicalPosition(50.20, 30.10);
-            pos.orientation = Orientation.fromEuler({
-                yaw: 90,
-                pitch: 0,
-                roll: 0,
-                unit: AngleUnit.DEGREE
-            });
             const now = Date.now();
             const obj1 = new DataObject("mvdewync", "Maxim Van de Wynckel")
                 .setPosition(new Absolute2DPosition(5, 1));
@@ -63,7 +56,13 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 .setPosition(new Absolute2DPosition(5, 2));
             obj2.createdTimestamp = now + 2;
             const obj3 = new DataObject("johndoe", "John Doe")
-                .setPosition(pos);
+                .setPosition(new GeographicalPosition(50.20, 30.10));
+            obj3.position.orientation = Orientation.fromEuler({
+                yaw: 90,
+                pitch: 0,
+                roll: 0,
+                unit: AngleUnit.DEGREE
+            });
             obj3.createdTimestamp = now + 3;
             Promise.all([
                 service.insertObject(obj1),
@@ -85,15 +84,21 @@ describe('SPARQLDataDriver (N3 store)', () => {
         });
 
         it('should support updating a dataobject', (done) => {
-            const object = new DataObject("mvdewync", "Maxim Van de Wynckel");
-            object.setPosition(new Absolute2DPosition(5, 3));
-            object.position.orientation = Orientation.fromEuler({
-                yaw: 180,
-                pitch: 0,
-                roll: 0,
-                unit: AngleUnit.DEGREE
-            });
-            service.insertObject(object).then(() => {
+            service.findByUID("mvdewync").then(object => {
+                object.setPosition(new Absolute2DPosition(5, 3));
+                object.position.orientation = Orientation.fromEuler({
+                    yaw: 180,
+                    pitch: 0,
+                    roll: 0,
+                    unit: AngleUnit.DEGREE
+                });
+                object.createdTimestamp = Date.now() + 4;
+                return service.insertObject(object);
+            }).then(() => {
+                return service.findByUID("mvdewync");
+            }).then(data => {
+                expect((data.position as Absolute2DPosition).x).to.equal(5);
+                expect((data.position as Absolute2DPosition).y).to.equal(3);
                 done()
             }).catch(done);
         });
@@ -112,7 +117,7 @@ describe('SPARQLDataDriver (N3 store)', () => {
                 BIND(geof:asGeoJSON(?testgeom) AS ?geoJSON)
             }
             `, {
-                sources: [(service['driver'] as any).options.store],
+                sources: [(service['driver'] as any).options.sources[0]],
                 extensionFunctions: {
                     'http://www.opengis.net/def/function/geosparql/asGeoJSON'(args: Term[]) {
                         const wktLiteral = args[0];

@@ -13,7 +13,7 @@ import {
     Change,
 } from '@openhps/core';
 import { IriString, Thing, XmlSchemaTypeIri, xsd } from './types';
-import { DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
+import { BlankNode, DataFactory, Literal, NamedNode, Quad_Object } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions } from '../decorators/';
 import { mergeDeep } from './utils';
 import { MemberSerializerOptionsParent } from '../decorators/options';
@@ -30,13 +30,15 @@ export class InternalRDFSerializer extends Serializer {
     ]);
 
     private blankNode(uri: string, options: InternalSerializerOptions) {
+        let blankNode: BlankNode = undefined;
         if (uri) {
-            return DataFactory.blankNode(uri);
+            blankNode = DataFactory.blankNode(uri);
+        } else if (options.blankNodeCounter === undefined) {
+            blankNode = DataFactory.blankNode();
+        } else {
+            blankNode = DataFactory.blankNode(`${options.blankNodePrefix ?? 'n3'}-${options.blankNodeCounter++}`);
         }
-        if (options.blankNodeCounter === undefined) {
-            return DataFactory.blankNode();
-        }
-        return DataFactory.blankNode(`n3-${options.blankNodeCounter++}`);
+        return blankNode;
     }
 
     convertSingleValue(
@@ -146,6 +148,7 @@ export class InternalRDFSerializer extends Serializer {
                 (member.options.rdf as RDFIdentifierOptions).identifier
             );
         })[0];
+
         let uri: string = undefined;
         if ((sourceObject as any).rdf && (sourceObject as any).rdf.uri) {
             uri = (sourceObject as any).rdf.uri;
@@ -156,19 +159,23 @@ export class InternalRDFSerializer extends Serializer {
             uri = rdfOptions.serializer
                 ? rdfOptions.serializer((sourceObject as any)[identifierMember.key] as string, sourceObject.constructor)
                 : ((sourceObject as any)[identifierMember.key] as string);
+            serializerOptions.blankNodePrefix = (sourceObject as any)[identifierMember.key] as string;
         }
 
-        uri =
-            uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri
-                ? serializerOptions.rdf.baseUri.endsWith('/') && uri.startsWith('/')
+        if (uri && (sourceObject as any).rdf && (sourceObject as any).rdf.termType === 'BlankNode') {
+            // Blank node
+        } else if (uri && !uri.startsWith('http') && serializerOptions.rdf.baseUri) {
+            uri =
+                serializerOptions.rdf.baseUri.endsWith('/') && uri.startsWith('/')
                     ? serializerOptions.rdf.baseUri + uri.substring(1)
-                    : serializerOptions.rdf.baseUri + uri
-                : this.blankNode(uri, serializerOptions).value;
+                    : serializerOptions.rdf.baseUri + uri;
+        } else if (!(uri && uri.startsWith('http'))) {
+            uri = this.blankNode(uri, serializerOptions).value;
+        }
 
         if (!(sourceObject as any).rdf) {
             (sourceObject as any).rdf = { uri };
         }
-
         let thing: Thing = {
             value: uri,
             predicates: options.predicates
@@ -210,6 +217,13 @@ export class InternalRDFSerializer extends Serializer {
         if (changelog && serializerOptions.changelog) {
             changes.push(...changelog.getLatestChanges());
             changedProperties = changes.map((c) => c.property);
+        } else if (
+            !changelog &&
+            serializerOptions.changelog &&
+            serializerOptions.changelog === ChangeLogType.DELETIONS
+        ) {
+            // If we are looking for deletions when no changelog, ignore
+            return undefined;
         }
 
         const data: ObjectMemberMetadata[] = Array.from(metadata.dataMembers.values())
@@ -233,22 +247,25 @@ export class InternalRDFSerializer extends Serializer {
 
                 return memberOptions;
             })
-            .filter((entry) => entry !== undefined)
-            .filter((entry) => {
-                return (changedProperties && changedProperties.includes(entry.key)) || !changedProperties;
-            });
+            .filter((entry) => entry !== undefined);
 
         data.forEach((memberOptions) => {
             let value = (sourceObject as any)[memberOptions.key];
-            if (changelog && serializerOptions.changelog) {
-                // Get the value of the changelog
-                const change = changes.find((c) => c.property === memberOptions.key);
-                if (change) {
-                    // Set the value the old of new value depending on if we want to get the quads
-                    // for additions or deletions
-                    value = serializerOptions.changelog === ChangeLogType.ADDITIONS ? change.newValue : change.oldValue;
+            if ((changedProperties && changedProperties.includes(memberOptions.key)) || !changedProperties) {
+                if (changelog && serializerOptions.changelog) {
+                    // Get the value of the changelog
+                    const change = changes.find((c) => c.property === memberOptions.key);
+                    if (change) {
+                        // Set the value the old of new value depending on if we want to get the quads
+                        // for additions or deletions
+                        value =
+                            serializerOptions.changelog === ChangeLogType.ADDITIONS ? change.newValue : change.oldValue;
+                    }
                 }
+            } else if (!(typeof value === 'object' && value[CHANGELOG_METADATA_KEY])) {
+                return;
             }
+
             const object = serializer.convertSingleValue(
                 value,
                 memberOptions.type(),
@@ -379,6 +396,7 @@ interface InternalSerializerOptions {
         baseUri: IriString;
     };
     blankNodeCounter?: number;
+    blankNodePrefix?: string;
 }
 
 export enum ChangeLogType {

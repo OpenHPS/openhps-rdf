@@ -151,7 +151,7 @@ export class RDFSerializer extends DataSerializer {
             changelog: ChangeLogType.DELETIONS,
         } as any);
         const additionsQuads = this.thingToQuads(additions);
-        const deletionsQuads = this.thingToQuads(deletions);
+        const deletionsQuads = deletions ? this.thingToQuads(deletions) : [];
         // Remove the unchanged quads froom the deletions and additions
         const filteredAdditions = additionsQuads.filter(
             (addition) => !deletionsQuads.some((deletion) => deletion.equals(addition)),

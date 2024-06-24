@@ -35,7 +35,6 @@ export class ProjectGenerator {
             }).filter(Boolean) as NodeModule[];
             return allModules;
         }
-
     }
 
     static findModule(dir: string): string {
@@ -59,7 +58,7 @@ export class ProjectGenerator {
                 .forEach((m) => this.loadClasses(classes, m));
             return;
         }
-        if (!this._modules.has(module.id) && module.exports) {
+        if (!this._modules.has(module.id)) {
             this._modules.add(module.id);
             Object.keys(module.exports).forEach((key) => {
                 const childModule = module.exports[key];

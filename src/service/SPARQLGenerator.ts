@@ -16,6 +16,7 @@ import {
     SparqlQuery,
     ConstructQuery,
     BgpPattern,
+    UpdateOperation,
 } from 'sparqljs';
 import { DataFactory, Quad_Subject } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
@@ -36,24 +37,53 @@ export class SPARQLGenerator<T> {
     }
 
     createInsert(object: T): string {
-        const quads = RDFSerializer.serializeToQuads(object, this.baseUri);
+        const changelog = RDFSerializer.serializeToChangeLog(object, {
+            baseUri: this.baseUri,
+        });
         const generator = new SparqlGenerator();
+        const updates: UpdateOperation[] = [];
+        if (changelog.deletions.length > 0) {
+            changelog.deletions.forEach((triple) => {
+                updates.push({
+                    updateType: 'deletewhere',
+                    delete: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject:
+                                        triple.subject.termType === 'BlankNode'
+                                            ? DataFactory.variable('subject')
+                                            : triple.subject,
+                                    predicate: triple.predicate,
+                                    object:
+                                        triple.object.termType === 'BlankNode'
+                                            ? DataFactory.variable('object')
+                                            : triple.object,
+                                },
+                            ],
+                        },
+                    ],
+                });
+            });
+        }
+        if (changelog.additions.length > 0) {
+            updates.push({
+                updateType: 'insert',
+                insert: [
+                    {
+                        type: 'bgp',
+                        triples: changelog.additions,
+                    },
+                ],
+            });
+        }
         const query: SparqlQuery = {
             type: 'update',
             prefixes: {
                 '': this.baseUri,
             },
-            updates: [
-                {
-                    updateType: 'insert',
-                    insert: [
-                        {
-                            type: 'bgp',
-                            triples: quads,
-                        },
-                    ],
-                },
-            ],
+            updates,
         };
         return generator.stringify(query);
     }

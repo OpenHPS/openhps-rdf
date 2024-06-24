@@ -1,5 +1,5 @@
 import 'mocha';
-import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance, createChangeLog } from '@openhps/core';
+import { DataObject, Accuracy3D, GeographicalPosition, LengthUnit, Orientation, RelativeDistance, createChangeLog, Absolute3DPosition, CHANGELOG_METADATA_KEY } from '@openhps/core';
 import { poso, rdf, RDFSerializer, Store } from '../../src';
 import { expect } from 'chai';
 
@@ -98,11 +98,50 @@ describe('DataObject', () => {
             store.addQuads(RDFSerializer.serializeToQuads(object));
             const objectWithChangeLog = createChangeLog(object);
             objectWithChangeLog.displayName = "Maxim Van de Wynckel";
-            objectWithChangeLog.position = new GeographicalPosition(50.40, 10.20, 10);
+            objectWithChangeLog.position = new Absolute3DPosition(50.40, 10.20, 10);
             const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
             store.addQuads(changelog.additions);
             store.removeQuads(changelog.deletions);
-            const deserialized = RDFSerializer.deserializeFromStore(undefined, store);
+            const deserialized: DataObject = RDFSerializer.deserializeFromStore(undefined, store);
+            expect(deserialized.displayName).to.equal("Maxim Van de Wynckel");
+            expect(deserialized.position).instanceOf(Absolute3DPosition);
+        });
+
+        it('should detect changes in child objects', () => {
+            const object = new DataObject();
+            object.displayName = "Beat Signer";
+            object.position = new GeographicalPosition(50.40, 10.20, 15);
+            const store = new Store();
+            store.addQuads(RDFSerializer.serializeToQuads(object));
+            const objectWithChangeLog = createChangeLog(object);
+            objectWithChangeLog.displayName = "Maxim Van de Wynckel";
+            (objectWithChangeLog.position as GeographicalPosition).latitude = 123;
+            const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
+            store.addQuads(changelog.additions);
+            store.removeQuads(changelog.deletions);
+            const deserialized: DataObject = RDFSerializer.deserializeFromStore(undefined, store);
+            expect(deserialized.displayName).to.equal("Maxim Van de Wynckel");
+            expect(deserialized.position).instanceOf(GeographicalPosition);
+            expect((deserialized.position as GeographicalPosition).latitude).to.equal(123);
+        });
+
+        it('should serialize to additions changelog when new', () => {
+            const object = new DataObject();
+            object.displayName = "Beat Signer";
+            object.position = new GeographicalPosition(50.40, 10.20, 15);
+            const changelog = RDFSerializer.serializeToChangeLog(object);
+            expect(changelog.additions.length).to.be.greaterThan(10);
+            expect(changelog.deletions.length).to.equal(0);
+        });
+
+        it('should remove objects when replaced', () => {
+            const object = new DataObject();
+            object.displayName = "Beat Signer";
+            object.position = new GeographicalPosition(50.40, 10.20, 15);
+            const objectWithChangeLog = createChangeLog(object);
+            objectWithChangeLog.position = new Absolute3DPosition(123, 123, 123);
+            const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
+            // console.log(changelog.additions, changelog.deletions);
         });
     });
 

@@ -7,6 +7,10 @@ export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
 
 export type RDFMetadata = {
     /**
+     * RDF type of this object
+     */
+    termType?: 'BlankNode' | 'NamedNode';
+    /**
      * Serialized or deserialized URI of the data object
      */
     uri?: IriString;

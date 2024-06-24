@@ -306,6 +306,7 @@ export class InternalRDFDeserializer extends Deserializer {
                 .filter((predicate: IriString) => !usedPredicates.includes(predicate));
             targetObject.rdf = { predicates: {} };
             targetObject.rdf.uri = sourceObject.value;
+            targetObject.rdf.termType = sourceObject.termType;
             unusedPredicates.forEach((predicate) => {
                 targetObject.rdf.predicates[predicate] = sourceObject.predicates[predicate];
             });

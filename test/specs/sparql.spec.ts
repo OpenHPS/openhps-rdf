@@ -98,16 +98,21 @@ describe('SPARQLDataDriver (Fuseki endpoint)', () => {
         });
 
         it('should support updating a dataobject', (done) => {
-            const object = new DataObject("mvdewync", "Maxim Van de Wynckel");
-            object.setPosition(new Absolute2DPosition(5, 3));
-            object.position.orientation = Orientation.fromEuler({
-                yaw: 180,
-                pitch: 0,
-                roll: 0,
-                unit: AngleUnit.DEGREE
-            });
-            object.createdTimestamp += 1;
-            service.insertObject(object).then(() => {
+            service.findByUID("mvdewync").then(object=> {
+                object.setPosition(new Absolute2DPosition(5, 3));
+                object.position.orientation = Orientation.fromEuler({
+                    yaw: 180,
+                    pitch: 0,
+                    roll: 0,
+                    unit: AngleUnit.DEGREE
+                });
+                object.createdTimestamp = Date.now() + 4;
+                return service.insertObject(object);
+            }).then(() => {
+                return service.findByUID("mvdewync");
+            }).then(data => {
+                expect((data.position as Absolute2DPosition).x).to.equal(5);
+                expect((data.position as Absolute2DPosition).y).to.equal(3);
                 done()
             }).catch(done);
         });

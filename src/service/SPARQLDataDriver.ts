@@ -7,6 +7,8 @@ import {
     MemoryQueryEvaluator,
     DataServiceDriver,
     DataSerializerUtils,
+    ChangeLog,
+    CHANGELOG_METADATA_KEY,
 } from '@openhps/core';
 import { DataFactory, Quad, Store } from 'n3';
 import { IriString, RDFSerializer } from '../rdf';
@@ -166,12 +168,16 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 
     insert(_: IriString, object: T, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
+            const changelog: ChangeLog = object[CHANGELOG_METADATA_KEY];
             const insertQuery = this.generator.createInsert(object);
             if (insertQuery === undefined) {
                 throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
             }
             this.queryVoid(insertQuery, context)
                 .then(() => {
+                    if (changelog) {
+                        changelog.reset();
+                    }
                     resolve(object);
                 })
                 .catch(reject);
