@@ -58,7 +58,8 @@ export class RDFSerializer extends DataSerializer {
         // Map RDF types
         const meta = DataSerializerUtils.getOwnMetadata(type);
         if (!meta.options || !meta.options.rdf) {
-            return;
+            meta.options = meta.options || {};
+            meta.options.rdf = {};
         }
         const rdfOptions = meta.options.rdf;
         if (options) {
@@ -531,6 +532,9 @@ export class RDFSerializer extends DataSerializer {
      * @returns {any} Deserialized object
      */
     static deserialize<T>(serializedData: any, dataType?: Serializable<T>): T | T[] {
+        if (!serializedData) {
+            return undefined; // Return undefined if no data is provided
+        }
         if (serializedData['predicates'] === undefined) {
             return super.deserialize(serializedData, dataType as Constructor<T>);
         }

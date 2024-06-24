@@ -6,5 +6,4 @@
     "hideGenerator": true,
     "categorizeByGroup": true,
     "tsconfig": "../tsconfig/tsconfig.app.json",
-    "media": "media"
 }

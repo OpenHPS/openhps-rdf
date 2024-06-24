@@ -190,9 +190,14 @@ export class InternalRDFSerializer extends Serializer {
         };
 
         if (options.serializer) {
-            thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
+            const serializedThing = options.serializer(sourceObject, serializerOptions.rdf.baseUri);
+            if (serializedThing instanceof Literal) {
+                return serializedThing as any;
+            } else {
+                thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
+            }
         }
-        thing.termType = thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
+        thing.termType = thing.termType ?? thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
 
         // Current thing
         if (serializerOptions.current) {
