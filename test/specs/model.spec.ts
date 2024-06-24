@@ -1,5 +1,5 @@
 import 'mocha';
-import { Absolute2DPosition, CallbackNode, CallbackSinkNode, CallbackSourceNode, DataFrame, LengthUnit, Model, ModelBuilder, MultilaterationNode } from '@openhps/core';
+import { Absolute2DPosition, CallbackSinkNode, CallbackSourceNode, DataFrame, LengthUnit, Model, ModelBuilder, MultilaterationNode } from '@openhps/core';
 import { RDFSerializer, RDFModelSerializer, Thing } from '../../src';
 import { RelativeRSSIProcessing } from '@openhps/rf';
 

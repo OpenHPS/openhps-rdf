@@ -84,7 +84,6 @@
     "build": "npm run clean && npm-run-all --parallel build:comunica build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
     "build:comunica": "npm-run-all --parallel build:comunica:*",
     "build:comunica:default": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
-    "build:comunica:experimental": "comunica-compile-config config/config-minimal.json > src/service/engine-minimal.js",
     "build:ts:cjs": "tsc --build ./tsconfig/tsconfig.bundle.cjs.json",
     "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json",
     "build:ts:esm5": "tsc --build ./tsconfig/tsconfig.bundle.esm5.json",

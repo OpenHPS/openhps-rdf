@@ -8,3 +8,4 @@ artifacts/
 test-results.xml
 componentsjs-error-state.json
 tmp/
+xunit.xml

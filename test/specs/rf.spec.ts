@@ -49,6 +49,14 @@ describe('@openhps/rf', () => {
                 baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
             });
         });
+
+        it('should serialize a UUID', () => {
+            const uuid = BLEUUID.fromString("AAEE");
+            const serialized = RDFSerializer.serialize(uuid, {
+                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            });
+            const deserialized = RDFSerializer.deserialize(serialized);
+        });
     });
 
     describe('deserialization', () => {
