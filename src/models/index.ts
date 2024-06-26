@@ -16,3 +16,5 @@ export * from './Platform';
 export * from './Deployment';
 export * from './Action';
 export * from './SerializableThing';
+export * from './Observation';
+export * from './utils';

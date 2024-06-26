@@ -19,6 +19,10 @@ export class SerializableThing {
     })
     id: IriString | BlankNodeId;
 
+    constructor(id?: IriString | BlankNodeId) {
+        this.id = id;
+    }
+
     toThing(): Thing {
         const deserialized = RDFSerializer.serialize(this);
         return {
