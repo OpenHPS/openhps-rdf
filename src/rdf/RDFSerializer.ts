@@ -326,7 +326,7 @@ export class RDFSerializer extends DataSerializer {
         return this.thingToQuads(thing);
     }
 
-    protected static thingToQuads(thing: Thing): Quad[] {
+    static thingToQuads(thing: Thing): Quad[] {
         const subject =
             thing.termType === 'BlankNode' ? DataFactory.blankNode(thing.value) : DataFactory.namedNode(thing.value);
         return Object.keys(thing.predicates)
