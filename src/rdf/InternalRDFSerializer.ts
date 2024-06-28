@@ -264,7 +264,7 @@ export class InternalRDFSerializer extends Serializer {
                         // Set the value the old of new value depending on if we want to get the quads
                         // for additions or deletions
                         value =
-                            serializerOptions.changelog === ChangeLogType.ADDITIONS ? change.newValue : change.oldValue;
+                            serializerOptions.changelog === ChangeLogType.DELETIONS ? change.oldValue : change.newValue;
                     }
                 }
             } else if (!(typeof value === 'object' && value[CHANGELOG_METADATA_KEY])) {

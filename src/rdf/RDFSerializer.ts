@@ -9,7 +9,7 @@ import {
 } from '@openhps/core';
 import { ChangeLogType, InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
-import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates } from './types';
+import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates, SubjectObjects } from './types';
 import {
     NamedNode,
     BlankNode,
@@ -124,6 +124,7 @@ export class RDFSerializer extends DataSerializer {
             rdf: {
                 baseUri: config ? config.baseUri : undefined,
             },
+            changelog: ChangeLogType.NONE,
             ...this.options,
         } as any);
     }
@@ -221,47 +222,8 @@ export class RDFSerializer extends DataSerializer {
     }
 
     static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
-        const processedSubjects: string[] = [];
-        /**
-         * @param {NamedNode | BlankNode} subject Subject of quad
-         * @param {Store} store Quad store
-         * @returns {Thing} Thing from quads
-         */
-        function quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
-            if (processedSubjects.includes(subject.value)) {
-                return {
-                    termType: subject.termType,
-                    value: subject.value,
-                    predicates: {},
-                };
-            }
-            processedSubjects.push(subject.value);
-            return {
-                termType: subject.termType,
-                value: subject.value,
-                predicates: {
-                    ...store
-                        .getPredicates(subject, null, null)
-                        .map((predicate) => {
-                            return {
-                                [predicate.value]: store.getObjects(subject, predicate, null).map((object) => {
-                                    if (
-                                        object.constructor.name === 'BlankNode' ||
-                                        object.constructor.name === 'NamedNode'
-                                    ) {
-                                        return quadsToThing(object as any, store);
-                                    } else {
-                                        return object;
-                                    }
-                                }),
-                            };
-                        })
-                        .reduce((a, b) => ({ ...a, ...b }), {}),
-                },
-            };
-        }
         subject = subject ?? (store.getQuads(null, null, null, null)[0].subject as NamedNode | BlankNode);
-        const thing = quadsToThing(subject, store);
+        const thing = this.quadsToThing(subject, store);
         return this.deserialize(thing);
     }
 
@@ -461,6 +423,139 @@ export class RDFSerializer extends DataSerializer {
                 })
                 .flat(),
         );
+    }
+
+    /**
+     * Convert subjects to thing
+     * @param subjects List of subjects
+     * @param subject Main subject
+     * @returns Thing
+     */
+    static subjectsToThing(subjects: Subject[], subject: IriString): Thing {
+        const quads = this.subjectsToQuads(subjects);
+        return this.quadsToThing(DataFactory.namedNode(subject), new Store(quads));
+    }
+
+    /**
+     * Convert quads to thing
+     * @param {NamedNode | BlankNode} subject Subject of quad
+     * @param {Store} store Quad store
+     * @returns {Thing} Thing from quads
+     */
+    static quadsToThing(subject: NamedNode | BlankNode, store: Store): Thing {
+        const processedSubjects: string[] = [];
+        /**
+         *
+         * @param subject
+         */
+        function innerQuadsToThing(subject: NamedNode | BlankNode): Thing {
+            if (processedSubjects.includes(subject.value)) {
+                return {
+                    termType: subject.termType,
+                    value: subject.value,
+                    predicates: {},
+                };
+            }
+            processedSubjects.push(subject.value);
+            return {
+                termType: subject.termType,
+                value: subject.value,
+                predicates: {
+                    ...store
+                        .getPredicates(subject, null, null)
+                        .map((predicate) => {
+                            return {
+                                [predicate.value]: store.getObjects(subject, predicate, null).map((object) => {
+                                    if (
+                                        object.constructor.name === 'BlankNode' ||
+                                        object.constructor.name === 'NamedNode'
+                                    ) {
+                                        return innerQuadsToThing(object as any);
+                                    } else {
+                                        return object;
+                                    }
+                                }),
+                            };
+                        })
+                        .reduce((a, b) => ({ ...a, ...b }), {}),
+                },
+            };
+        }
+        return innerQuadsToThing(subject);
+    }
+
+    /**
+     * Convert subjects to quads
+     * @param subjects List of subjects
+     */
+    static subjectsToQuads(subjects: Subject[]): Quad[] {
+        const quads: Quad[] = [];
+        subjects.forEach((subject) => {
+            const subjectNode = DataFactory.namedNode(subject.url);
+            Object.keys(subject.predicates).forEach((predicateIri) => {
+                const predicate = DataFactory.namedNode(predicateIri);
+                const objects = subject.predicates[predicateIri] as SubjectObjects;
+                // Literals
+                if (objects.literals) {
+                    Object.keys(objects.literals).forEach((dataType) => {
+                        objects.literals[dataType].forEach((value) => {
+                            quads.push(
+                                DataFactory.quad(
+                                    subjectNode,
+                                    predicate,
+                                    DataFactory.literal(value, DataFactory.namedNode(dataType)),
+                                ),
+                            );
+                        });
+                    });
+                }
+                // Language strings
+                if (objects.langStrings) {
+                    Object.keys(objects.langStrings).forEach((language) => {
+                        objects.langStrings[language].forEach((value) => {
+                            quads.push(DataFactory.quad(subjectNode, predicate, DataFactory.literal(value, language)));
+                        });
+                    });
+                }
+                // Named nodes
+                if (objects.namedNodes) {
+                    objects.namedNodes.forEach((namedNode) => {
+                        quads.push(DataFactory.quad(subjectNode, predicate, DataFactory.namedNode(namedNode)));
+                    });
+                }
+                // Blank nodes
+                if (objects.blankNodes) {
+                    objects.blankNodes.forEach((blankNode) => {
+                        if (typeof blankNode === 'string') {
+                            quads.push(DataFactory.quad(subjectNode, predicate, DataFactory.blankNode(blankNode)));
+                        } else {
+                            const newBlankNode = DataFactory.blankNode();
+                            quads.push(DataFactory.quad(subjectNode, predicate, newBlankNode));
+                            quads.push(
+                                ...this.subjectsToQuads([
+                                    {
+                                        type: 'Subject',
+                                        url: newBlankNode.value,
+                                        predicates: blankNode,
+                                    },
+                                ]),
+                            );
+                        }
+                    });
+                }
+            });
+        });
+        return quads;
+    }
+
+    /**
+     * Convert thing to subjects
+     * @param thing Thing to convert
+     * @param baseUri Base URI
+     * @returns List of subjects
+     */
+    static thingToSubjects(thing: Thing, baseUri?: IriString): Subject[] {
+        return this.serializeToSubjects(thing, baseUri);
     }
 
     static deserializeFromSubject<T>(subject: Subject & { url: IriString }): T {

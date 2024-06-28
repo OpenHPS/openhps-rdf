@@ -1,8 +1,8 @@
-import { Accelerometer, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
+import { Absolute2DPosition, Accelerometer, DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode } from '../../src';
-import { xsd } from '../../src/rdf';
+import { IriString, xsd } from '../../src/rdf';
 
 describe('RDFSerializer', () => {
 
@@ -243,4 +243,37 @@ describe('RDFSerializer', () => {
 
     });
 
+    describe('conversion', () => {
+        it('should convert a thing to a list of quads', () => {
+            const object = new DataObject("test");
+            const position = new Absolute2DPosition(1, 2);
+            object.position = position;
+            const thing = RDFSerializer.serialize(object);
+            const quads = RDFSerializer.thingToQuads(thing);
+            expect(quads.length).to.be.greaterThan(10);
+        });
+
+        it('should convert a thing to a list of subjects', () => {
+            const object = new DataObject("test");
+            const position = new Absolute2DPosition(1, 2);
+            object.position = position;
+            const thing = RDFSerializer.serialize(object, {
+                baseUri: "http://example.com/"
+            });
+            const subjects = RDFSerializer.thingToSubjects(thing);
+            expect(subjects.length).to.equal(1);
+        });
+
+        it('should convert subjects to thing', () => {
+            const object = new DataObject("test");
+            const position = new Absolute2DPosition(1, 2);
+            object.position = position;
+            const thing = RDFSerializer.serialize(object, {
+                baseUri: "http://example.com/"
+            });
+            const subjects = RDFSerializer.thingToSubjects(thing);
+            const newThing = RDFSerializer.subjectsToThing(subjects, thing.value as IriString);
+            const deserialized = RDFSerializer.deserialize(newThing, DataObject);
+        });
+    });
 });

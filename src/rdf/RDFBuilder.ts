@@ -139,7 +139,10 @@ export class RDFBuilder {
         return this;
     }
 
-    build(): Thing & { additions?: Quad[]; deletions?: Quad[] } {
+    build(changelog?: boolean): Thing & { additions?: Quad[]; deletions?: Quad[] } {
+        if (!changelog) {
+            return this.thing;
+        }
         return {
             ...this.thing,
             additions: this.additions,
