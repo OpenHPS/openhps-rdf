@@ -9,7 +9,7 @@ describe('RDFBuilder', () => {
             const builder = RDFBuilder.blankNode();
             builder.add(ssn.hasProperty, "https://test.com/");
             builder.add(ssn.hasProperty, "https://test2.com/");
-            const thing = builder.build();
+            const thing = builder.build(true);
             expect(thing.additions).to.have.lengthOf(2);
         });
 
@@ -18,7 +18,7 @@ describe('RDFBuilder', () => {
             builder.add(ssn.hasProperty, "https://test.com/");
             builder.add(ssn.hasProperty, "https://test2.com/");
             builder.delete(ssn.hasProperty, "https://test.com/");
-            const thing = builder.build();
+            const thing = builder.build(true);
             expect(thing.additions).to.have.lengthOf(2);
             expect(thing.deletions).to.have.lengthOf(1);
         });
@@ -28,7 +28,7 @@ describe('RDFBuilder', () => {
         it('should not delete predicates that do not exist', () => {
             const builder = RDFBuilder.blankNode();
             builder.delete(ssn.hasProperty, "https://test.com/");
-            const thing = builder.build();
+            const thing = builder.build(true);
             expect(thing.deletions).to.have.lengthOf(0);
         });
     });
