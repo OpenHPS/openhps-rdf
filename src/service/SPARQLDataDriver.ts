@@ -94,17 +94,21 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    protected findAllSerialized(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<Store> {
-        const sparqlQuery = this.generator.createFindAll(query);
+    protected findAllSerialized(
+        query?: FilterQuery<T>,
+        options: FindRDFOptions = {},
+        context?: Partial<QueryStringContext>,
+    ): Promise<Store> {
+        const sparqlQuery = this.generator.createFindAll(query, options.dataType ?? this.dataType);
         if (sparqlQuery === undefined) {
             throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
         }
         return this.queryQuads(sparqlQuery, context);
     }
 
-    findAll(query?: FilterQuery<T>, options: FindOptions = {}, context?: Partial<QueryStringContext>): Promise<T[]> {
+    findAll(query?: FilterQuery<T>, options: FindRDFOptions = {}, context?: Partial<QueryStringContext>): Promise<T[]> {
         return new Promise((resolve, reject) => {
-            this.findAllSerialized(query, context)
+            this.findAllSerialized(query, options, context)
                 .then((store) => {
                     if (store.size === 0) {
                         return resolve([]);
@@ -142,7 +146,7 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
 
     count(query?: FilterQuery<T>, context?: Partial<QueryStringContext>): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.findAllSerialized(query, context)
+            this.findAllSerialized(query, {}, context)
                 .then((store) => {
                     if (store.size === 0) {
                         return resolve(0);
@@ -215,13 +219,14 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         });
     }
 
-    findOne(query?: FilterQuery<T>, options: FindOptions = {}, context?: Partial<QueryStringContext>): Promise<T> {
+    findOne(query?: FilterQuery<T>, options: FindRDFOptions = {}, context?: Partial<QueryStringContext>): Promise<T> {
         return new Promise((resolve, reject) => {
             this.findAll(
                 query,
                 {
                     limit: 1,
                     sort: options.sort,
+                    ...options,
                 },
                 context,
             )
@@ -243,3 +248,5 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
 }
 
 export type { QueryStringContext, IQueryEngine, BindingsStream, Bindings };
+
+export interface FindRDFOptions extends FindOptions {}

@@ -3169,10 +3169,10 @@
     read-package-json-fast "^3.0.0"
     which "^3.0.0"
 
-"@openhps/core@^0.7.7":
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.7.7.tgz#7e4926a8db970b0b9c458726c82d5be1fdd1d9e0"
-  integrity sha512-gST/THTgHm3qSqW5ETpc9zAhYZ1neEcKzjYCVAoLE6IOCxbijHWNM1O2vuDJINJlkfFcK25gc4xMdV8quiNpSg==
+"@openhps/core@^0.7.9":
+  version "0.7.9"
+  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.7.9.tgz#72ae98f8190a5c29ae26060ce3386a302473b153"
+  integrity sha512-CF99GrlU+4j7S6qOZt2PqE1MHkS+wq9+XFM9gl8s7tWUttC6bpdpckWKUR6mQ7+02sr1WzOXjTiVm8vnKsBKBw==
   dependencies:
     lodash.clonedeep "^4.5.0"
     reflect-metadata ">=0.2.2"

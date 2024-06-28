@@ -21,6 +21,7 @@ import {
 import { DataFactory, Quad_Subject } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { IriString, RDFSerializer } from '../rdf';
+import { rdf } from '../vocab';
 
 export class SPARQLGenerator<T> {
     protected dataType: Serializable<T>;
@@ -180,13 +181,44 @@ export class SPARQLGenerator<T> {
         return generator.stringify(sparqlQuery);
     }
 
-    createFindAll(query: FilterQuery<T>): string {
+    createFindAll(query: FilterQuery<T>, dataType?: Serializable<T>): string {
         const generator = new SparqlGenerator();
-        return generator.stringify(this.createConstruct(query));
+        return generator.stringify(this.createConstruct(query, dataType));
     }
 
-    protected createConstruct(query: FilterQuery): ConstructQuery {
-        const patterns = this.createQuery(query);
+    protected createConstruct(query: FilterQuery, dataType?: Serializable<T>): ConstructQuery {
+        const patterns: Pattern[] = [];
+        // Create a pattern for the datatype
+        const rootMetadata = DataSerializerUtils.getOwnMetadata(dataType);
+        const options = rootMetadata.options;
+        if (options.rdf && options.rdf.type) {
+            const types = Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type];
+            patterns.push({
+                type: 'group',
+                patterns: [
+                    {
+                        type: 'union',
+                        patterns: types
+                            .map((type) => {
+                                return {
+                                    type: 'bgp',
+                                    triples: [
+                                        {
+                                            subject: DataFactory.variable('subject'),
+                                            predicate: DataFactory.namedNode(rdf.type),
+                                            object: DataFactory.namedNode(type),
+                                        },
+                                    ],
+                                };
+                            })
+                            .flat(),
+                    } as UnionPattern,
+                ],
+            });
+        }
+        // Create patterns for the query
+        patterns.push(...this.createQuery(query, dataType));
+
         // Variables
         const subjectVar = DataFactory.variable('subject');
         const propVar = DataFactory.variable('prop');
