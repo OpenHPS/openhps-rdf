@@ -118,7 +118,9 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
                         .filter((subject) => subject.termType === 'NamedNode');
                     let data: T[] = subjects
                         .map((subject) => RDFSerializer.deserializeFromStore(subject as any, store))
-                        .filter((data) => data && data.constructor.name === this.dataType.name) as T[];
+                        .filter(
+                            (data) => data && data.constructor.name === (options.dataType ?? this.dataType).name,
+                        ) as T[];
                     if (options.sort) {
                         data = data
                             .sort((a, b) =>
