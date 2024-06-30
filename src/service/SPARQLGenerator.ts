@@ -189,32 +189,35 @@ export class SPARQLGenerator<T> {
     protected createConstruct(query: FilterQuery, dataType?: Serializable<T>): ConstructQuery {
         const patterns: Pattern[] = [];
         // Create a pattern for the datatype
-        const rootMetadata = DataSerializerUtils.getOwnMetadata(dataType);
-        const options = rootMetadata.options;
-        if (options.rdf && options.rdf.type) {
-            const types = Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type];
-            patterns.push({
-                type: 'group',
-                patterns: [
-                    {
-                        type: 'union',
-                        patterns: types
-                            .map((type) => {
-                                return {
-                                    type: 'bgp',
-                                    triples: [
-                                        {
-                                            subject: DataFactory.variable('subject'),
-                                            predicate: DataFactory.namedNode(rdf.type),
-                                            object: DataFactory.namedNode(type),
-                                        },
-                                    ],
-                                };
-                            })
-                            .flat(),
-                    } as UnionPattern,
-                ],
-            });
+        const finalDataType = dataType || this.dataType;
+        if (finalDataType) {
+            const rootMetadata = DataSerializerUtils.getOwnMetadata(finalDataType);
+            const options = rootMetadata.options;
+            if (options.rdf && options.rdf.type) {
+                const types = Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type];
+                patterns.push({
+                    type: 'group',
+                    patterns: [
+                        {
+                            type: 'union',
+                            patterns: types
+                                .map((type) => {
+                                    return {
+                                        type: 'bgp',
+                                        triples: [
+                                            {
+                                                subject: DataFactory.variable('subject'),
+                                                predicate: DataFactory.namedNode(rdf.type),
+                                                object: DataFactory.namedNode(type),
+                                            },
+                                        ],
+                                    };
+                                })
+                                .flat(),
+                        } as UnionPattern,
+                    ],
+                });
+            }
         }
         // Create patterns for the query
         patterns.push(...this.createQuery(query, dataType));
