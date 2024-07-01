@@ -28,6 +28,7 @@ import { namespaces } from '../namespaces';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
+import { RDFChangeLog, createChangeLog } from './ChangeLog';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
@@ -135,7 +136,7 @@ export class RDFSerializer extends DataSerializer {
      * @param {RDFSerializerConfig} [config] RDF serializer configuration
      * @returns {Thing} Serialized data
      */
-    static serializeToChangeLog<T>(data: T, config?: RDFSerializerConfig): { additions?: Quad[]; deletions?: Quad[] } {
+    static serializeToChangeLog<T>(data: T, config?: RDFSerializerConfig): RDFChangeLog {
         const additions = super.serialize(data, {
             rdf: {
                 baseUri: config ? config.baseUri : undefined,
@@ -277,6 +278,12 @@ export class RDFSerializer extends DataSerializer {
                 };
             });
         return subjects;
+    }
+
+    static serializeToStore<T>(data: T, baseUri?: IriString): Store & RDFChangeLog {
+        const quads = this.serializeToQuads(data, baseUri);
+        const store = new Store(quads);
+        return createChangeLog(store);
     }
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {
