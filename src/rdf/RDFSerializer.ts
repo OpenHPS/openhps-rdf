@@ -242,20 +242,20 @@ export class RDFSerializer extends DataSerializer {
                 .map((quadPredicate) => {
                     const quadObjects: Quad_Object[] = store.getObjects(quadSubject, quadPredicate, null);
                     const literals: Record<string, string[]> = quadObjects
-                        .filter((obj) => obj instanceof Literal)
+                        .filter((obj) => obj.termType === 'Literal')
                         .filter((obj: Literal) => obj.language === '')
                         .map((obj: Literal) => ({ [obj.datatype.value]: [obj.value] }))
                         .reduce((a, b) => ({ ...a, ...b }), {});
                     const langStrings: Record<string, string[]> = quadObjects
-                        .filter((obj) => obj instanceof Literal)
+                        .filter((obj) => obj.termType === 'Literal')
                         .filter((obj: Literal) => obj.language !== '')
                         .map((obj: Literal) => ({ [obj.language]: [obj.value] }))
                         .reduce((a, b) => ({ ...a, ...b }), {});
                     const namedNodes: Array<string> = quadObjects
-                        .filter((obj) => obj instanceof NamedNode)
+                        .filter((obj) => obj.termType === 'NamedNode')
                         .map((obj) => obj.value);
                     const blankNodes: Array<any | string> = quadObjects
-                        .filter((obj) => obj instanceof BlankNode)
+                        .filter((obj) => obj.termType === 'BlankNode')
                         .map((obj: BlankNode) => serializePredicates(DataFactory.blankNode(obj.value)));
                     return {
                         [quadPredicate.value]: {
@@ -269,7 +269,7 @@ export class RDFSerializer extends DataSerializer {
                 .reduce((a, b) => ({ ...a, ...b }), {});
         }
         const subjects: Subject[] = quadSubjects
-            .filter((quadSubject) => quadSubject instanceof NamedNode)
+            .filter((quadSubject) => quadSubject.termType === 'NamedNode')
             .map((quadSubject) => {
                 return {
                     type: 'Subject',
