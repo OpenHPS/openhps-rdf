@@ -494,11 +494,16 @@ export class RDFSerializer extends DataSerializer {
      */
     static subjectsToQuads(subjects: Subject[]): Quad[] {
         const quads: Quad[] = [];
-        subjects.forEach((subject) => {
-            const subjectNode = DataFactory.namedNode(subject.url);
-            Object.keys(subject.predicates).forEach((predicateIri) => {
+        /**
+         *
+         * @param subjectNode
+         * @param predicates
+         */
+        function subjectPredicatesToQuads(subjectNode: Quad_Subject, predicates: SubjectPredicates): Quad[] {
+            const quads: Quad[] = [];
+            Object.keys(predicates).forEach((predicateIri) => {
                 const predicate = DataFactory.namedNode(predicateIri);
-                const objects = subject.predicates[predicateIri] as SubjectObjects;
+                const objects = predicates[predicateIri] as SubjectObjects;
                 // Literals
                 if (objects.literals) {
                     Object.keys(objects.literals).forEach((dataType) => {
@@ -535,19 +540,17 @@ export class RDFSerializer extends DataSerializer {
                         } else {
                             const newBlankNode = DataFactory.blankNode();
                             quads.push(DataFactory.quad(subjectNode, predicate, newBlankNode));
-                            quads.push(
-                                ...this.subjectsToQuads([
-                                    {
-                                        type: 'Subject',
-                                        url: newBlankNode.value,
-                                        predicates: blankNode,
-                                    },
-                                ]),
-                            );
+                            quads.push(...subjectPredicatesToQuads(newBlankNode, blankNode));
                         }
                     });
                 }
             });
+            return quads;
+        }
+        subjects.forEach((subject) => {
+            const subjectNode = DataFactory.namedNode(subject.url);
+            const predicates = subject.predicates;
+            quads.push(...subjectPredicatesToQuads(subjectNode, predicates));
         });
         return quads;
     }
