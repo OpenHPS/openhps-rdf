@@ -6,10 +6,10 @@ import {
     Orientation, 
     AngleUnit, 
     DataFrameService,
-    DataFrame
+    DataFrame,
 } from '@openhps/core';
 import 'mocha';
-import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver, DefaultEngine } from '../../src';
+import { Parser, Term, DataFactory, Store, ogc, SPARQLDataDriver, DefaultEngine, Observation } from '../../src';
 import { expect } from 'chai';
 const wkt = require('wkt');
 
@@ -440,6 +440,18 @@ describe('SPARQLDataDriver (N3 store)', () => {
                     });
                 }).then(data => {
                     expect(data.length).to.equal(0);
+                    done();
+                }).catch(done);
+            });
+
+            it('should check lte: <= using a date', (done) => {
+                service.findAll({
+                    resultTime: {
+                        $lte: Date.now()
+                    }
+                }, {
+                    dataType: Observation
+                }).then(data => {
                     done();
                 }).catch(done);
             });

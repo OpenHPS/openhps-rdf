@@ -592,6 +592,9 @@ export class SPARQLGenerator<T> {
         member: ObjectMemberMetadata,
         subject: Quad_Subject,
     ): Pattern[] {
+        if (!member) {
+            return [];
+        }
         const patterns: Pattern[] = [];
         const objectType =
             member.type().ctor === Map
