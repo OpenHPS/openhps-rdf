@@ -336,7 +336,7 @@ export class InternalRDFSerializer extends Serializer {
         });
     }
 
-    protected serializeLiteral(
+    serializeLiteral(
         sourceObject: any,
         typeDescriptor?: TypeDescriptor,
         memberName?: string,

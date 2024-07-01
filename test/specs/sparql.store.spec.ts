@@ -450,8 +450,9 @@ describe('SPARQLDataDriver (N3 store)', () => {
                         $lte: Date.now()
                     }
                 }, {
+                    debug: false,
                     dataType: Observation
-                }).then(data => {
+                } as any).then(data => {
                     done();
                 }).catch(done);
             });

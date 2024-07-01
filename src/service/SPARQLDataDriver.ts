@@ -103,6 +103,9 @@ export class SPARQLDataDriver<T> extends DataServiceDriver<IriString, T> {
         if (sparqlQuery === undefined) {
             throw new Error(`Unable to generate SPARQL query for ${this.dataType.name}`);
         }
+        if (options.debug) {
+            console.log(sparqlQuery);
+        }
         return this.queryQuads(sparqlQuery, context);
     }
 
@@ -251,4 +254,9 @@ export interface SPARQLDriverOptions extends DataServiceOptions, QueryStringCont
 
 export type { QueryStringContext, IQueryEngine, BindingsStream, Bindings };
 
-export interface FindRDFOptions extends FindOptions {}
+export interface FindRDFOptions extends FindOptions {
+    /**
+     * Print the raw SPARQL query for debugging purposes
+     */
+    debug?: boolean;
+}

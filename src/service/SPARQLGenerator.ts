@@ -22,15 +22,18 @@ import { DataFactory, Quad_Subject } from 'n3';
 import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../decorators';
 import { IriString, RDFSerializer } from '../rdf';
 import { rdf } from '../vocab';
+import { InternalRDFSerializer } from '../rdf/InternalRDFSerializer';
 
 export class SPARQLGenerator<T> {
     protected dataType: Serializable<T>;
     protected baseUri: IriString;
+    protected internalSerializer: InternalRDFSerializer;
     private _counter = 0;
 
     constructor(dataType: Serializable<T>, baseUri: IriString) {
         this.dataType = dataType;
         this.baseUri = baseUri;
+        this.internalSerializer = new InternalRDFSerializer();
     }
 
     protected get next(): number {
@@ -345,7 +348,9 @@ export class SPARQLGenerator<T> {
         } else {
             const rootMetadata = DataSerializerUtils.getOwnMetadata(dataType);
 
-            let member: ObjectMemberMetadata;
+            let member: ObjectMemberMetadata = Array.from(rootMetadata.dataMembers.values()).filter(
+                (member) => member.key === key,
+            )[0];
             rootMetadata.knownTypes.forEach((knownType) => {
                 if (!member) {
                     const metadata = DataSerializerUtils.getMetadata(knownType);
@@ -355,7 +360,6 @@ export class SPARQLGenerator<T> {
                     }
                 }
             });
-
             const rootMember = rootMetadata.dataMembers.get(key);
             const memberOptions =
                 member && member.options && member.options.rdf
@@ -527,7 +531,7 @@ export class SPARQLGenerator<T> {
     ): Pattern[] {
         const patterns: Pattern[] = [];
         for (const selector of Object.keys(subquery)) {
-            patterns.push(...this.generateComparisonSelector(selector, subquery, predicate, dataType, subject));
+            patterns.push(...this.generateComparisonSelector(selector, subquery, predicate, dataType, member, subject));
             patterns.push(...this.generateArraySelector(selector, subquery, predicate, dataType, member, subject));
         }
         return patterns;
@@ -538,8 +542,12 @@ export class SPARQLGenerator<T> {
         subquery: QuerySelector<T>,
         predicate: IriString,
         dataType: Serializable<any>,
+        member: ObjectMemberMetadata,
         subject: Quad_Subject,
     ): Pattern[] {
+        if (!member) {
+            return [];
+        }
         const patterns: Pattern[] = [];
         let operator = undefined;
         switch (selector) {
@@ -562,6 +570,13 @@ export class SPARQLGenerator<T> {
 
         if (operator) {
             const object = DataFactory.variable(`o${this.next}`);
+            const literal = this.internalSerializer.serializeLiteral(
+                subquery[selector],
+                undefined,
+                member.name,
+                this.internalSerializer,
+                member,
+            );
             patterns.push({
                 type: 'bgp',
                 triples: [
@@ -577,7 +592,7 @@ export class SPARQLGenerator<T> {
                 expression: {
                     type: 'operation',
                     operator,
-                    args: [object, DataFactory.literal((subquery as any)[selector])],
+                    args: [object, literal],
                 },
             } as FilterPattern);
         }
