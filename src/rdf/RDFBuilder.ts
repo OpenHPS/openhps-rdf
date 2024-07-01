@@ -1,6 +1,6 @@
 import { DataFactory, Quad, Quad_Object, Quad_Subject } from 'n3';
 import { RDFSerializer } from './RDFSerializer';
-import { Thing, IriString } from './types';
+import { Thing, IriString, Subject } from './types';
 
 export class RDFBuilder {
     protected thing: Thing;
@@ -34,11 +34,17 @@ export class RDFBuilder {
 
     /**
      * Create a new RDF builder from a serialized thing
-     * @param thing Thing
+     * @param {Thing | Subject} thing Thing
      * @returns
      */
-    static fromSerialized(thing: Thing): RDFBuilder {
-        return new RDFBuilder(thing);
+    static fromSerialized(thing: Thing | Subject): RDFBuilder {
+        if (thing['type'] && thing['type'] === 'Subject') {
+            return new RDFBuilder(
+                RDFSerializer.subjectsToThing([thing as Subject], (thing as Subject).url as IriString),
+            );
+        } else {
+            return new RDFBuilder(thing as Thing);
+        }
     }
 
     add(predicate: IriString, object: Quad_Object | Thing | IriString | object): RDFBuilder;
@@ -79,9 +85,12 @@ export class RDFBuilder {
             obj = RDFSerializer.serialize(object);
         }
         const data = this.thing.predicates[predicate] ?? [];
+        const lengthStart = data.length;
         data.push(obj as Thing);
         this.thing.predicates[predicate] = data;
-        this.additions.push(DataFactory.quad(this.subject, DataFactory.namedNode(predicate), obj as Quad_Object));
+        if (data.length > lengthStart) {
+            this.additions.push(DataFactory.quad(this.subject, DataFactory.namedNode(predicate), obj as Quad_Object));
+        }
         return this;
     }
 
