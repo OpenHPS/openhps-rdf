@@ -473,10 +473,7 @@ export class RDFSerializer extends DataSerializer {
                         .map((predicate) => {
                             return {
                                 [predicate.value]: store.getObjects(subject, predicate, null).map((object) => {
-                                    if (
-                                        object.constructor.name === 'BlankNode' ||
-                                        object.constructor.name === 'NamedNode'
-                                    ) {
+                                    if (object.termType === 'BlankNode' || object.termType === 'NamedNode') {
                                         return innerQuadsToThing(object as any);
                                     } else {
                                         return object;
