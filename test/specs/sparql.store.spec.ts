@@ -545,20 +545,37 @@ describe('SPARQLDataDriver (N3 store)', () => {
         });
     });
 
-    // describe('array query', () => {
-    //     it('should support $elemMatch', (done) => {
-    //         frameService.findAll({
-    //             _objects: {
-    //                 $elemMatch: {
-    //                     uid: 'mvdewync',
-    //                 },
-    //             },
-    //         }).then(data => {
-    //             console.log(data)
-    //             expect(data.length).to.equal(2);
-    //         }).catch(done);
-    //     });
-    // });
+    describe('array query', () => {
+        it('should support $elemMatch', (done) => {
+            frameService.findAll({
+                _objects: {
+                    $elemMatch: {
+                        uid: 'mvdewync',
+                    },
+                },
+            }, {
+                debug: true
+            } as any).then(data => {
+                expect(data.length).to.equal(2);
+                done();
+            }).catch(done);
+        });
+
+        // it('should support $in', (done) => {
+        //     frameService.findAll({
+        //         _objects: {
+        //             $elemMatch: {
+        //                 uid: 'mvdewync',
+        //             },
+        //         },
+        //     }, {
+        //         debug: true
+        //     } as any).then(data => {
+        //         expect(data.length).to.equal(2);
+        //         done();
+        //     }).catch(done);
+        // });
+    });
 
     describe('delete', () => {
         it('should support deleting one identifier', (done) => {

@@ -93,6 +93,10 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
              * Custom (partial) deserializer for this member.
              */
             deserializer?: (thing: Thing, targetObject?: any, options?: MemberDeserializerOptions) => any;
+            /**
+             * Custom SPARQL query to deserialize this data member
+             */
+            query?: string;
         } & (RDFLiteralOptions | RDFIdentifierOptions);
     }
 }

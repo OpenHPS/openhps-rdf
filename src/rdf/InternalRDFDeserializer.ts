@@ -15,8 +15,10 @@ import { RDFIdentifierOptions, RDFLiteralOptions, RDFObjectOptions } from '../de
 import { rdf } from '../vocab';
 import { IriString, RDFSerializerConfig, Thing, xsd } from './types';
 import { MemberDeserializerOptionsParent } from '../decorators/options';
+import { QueryEngine } from '../service/QueryEngine';
 
 export class InternalRDFDeserializer extends Deserializer {
+    engine: QueryEngine;
     deserializationStrategy = new Map<Serializable<any>, DeserializerFn<any, TypeDescriptor, any>>([
         [Number, this.deserializeLiteral.bind(this)],
         [String, this.deserializeLiteral.bind(this)],
@@ -26,6 +28,11 @@ export class InternalRDFDeserializer extends Deserializer {
         [Map, this.deserializeMap.bind(this)],
         [Set, this.deserializeSet.bind(this)],
     ]);
+
+    constructor(engine?: QueryEngine) {
+        super();
+        this.engine = engine;
+    }
 
     rdfTypeResolver(
         sourceObject: IndexedObject,

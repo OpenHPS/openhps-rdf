@@ -29,9 +29,11 @@ import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import { RDFChangeLog, createChangeLog } from './ChangeLog';
+import { QueryEngine } from '../service/QueryEngine';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
+    protected static engine: QueryEngine;
 
     static {
         this.eventEmitter.on(
@@ -80,6 +82,10 @@ export class RDFSerializer extends DataSerializer {
         }
     }
 
+    /**
+     * Initialize the RDF serializer
+     * @param module Module to initialize
+     */
     static initialize(module: string): void {
         if (module === 'rf') {
             import('../mapping/rf');
@@ -93,6 +99,11 @@ export class RDFSerializer extends DataSerializer {
         if (module === 'video') {
             import('../mapping/video');
         }
+    }
+
+    static setQueryEngine(engine: QueryEngine): void {
+        this.engine = engine;
+        (this.options.deserializer as InternalRDFDeserializer).engine = engine;
     }
 
     /**

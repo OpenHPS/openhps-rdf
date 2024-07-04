@@ -619,10 +619,76 @@ export class SPARQLGenerator<T> {
 
         switch (selector) {
             case '$in':
-                // result = result && Array.from(value).includes(subquery[selector]);
+                patterns.push({
+                    type: 'group',
+                    patterns: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject,
+                                    predicate: DataFactory.namedNode(predicate),
+                                    object,
+                                },
+                            ],
+                        },
+                        {
+                            type: 'filter',
+                            expression: {
+                                type: 'operation',
+                                operator: '=',
+                                args: [
+                                    object,
+                                    ...subquery[selector].map((value) => {
+                                        return this.internalSerializer.serializeLiteral(
+                                            value,
+                                            undefined,
+                                            member.name,
+                                            this.internalSerializer,
+                                            member,
+                                        );
+                                    }),
+                                ],
+                            },
+                        },
+                    ],
+                });
                 break;
             case '$nin':
-                // result = result && !Array.from(value).includes(subquery[selector]);
+                patterns.push({
+                    type: 'group',
+                    patterns: [
+                        {
+                            type: 'bgp',
+                            triples: [
+                                {
+                                    subject,
+                                    predicate: DataFactory.namedNode(predicate),
+                                    object,
+                                },
+                            ],
+                        },
+                        {
+                            type: 'filter',
+                            expression: {
+                                type: 'operation',
+                                operator: '!=',
+                                args: [
+                                    object,
+                                    ...subquery[selector].map((value) => {
+                                        return this.internalSerializer.serializeLiteral(
+                                            value,
+                                            undefined,
+                                            member.name,
+                                            this.internalSerializer,
+                                            member,
+                                        );
+                                    }),
+                                ],
+                            },
+                        },
+                    ],
+                });
                 break;
             case '$elemMatch':
                 patterns.push({
