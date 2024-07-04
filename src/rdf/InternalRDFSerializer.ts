@@ -344,7 +344,7 @@ export class InternalRDFSerializer extends Serializer {
         memberOptions?: ObjectMemberMetadata,
     ): Literal {
         let xsdDatatype: XmlSchemaTypeIri = undefined;
-        const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
+        const rdfOptions = memberOptions ? (memberOptions.options.rdf as RDFLiteralOptions) : undefined;
         if (rdfOptions && rdfOptions.datatype) {
             // Data type provided
             xsdDatatype = rdfOptions.datatype;
@@ -379,7 +379,7 @@ export class InternalRDFSerializer extends Serializer {
         ___?: Serializer,
         memberOptions?: ObjectMemberMetadata,
     ): Literal {
-        const rdfOptions = memberOptions.options.rdf as RDFLiteralOptions;
+        const rdfOptions = memberOptions ? (memberOptions.options.rdf as RDFLiteralOptions) : undefined;
         const xsdDatatype: XmlSchemaTypeIri = xsd.dateTime;
         const dateString = new Date(sourceObject).toISOString();
         const dataTypeNode = this.iriToNode(xsdDatatype);

@@ -111,6 +111,27 @@ describe('RDFSerializer', () => {
             expect(Object.keys(serialized['predicates']).length).to.equal(1);
         });
 
+        it('should serialize a date', () => {
+            const date = new Date();
+            const serialized = RDFSerializer.serialize(date);
+            expect(serialized).to.not.be.undefined;
+            expect(serialized.termType).to.equal("Literal");
+        });
+
+        it('should serialize a number', () => {
+            const value = 5;
+            const serialized = RDFSerializer.serialize(value);
+            expect(serialized).to.not.be.undefined;
+            expect(serialized.termType).to.equal("Literal");
+        });
+        
+        it('should serialize a string', () => {
+            const value = "test";
+            const serialized = RDFSerializer.serialize(value);
+            expect(serialized).to.not.be.undefined;
+            expect(serialized.termType).to.equal("Literal");
+        });
+
         it('should serialize single predicates per property', () => {
             const obj = new SomeLocation();
             obj.latitude = 50.40;
