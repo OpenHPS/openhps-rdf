@@ -291,10 +291,17 @@ export class RDFSerializer extends DataSerializer {
         return subjects;
     }
 
+    /**
+     * Serialize data to a store with changelog
+     * @param data
+     * @param baseUri
+     * @returns
+     */
     static serializeToStore<T>(data: T, baseUri?: IriString): Store & RDFChangeLog {
         const quads = this.serializeToQuads(data, baseUri);
-        const store = new Store(quads);
-        return createChangeLog(store);
+        const store = createChangeLog(new Store([]));
+        store.addQuads(quads);
+        return store;
     }
 
     static serializeToQuads<T>(data: T, baseUri?: IriString): Quad[] {

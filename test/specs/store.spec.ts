@@ -14,7 +14,7 @@ describe('Store', () => {
             const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
             store.addQuads(changelog.additions);
             store.removeQuads(changelog.deletions);
-            expect(store.additions).to.have.lengthOf(1);
+            expect(store.additions).to.have.lengthOf(5);
             expect(store.deletions).to.have.lengthOf(1);
         });
     });
