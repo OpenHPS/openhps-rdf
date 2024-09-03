@@ -22,10 +22,17 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
                         obj.add(quad);
                         obj.additions.push(quad);
                     };
+                case 'removeQuad':
                 case 'delete':
                     return (quad: Quad) => {
+                        // If quad is in additions, remove from additions
+                        // Else, add to deletions
+                        if (obj.additions.includes(quad)) {
+                            obj.additions = obj.additions.filter((q) => q !== quad);
+                        } else {
+                            obj.deletions.push(quad);
+                        }
                         obj.delete(quad);
-                        obj.deletions.push(quad);
                     };
                 case 'addQuads':
                     return (quads: Quad[]) => {
@@ -34,8 +41,14 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
                     };
                 case 'removeQuads':
                     return (quads: Quad[]) => {
+                        // If quads are in additions, remove from additions
+                        // Else, add to deletions
+                        if (quads.some((quad) => obj.additions.includes(quad))) {
+                            obj.additions = obj.additions.filter((quad) => !quads.includes(quad));
+                        } else {
+                            obj.deletions.push(...quads);
+                        }
                         obj.removeQuads(quads);
-                        obj.deletions.push(...quads);
                     };
             }
             return obj[prop];
