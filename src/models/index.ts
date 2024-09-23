@@ -18,3 +18,4 @@ export * from './Action';
 export * from './SerializableThing';
 export * from './Observation';
 export * from './utils';
+export * from './tree';
