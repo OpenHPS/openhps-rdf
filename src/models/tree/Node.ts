@@ -4,6 +4,9 @@ import { Relation } from './Relation';
 import { SerializableThing } from '../SerializableThing';
 import { IriString } from '../../rdf/';
 
+/**
+ * A Node is a node that may contain links to other dereferenceable resources that lead to a full overview of a Collection.
+ */
 @SerializableObject({
     rdf: {
         type: tree.Node,
@@ -17,21 +20,23 @@ export class Node extends SerializableThing {
     })
     relations: Relation[] = [];
 
-    @SerializableArrayMember(SerializableThing, {
-        rdf: {
-            predicate: tree.member,
-        },
-    })
-    members?: SerializableThing[] = [];
-
     constructor(iri?: IriString) {
         super(iri);
     }
 
+    /**
+     * Get the child nodes of this node.
+     * @returns {Node[]} Child nodes
+     */
     getChildNodes(): Node[] {
         return this.relations.map((r) => r.node as Node);
     }
 
+    /**
+     * Get the child node that matches the given value.
+     * @param {object} value Value to match
+     * @returns {Node} Child node
+     */
     // eslint-disable-next-line
     getChildNode(value: Object): Node {
         return this.relations.find((r) => {

@@ -42,6 +42,7 @@ const namespaces: Namespaces = {
     //indoorgml: 'http://www.opengis.net/indoorgml/1.0/core',
     m3lite: 'http://purl.org/iot/vocab/m3-lite#',
     tree: 'https://w3id.org/tree#',
+    ldes: 'https://w3id.org/ldes#',
 };
 
 const mirrors: Mirrors = {

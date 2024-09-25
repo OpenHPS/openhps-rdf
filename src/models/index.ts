@@ -19,3 +19,4 @@ export * from './SerializableThing';
 export * from './Observation';
 export * from './utils';
 export * from './tree';
+export * from './ldes';

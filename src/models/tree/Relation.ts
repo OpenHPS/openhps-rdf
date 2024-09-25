@@ -27,6 +27,13 @@ export abstract class Relation {
     })
     value: Object; // eslint-disable-line
 
+    @SerializableMember({
+        rdf: {
+            predicate: tree.remainingItems,
+        },
+    })
+    remainingItems?: number;
+
     constructor(value: any) {
         this.value = RDFSerializer.serialize(value);
     }
