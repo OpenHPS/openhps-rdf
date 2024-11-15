@@ -60,16 +60,22 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions &&
             memberOptions.options &&
             memberOptions.options.rdf &&
-            memberOptions.options.rdf.serializer
+            memberOptions.options.rdf.serializer !== undefined
         ) {
-            const output = memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
-                thing: serializerOptions.current,
-                baseUri: serializerOptions.rdf.baseUri ?? ('' as IriString),
-                dataType: typeDescriptor.ctor,
-                parent: serializerOptions.parent,
-            }) as Thing | Quad_Object;
+            const output =
+                typeof memberOptions.options.rdf.serializer === 'boolean' &&
+                memberOptions.options.rdf.serializer === false
+                    ? serializerOptions.current.value
+                    : (memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
+                          thing: serializerOptions.current,
+                          baseUri: serializerOptions.rdf.baseUri ?? ('' as IriString),
+                          dataType: typeDescriptor.ctor,
+                          parent: serializerOptions.parent,
+                      }) as Thing | Quad_Object);
             if (output === undefined) {
                 return undefined;
+            } else if (typeof output === 'string') {
+                return DataFactory.namedNode(output);
             } else if (output.termType === 'Literal') {
                 return output as Literal;
             } else if (output.termType === 'NamedNode') {

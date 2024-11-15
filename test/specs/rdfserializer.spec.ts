@@ -102,7 +102,32 @@ describe('RDFSerializer', () => {
             })
             featureOfInterest: FeatureOfInterest;
         }     
+
+        @SerializableObject({
+            rdf: {
+                type: sosa.ObservableProperty
+            }
+        })
+        class ObservableProperty2 extends SerializableNamedNode {
+            @SerializableMember({
+                rdf: {
+                    predicate: ssn.isPropertyOf,
+                    serializer: false
+                }
+            })
+            featureOfInterest: FeatureOfInterest;
+        }     
         
+        it('should not serialize to thing when serializer is false', () => {
+            const obj = new ObservableProperty2("http://example.com/me");
+            obj.featureOfInterest = new FeatureOfInterest("http://example.com/me");
+            const serialized = RDFSerializer.serialize(obj);
+            expect(serialized['predicates']).to.not.be.undefined;
+            expect(serialized['predicates'][ssn.isPropertyOf]).to.not.be.undefined;
+            expect(serialized['predicates'][ssn.isPropertyOf].length).to.equal(1);
+            expect(serialized['predicates'][ssn.isPropertyOf][0].value).to.equal("http://example.com/me");
+        });
+
         it('should not serialize an unconfigured member', () => {
             const obj = new SomeLocation();
             obj.random = "test";

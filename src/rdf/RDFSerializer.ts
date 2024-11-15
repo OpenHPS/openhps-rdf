@@ -40,10 +40,15 @@ export class RDFSerializer extends DataSerializer {
             'updateSerializableObject',
             <T>(_: Serializable<T>, options: SerializableObjectOptions<T>) => {
                 if (options && options.rdf && options.rdf.type) {
+                    const types = [...(Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type])];
                     options.rdf.predicates = options.rdf.predicates || {};
-                    const types = options.rdf.predicates[rdf.type] || [];
-                    types.push(...(Array.isArray(options.rdf.type) ? options.rdf.type : [options.rdf.type]));
-                    options.rdf.predicates[rdf.type] = types;
+                    const typesIRIs = options.rdf.predicates[rdf.type] || [];
+                    typesIRIs.push(
+                        ...types.map((type) => {
+                            return type as IriString;
+                        }),
+                    );
+                    options.rdf.predicates[rdf.type] = typesIRIs;
                 }
             },
         );
