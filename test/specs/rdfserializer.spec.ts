@@ -119,7 +119,7 @@ describe('RDFSerializer', () => {
         }     
         
         it('should not serialize to thing when serializer is false', () => {
-            const obj = new ObservableProperty2("http://example.com/me");
+            const obj = new ObservableProperty2("http://example.com/test");
             obj.featureOfInterest = new FeatureOfInterest("http://example.com/me");
             const serialized = RDFSerializer.serialize(obj);
             expect(serialized['predicates']).to.not.be.undefined;

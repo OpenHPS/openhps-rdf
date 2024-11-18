@@ -60,18 +60,15 @@ export class InternalRDFSerializer extends Serializer {
             memberOptions &&
             memberOptions.options &&
             memberOptions.options.rdf &&
-            memberOptions.options.rdf.serializer !== undefined
+            memberOptions.options.rdf.serializer !== undefined &&
+            typeof memberOptions.options.rdf.serializer !== 'boolean'
         ) {
-            const output =
-                typeof memberOptions.options.rdf.serializer === 'boolean' &&
-                memberOptions.options.rdf.serializer === false
-                    ? serializerOptions.current.value
-                    : (memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
-                          thing: serializerOptions.current,
-                          baseUri: serializerOptions.rdf.baseUri ?? ('' as IriString),
-                          dataType: typeDescriptor.ctor,
-                          parent: serializerOptions.parent,
-                      }) as Thing | Quad_Object);
+            const output = memberOptions.options.rdf.serializer(sourceObject, serializerOptions.sourceObject, {
+                thing: serializerOptions.current,
+                baseUri: serializerOptions.rdf.baseUri ?? ('' as IriString),
+                dataType: typeDescriptor.ctor,
+                parent: serializerOptions.parent,
+            }) as Thing | Quad_Object;
             if (output === undefined) {
                 return undefined;
             } else if (typeof output === 'string') {
@@ -99,7 +96,7 @@ export class InternalRDFSerializer extends Serializer {
         }
         // if not present in the strategy do property by property serialization
         if (typeof sourceObject === 'object') {
-            return this.serializeObject(
+            const object = this.serializeObject(
                 sourceObject,
                 typeDescriptor,
                 memberName,
@@ -107,6 +104,21 @@ export class InternalRDFSerializer extends Serializer {
                 memberOptions,
                 serializerOptions,
             );
+
+            // If the serializer is false, serialize the object but only return the URI
+            if (
+                object &&
+                memberOptions &&
+                memberOptions.options &&
+                memberOptions.options.rdf &&
+                memberOptions.options.rdf.serializer !== undefined &&
+                typeof memberOptions.options.rdf.serializer === 'boolean'
+            ) {
+                // Only serialize the URI
+                return DataFactory.namedNode(object.value);
+            } else {
+                return object;
+            }
         }
 
         let error = `Could not serialize '${memberName}'; don't know how to serialize type`;
