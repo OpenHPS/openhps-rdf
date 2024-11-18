@@ -46,6 +46,7 @@ const namespaces: Namespaces = {
 };
 
 const mirrors: Mirrors = {
+    'http://qudt.org/schema/qudt/': 'https://qudt.org/2.1/schema/qudt',
     'http://www.opengis.net/ont/geosparql#':
         'https://raw.githubusercontent.com/opengeospatial/ogc-geosparql/master/vocabularies/geo.ttl',
     //'http://www.opengis.net/ont/geosparql#': 'https://opengeospatial.github.io/ogc-geosparql/geosparql11/geo.ttl',
