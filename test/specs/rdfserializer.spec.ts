@@ -1,7 +1,7 @@
 import { Absolute2DPosition, Accelerometer, DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode } from '../../src';
+import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
 
 describe('RDFSerializer', () => {
@@ -287,6 +287,11 @@ describe('RDFSerializer', () => {
             expect(object).to.be.instanceOf(Accelerometer);
         });
 
+        it('should deserialize a literal', () => {
+            const literal = DataFactory.literal("2024-11-18T14:57:30.826Z", DataFactory.namedNode(xsd.dateTime));
+            const object = RDFSerializer.deserialize(literal);
+            expect(object).to.be.instanceOf(Date);
+        });
     });
 
     describe('conversion', () => {

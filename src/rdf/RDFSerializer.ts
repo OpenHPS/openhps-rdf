@@ -9,7 +9,7 @@ import {
 } from '@openhps/core';
 import { ChangeLogType, InternalRDFSerializer } from './InternalRDFSerializer';
 import { InternalRDFDeserializer } from './InternalRDFDeserializer';
-import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates, SubjectObjects } from './types';
+import { IriString, Thing, Subject, RDFSerializerConfig, SubjectPredicates, SubjectObjects, xsd } from './types';
 import {
     NamedNode,
     BlankNode,
@@ -32,6 +32,7 @@ import { RDFChangeLog, createChangeLog } from './ChangeLog';
 import { QueryEngine } from '../service/QueryEngine';
 
 export class RDFSerializer extends DataSerializer {
+    protected static readonly primitiveTypes: Map<string, Constructor<any>> = new Map();
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
     protected static engine: QueryEngine;
 
@@ -55,6 +56,16 @@ export class RDFSerializer extends DataSerializer {
         this.eventEmitter.on('registerType', <T>(type: Serializable<T>) => {
             RDFSerializer.registerRDFType(type);
         });
+
+        // Primitive types
+        this.primitiveTypes.set(xsd.string, String);
+        this.primitiveTypes.set(xsd.langString, String);
+        this.primitiveTypes.set(xsd.boolean, Boolean);
+        this.primitiveTypes.set(xsd.integer, Number);
+        this.primitiveTypes.set(xsd.double, Number);
+        this.primitiveTypes.set(xsd.decimal, Number);
+        this.primitiveTypes.set(xsd.dateTime, Date);
+        this.primitiveTypes.set(xsd.date, Date);
     }
 
     protected static options: DataSerializerConfig = {
@@ -648,7 +659,7 @@ export class RDFSerializer extends DataSerializer {
         return this.deserializeFromStore(DataFactory.namedNode(subject), new Store(quads));
     }
 
-    static deserialize<T>(serializedData: Thing, dataType?: Serializable<T>): T;
+    static deserialize<T>(serializedData: Thing | Literal, dataType?: Serializable<T>): T;
     static deserialize<T>(serializedData: any[], dataType?: Serializable<T>): T | T[];
     /**
      * Deserialize data
@@ -660,13 +671,18 @@ export class RDFSerializer extends DataSerializer {
         if (!serializedData) {
             return undefined; // Return undefined if no data is provided
         }
-        if (serializedData['predicates'] === undefined) {
+        // Serialize as JSON when not a literal and not a Thing
+        if (!(serializedData instanceof Literal) && serializedData['predicates'] === undefined) {
             return super.deserialize(serializedData, dataType as Constructor<T>);
         }
         const deserializer = new InternalRDFDeserializer();
-        const finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);
+        let finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);
         if (finalType === Object) {
             return serializedData as unknown as T;
+        } else if (serializedData instanceof Literal) {
+            // Primitive value
+            const dataTypeURI = serializedData.datatype.value;
+            finalType = this.primitiveTypes.get(dataTypeURI);
         } else if (finalType === undefined) {
             return undefined;
         }
