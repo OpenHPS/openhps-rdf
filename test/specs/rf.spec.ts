@@ -55,6 +55,7 @@ describe('@openhps/rf', () => {
             const serialized = RDFSerializer.serialize(uuid);
             console.log(serialized, uuid);
             const deserialized = RDFSerializer.deserialize(serialized);
+            console.log(deserialized);
         });
     });
 

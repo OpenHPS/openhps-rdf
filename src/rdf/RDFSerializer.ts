@@ -679,13 +679,19 @@ export class RDFSerializer extends DataSerializer {
         let finalType = dataType ?? deserializer.rdfTypeResolver(serializedData, this.knownTypes, this.knownRDFTypes);
         if (finalType === Object) {
             return serializedData as unknown as T;
-        } else if (serializedData instanceof Literal) {
-            // Primitive value
-            const dataTypeURI = serializedData.datatype.value;
-            finalType = this.primitiveTypes.get(dataTypeURI);
-        } else if (finalType === undefined) {
+        } else if (finalType === undefined && serializedData instanceof Literal) {
+            const dataTypeURI: IriString = serializedData.datatype.value as IriString;
+            // First check if it is a known type
+            finalType = this.knownRDFTypes.has(dataTypeURI)
+                ? this.findTypeByName(this.knownRDFTypes.get(dataTypeURI)[0])
+                : this.primitiveTypes.get(dataTypeURI);
+        }
+
+        // If no type is found, return undefined
+        if (finalType === undefined) {
             return undefined;
         }
+
         return deserializer.convertSingleValue(
             serializedData,
             DataSerializerUtils.ensureTypeDescriptor(finalType),
