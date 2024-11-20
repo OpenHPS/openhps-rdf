@@ -73,11 +73,11 @@ SerializableArrayMember(MACAddress, {
     rdf: {
         predicate: hardware.macAddress,
         datatype: xsd.string,
-        serializer: (object: MACAddress) => {
+        serializer: (object: MACAddress[]) => {
             if (!object) {
                 return undefined;
             }
-            return DataFactory.literal(object.toString());
+            return object.map((address) => DataFactory.literal(address.toString()));
         },
         deserializer: (thing: Thing) => {
             if (!thing) {

@@ -1,9 +1,15 @@
-import { Serializable, SerializableObjectOptions, MemberOptionsBase, DataObject } from '@openhps/core';
+import {
+    Serializable,
+    SerializableObjectOptions,
+    MemberOptionsBase,
+    DataObject,
+    SerializableArrayMemberOptions,
+} from '@openhps/core';
 import { Quad_Object } from 'n3';
 import { IriString, Thing } from '../rdf/types';
 import { RDFIdentifierOptions, RDFLiteralOptions } from './types';
 
-export type { SerializableObjectOptions, MemberOptionsBase, DataObject };
+export type { SerializableObjectOptions, MemberOptionsBase, DataObject, SerializableArrayMemberOptions };
 
 export type RDFMetadata = {
     /**
@@ -26,6 +32,26 @@ export type RDFMetadata = {
     };
 };
 
+export type RDFSerializerOptions = {
+    /**
+     * Specify if the member is an identifier
+     */
+    identifier?: boolean;
+    /**
+     * Custom (partial) serializer for this member.
+     */
+    serializer?:
+        | false
+        | ((value: any, object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object>);
+    /**
+     * Custom (partial) deserializer for this member.
+     */
+    deserializer?: (thing: Thing, targetObject?: any, options?: MemberDeserializerOptions) => any;
+    /**
+     * Custom SPARQL query to deserialize this data member
+     */
+    query?: string;
+} & (RDFLiteralOptions | RDFIdentifierOptions);
 declare module '@openhps/core/dist/types/data/object/DataObject' {
     export interface DataObject {
         rdf?: RDFMetadata;
@@ -80,26 +106,26 @@ declare module '@openhps/core/dist/types/data/decorators/options' {
          * Resource Description Framework serialization options
          * @see {@link https://www.w3.org/RDF/}
          */
+        rdf?: RDFSerializerOptions;
+    }
+
+    export interface SerializableArrayMemberOptions extends MemberOptionsBase {
+        /**
+         * Resource Description Framework serialization options
+         * @see {@link https://www.w3.org/RDF/}
+         */
         rdf?: {
-            /**
-             * Specify if the member is an identifier
-             */
-            identifier?: boolean;
             /**
              * Custom (partial) serializer for this member.
              */
             serializer?:
                 | false
-                | ((value: any, object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object>);
+                | ((value: any[], object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object[]>);
             /**
              * Custom (partial) deserializer for this member.
              */
             deserializer?: (thing: Thing, targetObject?: any, options?: MemberDeserializerOptions) => any;
-            /**
-             * Custom SPARQL query to deserialize this data member
-             */
-            query?: string;
-        } & (RDFLiteralOptions | RDFIdentifierOptions);
+        } & RDFSerializerOptions;
     }
 }
 

@@ -102,19 +102,32 @@ export class RDFSerializer extends DataSerializer {
      * Initialize the RDF serializer
      * @param module Module to initialize
      */
-    static initialize(module: string): void {
-        if (module === 'rf') {
-            import('../mapping/rf');
-        }
-        if (module === 'geospatial') {
-            import('../mapping/geospatial');
-        }
-        if (module === 'fingerprinting') {
-            import('../mapping/fingerprinting');
-        }
-        if (module === 'video') {
-            import('../mapping/video');
-        }
+    static initialize(module: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let promise: Promise<any> = Promise.resolve();
+            switch (module) {
+                case 'rf':
+                    promise = import('../mapping/rf');
+                    break;
+                case 'geospatial':
+                    promise = import('../mapping/geospatial');
+                    break;
+                case 'fingerprinting':
+                    promise = import('../mapping/fingerprinting');
+                    break;
+                case 'video':
+                    promise = import('../mapping/video');
+                    break;
+            }
+            promise
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    reject(err);
+                });
+        });
     }
 
     static setQueryEngine(engine: QueryEngine): void {

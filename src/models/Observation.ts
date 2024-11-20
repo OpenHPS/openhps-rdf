@@ -46,7 +46,9 @@ export class Observation extends SerializableThing {
     @SerializableArrayMember(String, {
         rdf: {
             predicate: sosa.usedProcedure,
-            serializer: (value: string) => DataFactory.namedNode(value),
+            serializer: (value: string[]) => {
+                return value.map((iri) => DataFactory.namedNode(iri));
+            },
             deserializer: (thing: Thing) => thing.value,
         },
     })

@@ -47,7 +47,7 @@ export class InternalRDFSerializer extends Serializer {
         memberName: string,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions: InternalSerializerOptions = {},
-    ): Thing | Literal {
+    ): Thing | Quad_Object | Quad_Object[] {
         if (this.retrievePreserveNull(memberOptions) && sourceObject === null) {
             return null;
         }
@@ -71,6 +71,9 @@ export class InternalRDFSerializer extends Serializer {
             }) as Thing | Quad_Object;
             if (output === undefined) {
                 return undefined;
+            } else if (Array.isArray(output)) {
+                // Convert to thing
+                return output;
             } else if (typeof output === 'string') {
                 return DataFactory.namedNode(output);
             } else if (output.termType === 'Literal') {
@@ -316,8 +319,8 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: InternalSerializerOptions,
-    ): (Literal | Thing)[] {
-        return sourceObject.map((obj) => {
+    ): (Quad_Object | Thing)[] {
+        const data = sourceObject.map((obj) => {
             return this.convertSingleValue(
                 obj,
                 typeDescriptor.elementType,
@@ -326,6 +329,11 @@ export class InternalRDFSerializer extends Serializer {
                 serializerOptions,
             );
         });
+        if (Array.isArray(data)) {
+            return data.flat();
+        } else {
+            return data;
+        }
     }
 
     protected serializeMap(
@@ -335,10 +343,18 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: InternalSerializerOptions,
-    ): (Literal | Thing)[] {
-        return Array.from(sourceObject.values()).map((obj) => {
-            return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
-        });
+    ): (Quad_Object | Thing)[] {
+        return Array.from(sourceObject.values())
+            .map((obj) => {
+                return this.convertSingleValue(
+                    obj,
+                    typeDescriptor.valueType,
+                    memberName,
+                    memberOptions,
+                    serializerOptions,
+                );
+            })
+            .reduce((a, b) => a.concat(b), [] as (Quad_Object | Thing)[]);
     }
 
     protected serializeSet(
@@ -348,10 +364,18 @@ export class InternalRDFSerializer extends Serializer {
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: any,
-    ): (Literal | Thing)[] {
-        return Array.from(sourceObject.values()).map((obj) => {
-            return this.convertSingleValue(obj, typeDescriptor.valueType, memberName, memberOptions, serializerOptions);
-        });
+    ): (Quad_Object | Thing)[] {
+        return Array.from(sourceObject.values())
+            .map((obj) => {
+                return this.convertSingleValue(
+                    obj,
+                    typeDescriptor.valueType,
+                    memberName,
+                    memberOptions,
+                    serializerOptions,
+                );
+            })
+            .reduce((a, b) => a.concat(b), [] as (Quad_Object | Thing)[]);
     }
 
     serializeLiteral(
