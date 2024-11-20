@@ -312,8 +312,12 @@ export class InternalRDFDeserializer extends Deserializer {
                 .filter((predicate: IriString) => predicate !== rdf.type)
                 .filter((predicate: IriString) => !usedPredicates.includes(predicate));
             targetObject.rdf = { predicates: {} };
-            targetObject.rdf.uri = sourceObject.value;
             targetObject.rdf.termType = sourceObject.termType;
+            if (targetObject.rdf.termType === 'BlankNode') {
+                targetObject.rdf.uri = sourceObject.value.replace(/^_:/, '');
+            } else {
+                targetObject.rdf.uri = sourceObject.value;
+            }
             unusedPredicates.forEach((predicate) => {
                 targetObject.rdf.predicates[predicate] = sourceObject.predicates[predicate];
             });

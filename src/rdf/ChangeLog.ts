@@ -19,8 +19,17 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
             switch (prop) {
                 case 'add':
                     return (quad: Quad) => {
+                        // If the quad exist in deletions, remove from deletions
+                        // If the quad already exist in store, do nothing
+                        // Else, add to additions
+                        if (obj.deletions.includes(quad)) {
+                            obj.deletions = obj.deletions.filter((q) => q !== quad);
+                        } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length > 0) {
+                            return;
+                        } else {
+                            obj.additions.push(quad);
+                        }
                         obj.add(quad);
-                        obj.additions.push(quad);
                     };
                 case 'removeQuad':
                 case 'delete':
@@ -36,8 +45,19 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
                     };
                 case 'addQuads':
                     return (quads: Quad[]) => {
-                        obj.addQuads(quads);
-                        obj.additions.push(...quads);
+                        // If the quads exist in deletions, remove from deletions
+                        // If the quads already exist in store, do nothing
+                        // Else, add to additions
+                        for (const quad of quads) {
+                            if (obj.deletions.includes(quad)) {
+                                obj.deletions = obj.deletions.filter((q) => q !== quad);
+                            } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length > 0) {
+                                return;
+                            } else {
+                                obj.additions.push(quad);
+                            }
+                            obj.add(quad);
+                        }
                     };
                 case 'removeQuads':
                     return (quads: Quad[]) => {

@@ -1,7 +1,7 @@
 import { Absolute2DPosition, Accelerometer, DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory } from '../../src';
+import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
 
 describe('RDFSerializer', () => {
@@ -228,6 +228,57 @@ describe('RDFSerializer', () => {
             console.log(await RDFSerializer.stringify(serialized, {
                 baseUri: "http://example.com/"
             }))
+        });
+
+        it('should keep blank node ids between serialization and deserialization', async () => {
+
+            @SerializableObject({
+                rdf: {
+                    type: "http://example.com#Test2"
+                }
+            })
+            class TestObject2 {
+                @SerializableMember({
+                    rdf: {
+                        predicate: rdfs.label
+                    }
+                })
+                name: string;
+            }
+
+            @SerializableObject({
+                rdf: {
+                    type: "http://example.com#Test"
+                }
+            })
+            class TestObject extends SerializableThing {
+                @SerializableMember({
+                    rdf: {
+                        predicate: rdfs.label
+                    }
+                })
+                name: string;
+                @SerializableArrayMember(TestObject2, {
+                    rdf: {
+                        predicate: "http://example.com#hasObject"
+                    }
+                })
+                test: TestObject2[] = [];
+            }
+
+            const obj = new TestObject("http://example.com#tMyObject");
+            obj.name = "Test";
+            const obj2 = new TestObject2();
+            obj2.name = "Test2";
+            obj.test.push(obj2);
+            const turtle = await RDFSerializer.stringify(obj);
+            const deserialized: TestObject = RDFSerializer.deserializeFromString("http://example.com#tMyObject", turtle);
+            expect(deserialized).to.be.instanceOf(TestObject);
+            expect(deserialized.test[0]).to.be.instanceOf(TestObject2);
+
+            const subject = RDFSerializer.serializeToSubjects(obj);
+            const deserializedSubject = RDFSerializer.subjectsToThing(subject, "http://example.com#tMyObject");
+            const serializedStore = RDFSerializer.serializeToStore(deserializedSubject);
         });
     });
 

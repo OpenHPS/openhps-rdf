@@ -506,14 +506,14 @@ export class RDFSerializer extends DataSerializer {
             if (processedSubjects.includes(subject.value)) {
                 return {
                     termType: subject.termType,
-                    value: subject.value,
+                    value: subject.value.replace(/^_:/, ''),
                     predicates: {},
                 };
             }
             processedSubjects.push(subject.value);
             return {
                 termType: subject.termType,
-                value: subject.value,
+                value: subject.value.replace(/^_:/, ''),
                 predicates: {
                     ...store
                         .getPredicates(subject, null, null)
