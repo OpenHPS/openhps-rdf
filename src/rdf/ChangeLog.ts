@@ -23,10 +23,9 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
                         // If the quad already exist in store, do nothing
                         // Else, add to additions
                         if (obj.deletions.includes(quad)) {
+                            // Remove from deletions
                             obj.deletions = obj.deletions.filter((q) => q !== quad);
-                        } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length > 0) {
-                            return;
-                        } else {
+                        } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length === 0) {
                             obj.additions.push(quad);
                         }
                         obj.add(quad);
@@ -50,10 +49,9 @@ export function createChangeLog(store: Store): Store & RDFChangeLog {
                         // Else, add to additions
                         for (const quad of quads) {
                             if (obj.deletions.includes(quad)) {
+                                // Remove from deletions
                                 obj.deletions = obj.deletions.filter((q) => q !== quad);
-                            } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length > 0) {
-                                return;
-                            } else {
+                            } else if (obj.getQuads(quad.subject, quad.predicate, quad.object, null).length === 0) {
                                 obj.additions.push(quad);
                             }
                             obj.add(quad);
