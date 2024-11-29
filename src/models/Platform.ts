@@ -1,6 +1,6 @@
-import { SerializableMember, SerializableObject } from '@openhps/core';
+import { SerializableObject } from '@openhps/core';
 import { SerializableThing } from './SerializableThing';
-import { sosa, rdfs } from '../vocab';
+import { sosa } from '../vocab';
 
 @SerializableObject({
     rdf: {
@@ -8,19 +8,11 @@ import { sosa, rdfs } from '../vocab';
     },
 })
 export class Platform extends SerializableThing {
-    @SerializableMember({
-        rdf: {
-            predicate: rdfs.label,
-            language: 'en',
-        },
-    })
-    label?: string;
+    get name(): string {
+        return this.label;
+    }
 
-    @SerializableMember({
-        rdf: {
-            predicate: rdfs.comment,
-            language: 'en',
-        },
-    })
-    comment?: string;
+    set name(value: string) {
+        this.label = value;
+    }
 }

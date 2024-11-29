@@ -1,5 +1,5 @@
 import { SerializableMember, SerializableObject, Unit } from '@openhps/core';
-import { schema, ssn, ssns, rdfs } from '../vocab';
+import { schema, ssn, ssns } from '../vocab';
 import { ObservableProperty } from './ObservableProperty';
 import { SerializableThing } from './SerializableThing';
 
@@ -9,22 +9,6 @@ import { SerializableThing } from './SerializableThing';
     },
 })
 export class PropertyAccuracy extends SerializableThing {
-    @SerializableMember({
-        rdf: {
-            predicate: rdfs.label,
-            language: 'en',
-        },
-    })
-    label?: string;
-
-    @SerializableMember({
-        rdf: {
-            predicate: rdfs.comment,
-            language: 'en',
-        },
-    })
-    comment?: string;
-
     @SerializableMember({
         rdf: {
             predicate: ssn.forProperty,

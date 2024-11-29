@@ -1,5 +1,5 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { rdfs, ssn, dcterms } from '../vocab';
+import { ssn } from '../vocab';
 import { DataFactory } from 'n3';
 import { IriString, Thing } from '../rdf';
 import { SerializableThing } from './SerializableThing';
@@ -10,22 +10,6 @@ import { SerializableThing } from './SerializableThing';
     },
 })
 export class Property extends SerializableThing {
-    @SerializableMember({
-        rdf: {
-            predicate: rdfs.label,
-            language: 'en',
-        },
-    })
-    label?: string;
-
-    @SerializableMember({
-        rdf: {
-            predicate: [rdfs.comment, dcterms.description],
-            language: 'en',
-        },
-    })
-    description?: string;
-
     @SerializableMember({
         rdf: {
             predicate: ssn.isPropertyOf,

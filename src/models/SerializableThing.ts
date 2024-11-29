@@ -1,5 +1,6 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
+import { dcterms, rdfs } from '../vocab';
 
 @SerializableObject({
     rdf: {
@@ -18,6 +19,30 @@ export class SerializableThing {
         },
     })
     id: IriString | BlankNodeId;
+
+    @SerializableMember({
+        rdf: {
+            predicate: rdfs.label,
+            language: 'en',
+        },
+    })
+    label?: string;
+
+    @SerializableMember({
+        rdf: {
+            predicate: [rdfs.comment, dcterms.description],
+            language: 'en',
+        },
+    })
+    description?: string;
+
+    get comment(): string {
+        return this.description;
+    }
+
+    set comment(value: string) {
+        this.description = value;
+    }
 
     constructor(id?: IriString | BlankNodeId) {
         this.id = id;

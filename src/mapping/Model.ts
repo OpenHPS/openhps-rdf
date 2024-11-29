@@ -1,10 +1,10 @@
 import { SerializableMapMember, SerializableObject } from '@openhps/core';
 import { GraphNode, GraphShape, ModelGraph } from '@openhps/core/internal';
-import { ssn } from '../vocab';
+import { poso, ssn } from '../vocab';
 
 SerializableObject({
     rdf: {
-        type: ssn.System,
+        type: poso.PositioningSystem,
     },
 })(ModelGraph);
 SerializableMapMember(String, GraphNode, {
