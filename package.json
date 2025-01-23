@@ -105,7 +105,7 @@
     "linked data"
   ],
   "dependencies": {
-    "@comunica/query-sparql": "^3.1.2",
+    "@comunica/query-sparql": "^4.0.2",
     "@inquirer/prompts": "^5.1.0",
     "@types/n3": "^1.16.4",
     "axios": "^1.7.2",
@@ -130,7 +130,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@comunica/runner": "^3.1.0",
+    "@comunica/runner": "^4.0.2",
     "@openhps/core": "^0.7.10",
     "@openhps/fingerprinting": "^0.1.8",
     "@openhps/geospatial": "^0.1.30",
