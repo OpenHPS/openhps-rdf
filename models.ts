@@ -1,1 +1,1 @@
-export * from './dist/types/index.minimal';
+export * from './dist/types/index.models';
