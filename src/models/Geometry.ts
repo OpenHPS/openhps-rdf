@@ -1,5 +1,5 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { Thing, IriString } from '../rdf';
+import { Thing, IriString } from '../rdf/types';
 import { ogc, poso } from '../vocab';
 import { QuantityValue } from './QuantityValue';
 // eslint-disable-next-line

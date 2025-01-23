@@ -1,6 +1,6 @@
 import { SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { foaf, schema, vcard } from '../vocab';
-import { IriString, xsd } from '../rdf';
+import { IriString, xsd } from '../rdf/types';
 import { DataFactory } from 'n3';
 import { SerializableThing } from './SerializableThing';
 

@@ -2,9 +2,8 @@ import { SerializableArrayMember, SerializableMember, SerializableObject } from 
 import { sosa } from '../vocab';
 import { FeatureOfInterest } from './FeatureOfInterest';
 import { ObservableProperty } from './ObservableProperty';
-import { IriString, Thing } from '../rdf';
+import { IriString, Thing, xsd } from '../rdf/types';
 import { SerializableThing } from './SerializableThing';
-import { xsd } from '../rdf/types';
 import { DataFactory } from 'n3';
 
 @SerializableObject({

@@ -1,6 +1,7 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { BlankNodeId, IriString, RDFSerializer, Thing } from '../rdf';
+import { BlankNodeId, IriString, Thing } from '../rdf/types';
 import { dcterms, rdfs } from '../vocab';
+import { RDFSerializer } from '../rdf/RDFSerializer';
 
 @SerializableObject({
     rdf: {
