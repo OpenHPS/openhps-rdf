@@ -129,7 +129,7 @@ SerializableMember({
                           }),
                       };
                   })
-                  .reduce((a, b) => ({ ...a, ...b }))
+                  .reduce((a, b) => ({ ...a, ...b }), {})
             : undefined;
         return {
             path: rdf.path,
