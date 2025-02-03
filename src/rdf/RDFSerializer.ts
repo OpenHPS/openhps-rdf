@@ -415,7 +415,7 @@ export class RDFSerializer extends DataSerializer {
                 ];
                 usedNamespacesInQuad.map((namespace) => {
                     Object.keys(ns).forEach((n) => {
-                        if (namespace.includes(n)) {
+                        if (namespace && namespace.includes(n)) {
                             filteredPrefixes[(ns as any)[n]] = n;
                         }
                     });

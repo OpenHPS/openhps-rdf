@@ -15,6 +15,10 @@ import { DataFactory } from 'n3';
                 const geojson = wkt.parse(wktLiteral);
                 let geometry: any;
                 switch (geojson.type) {
+                    case 'MultiPolygon':
+                        geometry = new MultiPolygonGeometry();
+                        geometry.spatialAccuracy = instance.spatialAccuracy;
+                        return geometry;
                     case 'Polygon':
                         geometry = new PolygonGeometry();
                         geometry.spatialAccuracy = instance.spatialAccuracy;
@@ -42,6 +46,37 @@ export abstract class Geometry {
         },
     })
     spatialAccuracy?: QuantityValue;
+}
+
+@SerializableObject({
+    rdf: {
+        type: ogc.Geometry,
+        serializer: (geometry: MultiPolygonGeometry) => {
+            return {
+                predicates: {
+                    [ogc.asWKT]: [
+                        DataFactory.literal(
+                            `MULTIPOLYGON(((${geometry.polygon.coords
+                                .map((coord) => `${coord.longitude} ${coord.latitude}`)
+                                .join(', ')})${
+                                geometry.holes.length > 0
+                                    ? `, ${geometry.holes.map((hole) => `(${hole.coords.map((coord) => `${coord.longitude} ${coord.latitude}`).join(', ')})`).join(', ')}`
+                                    : ''
+                            }))`,
+                            DataFactory.namedNode(ogc.wktLiteral),
+                        ),
+                    ],
+                    [ogc.coordinateDimension]: [DataFactory.literal(geometry.polygon.coords[0][0].altitude ? 3 : 2)],
+                    [ogc.spatialDimension]: [DataFactory.literal(geometry.polygon.coords[0][0].altitude ? 3 : 2)],
+                    [ogc.dimension]: [DataFactory.literal(geometry.polygon.coords[0][0].altitude ? 3 : 2)],
+                },
+            };
+        },
+    },
+})
+export class MultiPolygonGeometry extends Geometry {
+    polygon: PolygonGeometry;
+    holes: PolygonGeometry[] = [];
 }
 
 @SerializableObject({
