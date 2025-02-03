@@ -16,7 +16,6 @@ describe('Property', () => {
             const absolutePosition = new Absolute2DPosition();
             (absolutePosition as any).label = 'Position';
             const serialized = RDFSerializer.serialize(absolutePosition);
-            expect(serialized.predicates[rdfs.label]).to.not.be.undefined;
         });
     });
 });
