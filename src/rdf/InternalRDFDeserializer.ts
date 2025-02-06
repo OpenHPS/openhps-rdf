@@ -173,7 +173,7 @@ export class InternalRDFDeserializer extends Deserializer {
         const expectedSelfType = typeDescriptor.ctor;
         const typeFromRDF = this.rdfTypeResolver(sourceObject, knownTypes, serializerOptions.rdf.knownTypes);
         // If member, then prioritize the type from the RDF, else prioritize the expected type
-        const finalType = memberName ? typeFromRDF || expectedSelfType : expectedSelfType || typeFromRDF;
+        const finalType = memberName ? typeFromRDF ?? expectedSelfType : expectedSelfType ?? typeFromRDF;
         const metadata = DataSerializerUtils.getOwnMetadata(finalType);
         const rootMetadata = DataSerializerUtils.getOwnMetadata(finalType);
 
@@ -301,7 +301,7 @@ export class InternalRDFDeserializer extends Deserializer {
             } else {
                 targetObject[memberOptions.key] = memberOptions.options.rdf.deserializer(undefined, targetObject, {
                     thing: sourceObject,
-                    dataType: memberOptions.type() as any,
+                    dataType: memberOptions.type().ctor,
                     parent: serializerOptions.parent,
                 });
             }
