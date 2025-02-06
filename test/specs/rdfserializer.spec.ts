@@ -1,7 +1,7 @@
 import { Absolute2DPosition, Accelerometer, DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing } from '../../src';
+import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing, Quad, Store } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
 
 describe('RDFSerializer', () => {
@@ -342,6 +342,157 @@ describe('RDFSerializer', () => {
             const literal = DataFactory.literal("2024-11-18T14:57:30.826Z", DataFactory.namedNode(xsd.dateTime));
             const object = RDFSerializer.deserialize(literal);
             expect(object).to.be.instanceOf(Date);
+        });
+
+        it('should deserialize a graph from Solid', (done) => {
+            const dataset = {
+                "graphs": {
+                    "default": {
+                        "http://localhost:3000/test1/nodes/poso/node.ttl": {
+                            "type": "Subject",
+                            "url": "http://localhost:3000/test1/nodes/poso/node.ttl",
+                            "predicates": {
+                                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                                    "namedNodes": [
+                                        "http://purl.org/ldht/Node"
+                                    ]
+                                },
+                                "http://purl.org/ldht/nodeID": {
+                                    "literals": {
+                                        "http://www.w3.org/2001/XMLSchema#double": [
+                                            "-6032"
+                                        ]
+                                    }
+                                },
+                                "http://schema.org/potentialAction": {
+                                    "blankNodes": [
+                                        "_:b38_n3-0",
+                                        "_:b38_n3-1",
+                                        "_:b38_n3-2",
+                                        "_:b38_n3-3"
+                                    ]
+                                },
+                                "https://w3id.org/tree#relation": {
+                                    "blankNodes": [
+                                        "_:b38_n3-4"
+                                    ]
+                                }
+                            }
+                        },
+                        "_:b38_n3-0": {
+                            "type": "Subject",
+                            "url": "_:b38_n3-0",
+                            "predicates": {
+                                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                                    "namedNodes": [
+                                        "http://purl.org/ldht/PingAction"
+                                    ]
+                                },
+                                "http://schema.org/target": {
+                                    "namedNodes": [
+                                        "http://localhost:3000/test1/nodes/poso/actions/"
+                                    ]
+                                }
+                            }
+                        },
+                        "_:b38_n3-1": {
+                            "type": "Subject",
+                            "url": "_:b38_n3-1",
+                            "predicates": {
+                                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                                    "namedNodes": [
+                                        "http://purl.org/ldht/AddNodeAction"
+                                    ]
+                                },
+                                "http://schema.org/target": {
+                                    "namedNodes": [
+                                        "http://localhost:3000/test1/nodes/poso/actions/"
+                                    ]
+                                }
+                            }
+                        },
+                        "_:b38_n3-2": {
+                            "type": "Subject",
+                            "url": "_:b38_n3-2",
+                            "predicates": {
+                                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                                    "namedNodes": [
+                                        "http://purl.org/ldht/RemoveNodeAction"
+                                    ]
+                                },
+                                "http://schema.org/target": {
+                                    "namedNodes": [
+                                        "http://localhost:3000/test1/nodes/poso/actions/"
+                                    ]
+                                }
+                            }
+                        },
+                        "_:b38_n3-3": {
+                            "type": "Subject",
+                            "url": "_:b38_n3-3",
+                            "predicates": {
+                                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                                    "namedNodes": [
+                                        "http://purl.org/ldht/StoreValueAction"
+                                    ]
+                                },
+                                "http://schema.org/target": {
+                                    "namedNodes": [
+                                        "http://localhost:3000/test1/nodes/poso/actions/"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "type": "Dataset",
+                "internal_resourceInfo": {
+                    "sourceIri": "http://localhost:3000/test1/nodes/poso/node.ttl",
+                    "isRawData": false,
+                    "contentType": "text/turtle",
+                    "linkedResources": {
+                        "type": [
+                            "http://www.w3.org/ns/ldp#Resource"
+                        ],
+                        "describedby": [
+                            "http://localhost:3000/test1/nodes/poso/node.ttl.meta"
+                        ],
+                        "http://www.w3.org/ns/solid/terms#updatesViaStreamingHttp2023": [
+                            "http://localhost:3000/.notifications/StreamingHTTPChannel2023/http%3A%2F%2Flocalhost%3A3000%2Ftest1%2Fnodes%2Fposo%2Fnode.ttl"
+                        ],
+                        "acl": [
+                            "http://localhost:3000/test1/nodes/poso/node.ttl.acl"
+                        ],
+                        "http://www.w3.org/ns/solid/terms#storageDescription": [
+                            "http://localhost:3000/test1/.well-known/solid"
+                        ]
+                    },
+                    "aclUrl": "http://localhost:3000/test1/nodes/poso/node.ttl.acl",
+                    "permissions": {
+                        "user": {
+                            "read": true,
+                            "append": true,
+                            "write": true,
+                            "control": true
+                        },
+                        "public": {
+                            "read": true,
+                            "append": false,
+                            "write": false,
+                            "control": false
+                        }
+                    }
+                }
+            };
+            const quads: Quad[] = Object.keys(dataset.graphs)
+                .map((key) => {
+                    const graph = dataset.graphs[key];
+                    return RDFSerializer.subjectsToQuads(Object.values(graph));
+                })
+                .reduce((a, b) => a.concat(b), []);
+            const store = new Store(quads); 
+            RDFSerializer.deserializeFromStore(DataFactory.namedNode("http://localhost:3000/test1/nodes/poso/node.ttl"), store);
+            done();
         });
     });
 

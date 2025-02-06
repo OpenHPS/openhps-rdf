@@ -262,8 +262,11 @@ export class RDFSerializer extends DataSerializer {
         );
     }
 
-    static deserializeFromStore<T>(subject: NamedNode | BlankNode, store: Store): T {
+    static deserializeFromStore<T>(subject: NamedNode | BlankNode | IriString, store: Store): T {
         subject = subject ?? (store.getQuads(null, null, null, null)[0].subject as NamedNode | BlankNode);
+        if (typeof subject === 'string') {
+            subject = DataFactory.namedNode(subject);
+        }
         const thing = this.quadsToThing(subject, store);
         return this.deserialize(thing);
     }
@@ -595,7 +598,15 @@ export class RDFSerializer extends DataSerializer {
             return quads;
         }
         subjects.forEach((subject) => {
-            const subjectNode = DataFactory.namedNode(subject.url);
+            // Subject can be a named node or a blank node
+            let subjectNode: NamedNode | BlankNode = undefined;
+            if (subject.url.startsWith('_:')) {
+                // Blank node
+                subjectNode = DataFactory.blankNode(subject.url.replace(/^_:/, ''));
+            } else {
+                // Named node
+                subjectNode = DataFactory.namedNode(subject.url);
+            }
             const predicates = subject.predicates;
             quads.push(...subjectPredicatesToQuads(subjectNode, predicates));
         });
