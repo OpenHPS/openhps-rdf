@@ -586,7 +586,13 @@ export class RDFSerializer extends DataSerializer {
                 if (objects.blankNodes) {
                     objects.blankNodes.forEach((blankNode) => {
                         if (typeof blankNode === 'string') {
-                            quads.push(DataFactory.quad(subjectNode, predicate, DataFactory.blankNode(blankNode)));
+                            quads.push(
+                                DataFactory.quad(
+                                    subjectNode,
+                                    predicate,
+                                    DataFactory.blankNode(blankNode.replace(/^_:/, '')),
+                                ),
+                            );
                         } else {
                             const newBlankNode = DataFactory.blankNode();
                             quads.push(DataFactory.quad(subjectNode, predicate, newBlankNode));

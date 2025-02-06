@@ -491,6 +491,7 @@ describe('RDFSerializer', () => {
                 })
                 .reduce((a, b) => a.concat(b), []);
             const store = new Store(quads); 
+            // console.log(quads);
             RDFSerializer.deserializeFromStore(DataFactory.namedNode("http://localhost:3000/test1/nodes/poso/node.ttl"), store);
             done();
         });
