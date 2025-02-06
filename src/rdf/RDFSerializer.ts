@@ -262,13 +262,24 @@ export class RDFSerializer extends DataSerializer {
         );
     }
 
-    static deserializeFromStore<T>(subject: NamedNode | BlankNode | IriString, store: Store): T {
+    /**
+     * Deserialize data from a store
+     * @param subject Subject to deserialize
+     * @param store Store to deserialize from
+     * @param {Serializable} [dataType] Optional data type to specify deserialization type
+     * @returns
+     */
+    static deserializeFromStore<T>(
+        subject: NamedNode | BlankNode | IriString,
+        store: Store,
+        dataType?: Serializable<any>,
+    ): T {
         subject = subject ?? (store.getQuads(null, null, null, null)[0].subject as NamedNode | BlankNode);
         if (typeof subject === 'string') {
             subject = DataFactory.namedNode(subject);
         }
         const thing = this.quadsToThing(subject, store);
-        return this.deserialize(thing);
+        return this.deserialize(thing, dataType);
     }
 
     static serializeToSubjects<T>(data: T, baseUri?: IriString): Subject[] {
