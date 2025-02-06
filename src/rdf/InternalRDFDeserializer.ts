@@ -105,7 +105,7 @@ export class InternalRDFDeserializer extends Deserializer {
         sourceObject: any,
         typeDescriptor: TypeDescriptor,
         knownTypes: Map<string, Serializable<any>>,
-        memberName = 'object',
+        memberName: string,
         memberOptions?: ObjectMemberMetadata,
         serializerOptions?: InternalDeserializerOptions,
     ): any {
@@ -153,7 +153,7 @@ export class InternalRDFDeserializer extends Deserializer {
             );
         }
 
-        let error = `Could not deserialize '${memberName}'; don't know how to deserialize type`;
+        let error = `Could not deserialize '${memberName ?? 'object'}'; don't know how to deserialize type`;
 
         if (typeDescriptor.hasFriendlyName()) {
             error += ` '${typeDescriptor.ctor.name}'`;
