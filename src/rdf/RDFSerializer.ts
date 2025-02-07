@@ -25,6 +25,7 @@ import {
 } from 'n3';
 import type { WriterOptions as N3WriterOptions } from 'n3';
 import { namespaces } from '../namespaces';
+import * as jsonld from 'jsonld';
 import { rdf } from '../vocab';
 import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
@@ -152,6 +153,40 @@ export class RDFSerializer extends DataSerializer {
         }
         uri = uri && !uri.startsWith('http') && baseUri ? baseUri + uri : DataFactory.blankNode(uri).value;
         return uri as IriString;
+    }
+
+    /**
+     * Serialize data to JSON-LD
+     * @param {any} data Data to serialize to an URI
+     * @param {string} baseUri Base URI
+     */
+    static serializeToJSONLD<T>(data: T, baseUri?: IriString): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            const quads = this.serializeToQuads(data, baseUri);
+            jsonld
+                .fromRDF(quads)
+                .then((doc) => {
+                    resolve(doc);
+                })
+                .catch(reject);
+        });
+    }
+
+    static deserializeFromJSONLD<T>(subject: IriString, data: any | any[]): Promise<T> {
+        return new Promise((resolve, reject) => {
+            const jsonldObjects = Array.isArray(data) ? data : [data];
+            Promise.all(
+                jsonldObjects.map((jsonldObject) => {
+                    return jsonld.toRDF(jsonldObject);
+                }),
+            )
+                .then((quadSets) => {
+                    const quads = quadSets.flat();
+                    const store = new Store(quads as Quad[]);
+                    resolve(this.deserializeFromStore(subject, store));
+                })
+                .catch(reject);
+        });
     }
 
     /**

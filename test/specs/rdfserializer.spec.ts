@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing, Quad, Store } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
+import exp = require('constants');
 
 describe('RDFSerializer', () => {
 
@@ -230,6 +231,13 @@ describe('RDFSerializer', () => {
             }))
         });
 
+        it('should serialize to json-ld', async () => {
+            const obj = new DataObject("mvdewync");
+            obj.position = new Absolute2DPosition(50, 10);
+            const serialized = await RDFSerializer.serializeToJSONLD(obj, "http://example.com/");
+            expect(serialized).to.not.be.undefined;
+        });
+
         it('should keep blank node ids between serialization and deserialization', async () => {
 
             @SerializableObject({
@@ -343,6 +351,15 @@ describe('RDFSerializer', () => {
             const object = RDFSerializer.deserialize(literal);
             expect(object).to.be.instanceOf(Date);
         });
+
+        // it('should deserialize from json-ld', async () => {
+        //     const obj = new DataObject("mvdewync");
+        //     obj.position = new Absolute2DPosition(50, 10);
+        //     const serialized = await RDFSerializer.serializeToJSONLD(obj, "http://example.com/");
+        //     const deserialized: DataObject = await RDFSerializer.deserializeFromJSONLD("http://example.com/mvdewync", serialized);
+        //     expect(deserialized).to.be.instanceOf(DataObject);
+        //     expect(deserialized.position).to.be.instanceOf(Absolute2DPosition);
+        // });
 
         it('should deserialize a graph from Solid', (done) => {
             const dataset = {
