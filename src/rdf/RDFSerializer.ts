@@ -31,11 +31,13 @@ import { RDFIdentifierOptions } from '../decorators';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import { RDFChangeLog, createChangeLog } from './ChangeLog';
 import { QueryEngine } from '../service/QueryEngine';
+import { DocumentLoader } from './DocumentLoader';
 
 export class RDFSerializer extends DataSerializer {
     protected static readonly primitiveTypes: Map<string, Constructor<any>> = new Map();
     protected static readonly knownRDFTypes: Map<IriString, string[]> = new Map();
     protected static engine: QueryEngine;
+    protected static documentLoader: DocumentLoader;
 
     static {
         this.eventEmitter.on(
@@ -67,6 +69,17 @@ export class RDFSerializer extends DataSerializer {
         this.primitiveTypes.set(xsd.decimal, Number);
         this.primitiveTypes.set(xsd.dateTime, Date);
         this.primitiveTypes.set(xsd.date, Date);
+    }
+
+    /**
+     * Get the document loader
+     * @returns {DocumentLoader} Document loader
+     */
+    static getDocumentLoader(): DocumentLoader {
+        if (!this.documentLoader) {
+            this.documentLoader = new DocumentLoader();
+        }
+        return this.documentLoader;
     }
 
     protected static options: DataSerializerConfig = {
@@ -174,14 +187,11 @@ export class RDFSerializer extends DataSerializer {
 
     static deserializeFromJSONLD<T>(subject: IriString, data: any | any[]): Promise<T> {
         return new Promise((resolve, reject) => {
-            const jsonldObjects = Array.isArray(data) ? data : [data];
-            Promise.all(
-                jsonldObjects.map((jsonldObject) => {
-                    return jsonld.toRDF(jsonldObject);
-                }),
-            )
-                .then((quadSets) => {
-                    const quads = quadSets.flat();
+            jsonld
+                .toRDF(data, {
+                    documentLoader: this.documentLoader.fetch.bind(this.documentLoader),
+                })
+                .then((quads) => {
                     const store = new Store(quads as Quad[]);
                     resolve(this.deserializeFromStore(subject, store));
                 })

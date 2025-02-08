@@ -140,7 +140,6 @@
     "@types/axios": "^0.14.0",
     "@types/benchmark": "^2.1.5",
     "@types/chai": "^4.3.16",
-    "@types/jsonld": "^1.5.15",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.9",
     "@types/node-fetch": "^3.0.3",
