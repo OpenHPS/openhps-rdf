@@ -319,6 +319,9 @@ export class RDFSerializer extends DataSerializer {
         store: Store,
         dataType?: Serializable<any>,
     ): T {
+        if (store.size === 0) {
+            return undefined;
+        }
         subject = subject ?? (store.getQuads(null, null, null, null)[0].subject as NamedNode | BlankNode);
         if (typeof subject === 'string') {
             subject = DataFactory.namedNode(subject);
