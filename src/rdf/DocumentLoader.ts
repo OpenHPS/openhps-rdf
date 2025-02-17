@@ -11,7 +11,13 @@ export class DocumentLoader {
 
     public constructor() {
         this.context = {};
-        this.defaultLoader = jsonld.documentLoaders.node();
+        if (jsonld.documentLoaders) {
+            if (jsonld.documentLoaders.node) {
+                this.defaultLoader = jsonld.documentLoaders.node();
+            } else if (jsonld.documentLoaders.xhr) {
+                this.defaultLoader = jsonld.documentLoaders.xhr();
+            }
+        }
     }
 
     /**
