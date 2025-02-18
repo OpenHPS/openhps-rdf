@@ -3,8 +3,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing, Quad, Store } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
-import exp = require('constants');
-
+import { createChangeLog } from '@openhps/core';
 describe('RDFSerializer', () => {
 
     describe('serialization', () => {
@@ -545,6 +544,49 @@ describe('RDFSerializer', () => {
             const subjects = RDFSerializer.thingToSubjects(thing);
             const newThing = RDFSerializer.subjectsToThing(subjects, thing.value as IriString);
             const deserialized = RDFSerializer.deserialize(newThing, DataObject);
+        });
+    });
+
+    describe('changelog', () => {
+        it('should serialize a changelog', () => {
+            @SerializableObject({
+                rdf: {
+                    type: "http://example.com#TestEntry"
+                }
+            })
+            class TestObjectEntry { 
+                @SerializableMember({
+                    rdf: {
+                        predicate: "http://example.com#key"
+                    }
+                })
+                key: string;
+
+                constructor(key?: string) {
+                    this.key = key;
+                }
+            }
+
+            @SerializableObject({
+                rdf: {
+                    type: "http://example.com#Test"
+                }
+            })
+            class TestObject {
+                @SerializableArrayMember(TestObjectEntry, {
+                    rdf: {
+                        predicate: "http://example.com#members"
+                    }
+                })
+                members: TestObjectEntry[] = [];
+            }
+
+            const object = createChangeLog(new TestObject());
+            object.members.push(new TestObjectEntry("test"));
+            const changelog = RDFSerializer.serializeToChangeLog(object);
+            expect(changelog).to.not.be.undefined;
+            expect(changelog.additions.length).to.be.greaterThan(0);
+            console.log(changelog.additions);
         });
     });
 });

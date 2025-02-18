@@ -2,9 +2,16 @@ import { SerializableMember, SerializableObject } from '@openhps/core';
 import { BlankNodeId, IriString, Thing } from '../rdf/types';
 import { dcterms, rdfs } from '../vocab';
 import { RDFSerializer } from '../rdf/RDFSerializer';
+import { DataFactory } from 'n3';
 
 @SerializableObject({
     rdf: {
+        serializer: (object: SerializableThing) => {
+            return {
+                termType: object.termType,
+                value: object.id,
+            };
+        },
         deserializer: (thing: Thing, object: SerializableThing) => {
             object.id = thing.value as IriString | BlankNodeId;
             object.termType = thing.termType;
@@ -46,7 +53,7 @@ export class SerializableThing {
     }
 
     constructor(id?: IriString | BlankNodeId) {
-        this.id = id;
+        this.id = id ?? (DataFactory.blankNode().value as BlankNodeId);
     }
 
     toThing(): Thing {
