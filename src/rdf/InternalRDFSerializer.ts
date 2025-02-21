@@ -117,8 +117,12 @@ export class InternalRDFSerializer extends Serializer {
                 memberOptions.options.rdf.serializer !== undefined &&
                 typeof memberOptions.options.rdf.serializer === 'boolean'
             ) {
-                // Only serialize the URI
-                return DataFactory.namedNode(object.value);
+                // Only serialize the URI (or blank node id)
+                if (object.termType === 'BlankNode') {
+                    return DataFactory.blankNode(object.value);
+                } else {
+                    return DataFactory.namedNode(object.value);
+                }
             } else {
                 return object;
             }

@@ -1,7 +1,7 @@
 import { Absolute2DPosition, Accelerometer, DataObject, SerializableArrayMember, SerializableMember, SerializableObject } from '@openhps/core';
 import { expect } from 'chai';
 import 'mocha';
-import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing, Quad, Store } from '../../src';
+import { RDFSerializer, geo, schema, rdf, rdfs, sosa, ssn, SerializableNamedNode, DataFactory, SerializableThing, Quad, Store, BlankNode } from '../../src';
 import { IriString, xsd } from '../../src/rdf';
 import { createChangeLog } from '@openhps/core';
 describe('RDFSerializer', () => {
@@ -554,7 +554,7 @@ describe('RDFSerializer', () => {
                     type: "http://example.com#TestEntry"
                 }
             })
-            class TestObjectEntry { 
+            class TestObjectEntry extends SerializableThing{ 
                 @SerializableMember({
                     rdf: {
                         predicate: "http://example.com#key"
@@ -563,6 +563,7 @@ describe('RDFSerializer', () => {
                 key: string;
 
                 constructor(key?: string) {
+                    super();
                     this.key = key;
                 }
             }
@@ -573,12 +574,13 @@ describe('RDFSerializer', () => {
                 }
             })
             class TestObject {
-                @SerializableArrayMember(TestObjectEntry, {
+                @SerializableArrayMember(SerializableThing, {
                     rdf: {
-                        predicate: "http://example.com#members"
-                    }
+                        predicate: "http://example.com#members",
+                        serializer: false,
+                    },
                 })
-                members: TestObjectEntry[] = [];
+                members?: (SerializableThing | BlankNode)[] = [];
             }
 
             const object = createChangeLog(new TestObject());
