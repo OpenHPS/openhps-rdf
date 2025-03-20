@@ -61,13 +61,18 @@ export class ProjectGenerator {
         if (!this._modules.has(module.id)) {
             this._modules.add(module.id);
             Object.keys(module.exports).forEach((key) => {
-                const childModule = module.exports[key];
-                if (childModule && childModule.prototype && childModule.prototype instanceof Node) {
-                    childModule.prototype._module = this.findModule(path.dirname(require.resolve(module.id)));
-                    childModule.prototype._file = key;
-                    childModule.prototype._filePath = require.resolve(module.id);
-                    classes.push(childModule);
-                    this._packages.add(childModule.prototype._module);
+                // Check if the module is a class
+                try {
+                    const childModule = module.exports[key];
+                    if (childModule && childModule.prototype && childModule.prototype instanceof Node) {
+                        childModule.prototype._module = this.findModule(path.dirname(require.resolve(module.id)));
+                        childModule.prototype._file = key;
+                        childModule.prototype._filePath = require.resolve(module.id);
+                        classes.push(childModule);
+                        this._packages.add(childModule.prototype._module);
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
             });
         }
@@ -107,7 +112,7 @@ export class ProjectGenerator {
                     );
                 }
                 
-                return this.processClass(nodeType).then((value) => {
+                return this.processClass(nodeType, options).then((value) => {
                     if (value === undefined) {
                         return undefined;
                     }
@@ -122,7 +127,7 @@ export class ProjectGenerator {
         });
     }
 
-    static processClass(nodeType: any): Promise<[string, string]> {
+    static processClass(nodeType: any, options: ProjectBuildOptions = {}): Promise<[string, string]> {
         return new Promise((resolve, reject) => {
             const url = `https://openhps.org/terms/procedure/${nodeType.name}`;
             const builder = RDFBuilder.namedNode(url as IriString)
