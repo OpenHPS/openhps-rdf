@@ -5,6 +5,7 @@ import * as path from 'path';
 import { IriString, RDFBuilder, RDFSerializer } from '../rdf';
 import { dcterms, poso, rdf, rdfs } from '../vocab';
 import * as jsdoc from 'jsdoc3-parser';
+import { Module } from 'module';
 
 /**
  * Project generator
@@ -27,8 +28,10 @@ export class ProjectGenerator {
             const allModuleNames = Object.keys(allDependencies);
             const allModules = allModuleNames.map(name => {
                 try {
-                    require(name);
-                    return require.cache[require.resolve(name)];
+                    const moduleInstance = new Module(name, null);
+                    moduleInstance.filename = require.resolve(name);
+                    moduleInstance.paths = (Module as any)._nodeModulePaths(path.dirname(moduleInstance.filename));
+                    return moduleInstance;
                 } catch (error) {
                     return null;
                 }
@@ -72,7 +75,7 @@ export class ProjectGenerator {
                         this._packages.add(childModule.prototype._module);
                     }
                 } catch (error) {
-                    console.error(error);
+                    console.error("Error loading module: ", error);
                 }
             });
         }
