@@ -5,56 +5,86 @@
 
 import { Literal, NamedNode, Store } from 'n3';
 
+/**
+ *
+ * @param node
+ * @param store
+ */
 function getComment(node: NamedNode, store: Store): string {
-    const rdfComments = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null)
-        .filter((object: Literal) => object.language === "en");
-    const skosDefinitions = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null)
-        .filter((object: Literal) => object.language === "en");
-    const dctermsDescription = store.getObjects(node, 'http://purl.org/dc/terms/description', null)
-        .filter((object: Literal) => object.language === "en");
-    let comment = rdfComments.length > 0 ? rdfComments[0].value : skosDefinitions.length > 0 ? skosDefinitions[0].value : dctermsDescription.length > 0 ? dctermsDescription[0].value : undefined;
+    const rdfComments = store
+        .getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#comment', null)
+        .filter((object: Literal) => object.language === 'en');
+    const skosDefinitions = store
+        .getObjects(node, 'http://www.w3.org/2004/02/skos/core#definition', null)
+        .filter((object: Literal) => object.language === 'en');
+    const dctermsDescription = store
+        .getObjects(node, 'http://purl.org/dc/terms/description', null)
+        .filter((object: Literal) => object.language === 'en');
+    let comment =
+        rdfComments.length > 0
+            ? rdfComments[0].value
+            : skosDefinitions.length > 0
+              ? skosDefinitions[0].value
+              : dctermsDescription.length > 0
+                ? dctermsDescription[0].value
+                : undefined;
     comment = sanitize(comment);
     return comment;
 }
 
+/**
+ *
+ * @param node
+ * @param store
+ */
 function getLabel(node: NamedNode, store: Store): string {
-    const rdfLabels = store.getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#label', null)
-        .filter((object: Literal) => object.language === "en");
-    const skosLabels = store.getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null)
-        .filter((object: Literal) => object.language === "en");
+    const rdfLabels = store
+        .getObjects(node, 'http://www.w3.org/2000/01/rdf-schema#label', null)
+        .filter((object: Literal) => object.language === 'en');
+    const skosLabels = store
+        .getObjects(node, 'http://www.w3.org/2004/02/skos/core#prefLabel', null)
+        .filter((object: Literal) => object.language === 'en');
     let label = rdfLabels.length > 0 ? rdfLabels[0].value : skosLabels.length > 0 ? skosLabels[0].value : undefined;
     label = sanitize(label);
     return label;
 }
 
+/**
+ *
+ * @param str
+ */
 function sanitize(str: string): string {
     if (!str) {
         return str;
     }
-    str = str.replace(/\u00A0/, " ");
+    str = str.replace(/\u00A0/, ' ');
     return str;
 }
 
-const reservedWords = [
-    'implements'
-];
+const reservedWords = ['implements'];
 
 /**
  * @param entity
+ * @param node
+ * @param store
  * @param namespace
  */
-export function getTs(node: NamedNode, store: Store, namespace: string, entityTypes: { [alias: string]: string }): string {
+export function getTs(
+    node: NamedNode,
+    store: Store,
+    namespace: string,
+    entityTypes: { [alias: string]: string },
+): string {
     const types = store.getObjects(node, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', null);
-    const entityType = types.length > 0 ? Object.entries(entityTypes).find(
-        ([_alias, type]) => type === types[0].id,
-    ) : undefined;
+    const entityType =
+        types.length > 0 ? Object.entries(entityTypes).find(([_alias, type]) => type === types[0].id) : undefined;
     const typeAlias = entityType ? entityType[0] : 'OtherIndividual';
     const comment = getComment(node, store);
     let formattedComment = typeof comment === 'string' ? comment.replace(/\n/g, '\n * ') : comment;
 
-    let identifier = node.id.substring(namespace.length).replace(/\-/g, "_");
+    let identifier = node.id.substring(namespace.length).replace(/\-/g, '_');
     if (reservedWords.includes(identifier)) {
-        identifier = "_" + identifier;
+        identifier = '_' + identifier;
     }
     if (reservedKeywords.includes(identifier)) {
         formattedComment =

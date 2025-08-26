@@ -29,7 +29,6 @@ import { DataFactory } from 'n3';
                     case 'Point':
                         geometry = new PointGeometry();
                         geometry.spatialAccuracy = instance.spatialAccuracy;
-                        geometry;
                         return geometry;
                     default:
                         return instance;

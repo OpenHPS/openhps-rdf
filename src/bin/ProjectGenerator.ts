@@ -20,22 +20,24 @@ export class ProjectGenerator {
             const packageJson = JSON.parse(fs.readFileSync(packageFile, { encoding: 'utf-8' }));
             const dependencies = packageJson.dependencies;
             const devDependencies = packageJson.devDependencies;
-            
+
             // Combine dependencies and devDependencies
-            const allDependencies = {...dependencies, ...devDependencies};
-            
+            const allDependencies = { ...dependencies, ...devDependencies };
+
             // Get the names of all modules
             const allModuleNames = Object.keys(allDependencies);
-            const allModules = allModuleNames.map(name => {
-                try {
-                    const moduleInstance = new Module(name, null);
-                    moduleInstance.filename = require.resolve(name);
-                    moduleInstance.paths = (Module as any)._nodeModulePaths(path.dirname(moduleInstance.filename));
-                    return moduleInstance;
-                } catch (error) {
-                    return null;
-                }
-            }).filter(Boolean) as NodeModule[];
+            const allModules = allModuleNames
+                .map((name) => {
+                    try {
+                        const moduleInstance = new Module(name, null);
+                        moduleInstance.filename = require.resolve(name);
+                        moduleInstance.paths = (Module as any)._nodeModulePaths(path.dirname(moduleInstance.filename));
+                        return moduleInstance;
+                    } catch (error) {
+                        return null;
+                    }
+                })
+                .filter(Boolean) as NodeModule[];
             return allModules;
         }
     }
@@ -57,7 +59,7 @@ export class ProjectGenerator {
             // Use cache instead
             [require.main]
                 .concat(Object.values(require.cache))
-                .concat(this.findAllModules("./"))
+                .concat(this.findAllModules('./'))
                 .forEach((m) => this.loadClasses(classes, m));
             return;
         }
@@ -75,7 +77,7 @@ export class ProjectGenerator {
                         this._packages.add(childModule.prototype._module);
                     }
                 } catch (error) {
-                    console.error("Error loading module: ", error);
+                    console.error('Error loading module: ', error);
                 }
             });
         }
@@ -108,13 +110,11 @@ export class ProjectGenerator {
                     console.log(
                         chalk.italic(
                             `Generating ${nodeType.name}`,
-                            nodeType.prototype._module
-                                ? `of module ${nodeType.prototype._module}`
-                                : '',
+                            nodeType.prototype._module ? `of module ${nodeType.prototype._module}` : '',
                         ),
                     );
                 }
-                
+
                 return this.processClass(nodeType, options).then((value) => {
                     if (value === undefined) {
                         return undefined;
@@ -133,8 +133,7 @@ export class ProjectGenerator {
     static processClass(nodeType: any, options: ProjectBuildOptions = {}): Promise<[string, string]> {
         return new Promise((resolve, reject) => {
             const url = `https://openhps.org/terms/procedure/${nodeType.name}`;
-            const builder = RDFBuilder.namedNode(url as IriString)
-                .add(rdfs.label, nodeType.name, "en");
+            const builder = RDFBuilder.namedNode(url as IriString).add(rdfs.label, nodeType.name, 'en');
             jsdoc(nodeType.prototype._filePath, (err, data) => {
                 if (err) {
                     resolve(undefined);
@@ -146,7 +145,7 @@ export class ProjectGenerator {
                 const classAST = data.find((ast) => ast.kind === 'class');
                 if (classAST) {
                     const description = classAST.classdesc;
-                    builder.add(rdfs.comment, description, "en");
+                    builder.add(rdfs.comment, description, 'en');
                     const tags = classAST.tags;
                     if (tags) {
                         const rdfTag = tags.find((tag) => tag.title === 'rdf');
@@ -166,9 +165,11 @@ export class ProjectGenerator {
                     }
                 }
 
-                RDFSerializer.stringify(builder.build()).then((turtle) => {
-                    resolve([url, turtle]);
-                }).catch(reject);
+                RDFSerializer.stringify(builder.build())
+                    .then((turtle) => {
+                        resolve([url, turtle]);
+                    })
+                    .catch(reject);
             });
         });
     }

@@ -34,7 +34,6 @@ export class Observation extends SerializableThing {
     })
     observedProperties: ObservableProperty[] = [];
 
-    // eslint-disable-next-line
     @SerializableArrayMember(Object, {
         rdf: {
             predicate: sosa.hasResult,

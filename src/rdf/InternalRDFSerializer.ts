@@ -219,7 +219,7 @@ export class InternalRDFSerializer extends Serializer {
                 thing = mergeDeep(thing, options.serializer(sourceObject, serializerOptions.rdf.baseUri));
             }
         }
-        thing.termType = thing.termType ?? thing.value.startsWith('http') ? 'NamedNode' : 'BlankNode';
+        thing.termType = (thing.termType ?? thing.value.startsWith('http')) ? 'NamedNode' : 'BlankNode';
 
         // Current thing
         if (serializerOptions.current) {
@@ -412,7 +412,7 @@ export class InternalRDFSerializer extends Serializer {
             }
         }
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return DataFactory.literal(sourceObject, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
+        return DataFactory.literal(sourceObject, rdfOptions ? (rdfOptions.language ?? dataTypeNode) : dataTypeNode);
     }
 
     protected serializeDate(
@@ -426,7 +426,7 @@ export class InternalRDFSerializer extends Serializer {
         const xsdDatatype: XmlSchemaTypeIri = xsd.dateTime;
         const dateString = new Date(sourceObject).toISOString();
         const dataTypeNode = this.iriToNode(xsdDatatype);
-        return DataFactory.literal(dateString, rdfOptions ? rdfOptions.language ?? dataTypeNode : dataTypeNode);
+        return DataFactory.literal(dateString, rdfOptions ? (rdfOptions.language ?? dataTypeNode) : dataTypeNode);
     }
 
     protected iriToNode(iri: IriString): NamedNode {

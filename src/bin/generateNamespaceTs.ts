@@ -7,53 +7,22 @@ import { Mirrors } from './types';
 import { getTs } from './getTs';
 import axios from 'axios';
 import { DataFactory, NamedNode, Parser, Quad, Store } from 'n3';
-import { RdfXmlParser } from "rdfxml-streaming-parser";
+import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 
+/**
+ *
+ * @param filePath
+ */
 function fetchLocalData(filePath: string): Quad[] {
-    const localPath = path.normalize(filePath.replace("file://", ""));
-    const file =  fs.readFileSync(localPath, { encoding: "utf-8" });
+    const localPath = path.normalize(filePath.replace('file://', ''));
+    const file = fs.readFileSync(localPath, { encoding: 'utf-8' });
     let quads = [];
-    if (filePath.toLowerCase().endsWith("ttl")) {
+    if (filePath.toLowerCase().endsWith('ttl')) {
         const parser = new Parser({
-            format: "text/turtle"
-        });
-        quads = parser.parse(file);
-    }
-    return quads;
-}
-
-async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> {
-    const response = await axios.get(url, {
-        headers: {
-            'Accept': 'text/turtle;q=0.9, application/rdf+xml;q=0.8',
-        },
-        timeout: 60000,
-        httpsAgent: new https.Agent({  
-            rejectUnauthorized: false
-        })
-    });
-    const file = response.data;
-    let quads: Quad[] = [];
-    const contentType = response.headers['content-type'] ?? '';
-    if (contentType.includes("application/rdf+xml") || file.startsWith("<?xml version=")) {
-        const parser = new RdfXmlParser({
-            baseIRI: namespace
-        });
-        parser.on('data', (data: Quad) => {
-            quads.push(data);
-        });
-        parser.on('error', (err) => {
-            console.error("An error occured during RDF parsing", err);
-        });
-        parser.write(file);
-        parser.end();
-    } else {
-        const mimetype = contentType.substring(0, contentType.indexOf(";"));
-        const parser = new Parser({
-            format: mimetype
+            format: 'text/turtle',
         });
         quads = parser.parse(file);
     }
@@ -61,6 +30,47 @@ async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> 
 }
 
 /**
+ *
+ * @param url
+ * @param namespace
+ */
+async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> {
+    const response = await axios.get(url, {
+        headers: {
+            Accept: 'text/turtle;q=0.9, application/rdf+xml;q=0.8',
+        },
+        timeout: 60000,
+        httpsAgent: new https.Agent({
+            rejectUnauthorized: false,
+        }),
+    });
+    const file = response.data;
+    let quads: Quad[] = [];
+    const contentType = response.headers['content-type'] ?? '';
+    if (contentType.includes('application/rdf+xml') || file.startsWith('<?xml version=')) {
+        const parser = new RdfXmlParser({
+            baseIRI: namespace,
+        });
+        parser.on('data', (data: Quad) => {
+            quads.push(data);
+        });
+        parser.on('error', (err) => {
+            console.error('An error occured during RDF parsing', err);
+        });
+        parser.write(file);
+        parser.end();
+    } else {
+        const mimetype = contentType.substring(0, contentType.indexOf(';'));
+        const parser = new Parser({
+            format: mimetype,
+        });
+        quads = parser.parse(file);
+    }
+    return quads;
+}
+
+/**
+ * @param prefix
  * @param namespace
  * @param options
  */
@@ -88,7 +98,7 @@ export async function generateNamespaceTs(
     };
 
     const schemaLocation = options.mirrors[namespace] || namespace;
-    const fetchFn = schemaLocation.startsWith("file://") ? fetchLocalData : fetchRemoteData;
+    const fetchFn = schemaLocation.startsWith('file://') ? fetchLocalData : fetchRemoteData;
     const quads: Quad[] = await fetchFn(schemaLocation, namespace);
     const store = new Store(quads);
 
@@ -100,17 +110,23 @@ export async function generateNamespaceTs(
         });
         return entitiesSoFar.concat(newEntitiesOfThisType);
     }, []);
-    const individuals: NamedNode[] = store.getSubjects(DataFactory.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), null, null) as NamedNode[];
-    entities = entities.concat(individuals.filter((entityOfThisType) => {
-        // Only include this entity if it is not present in the list yet:
-        return entities.findIndex((entity) => entity.id === entityOfThisType.id) === -1;
-    }));
+    const individuals: NamedNode[] = store.getSubjects(
+        DataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+        null,
+        null,
+    ) as NamedNode[];
+    entities = entities.concat(
+        individuals.filter((entityOfThisType) => {
+            // Only include this entity if it is not present in the list yet:
+            return entities.findIndex((entity) => entity.id === entityOfThisType.id) === -1;
+        }),
+    );
     const typeAliases = Object.keys(entityTypes)
         .map((alias) => `type ${alias} = IriString; // eslint-disable-line`)
         .join('\n');
     const entityTs = entities
         .filter((entity: NamedNode) => {
-            let entityName = entity.id.substring(namespace.length);
+            const entityName = entity.id.substring(namespace.length);
             return (
                 // Only include names that are valid Javascript identifiers (i.e. alphanumeric characters,
                 // underscores and dollar signs allowed, but shouldn't start with a digit)...
@@ -121,7 +137,11 @@ export async function generateNamespaceTs(
         })
         .map((entity) => getTs(entity, store, namespace, entityTypes))
         .join('');
-    const typescript = 'type IriString = `${\'http\' | \'https\'}://${string}`;\n' + typeAliases + '\n' + entityTs + 
-    `\nexport const _BASE: IriString = '${namespace}';\nexport const _PREFIX: string = '${prefix}';`;
+    const typescript =
+        "type IriString = `${'http' | 'https'}://${string}`;\n" +
+        typeAliases +
+        '\n' +
+        entityTs +
+        `\nexport const _BASE: IriString = '${namespace}';\nexport const _PREFIX: string = '${prefix}';`;
     return typescript;
 }

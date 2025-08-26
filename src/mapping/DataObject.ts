@@ -158,7 +158,7 @@ SerializableMember({
                                     case 'Literal':
                                         return DataFactory.literal(
                                             item.value,
-                                            item.language ?? item.datatype
+                                            (item.language ?? item.datatype)
                                                 ? DataFactory.namedNode(item.datatype.value)
                                                 : undefined,
                                         );
