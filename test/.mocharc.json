@@ -11,5 +11,6 @@
     "slow": 1500,
     "timeout": 20000,
     "recursive": true,
-    "reporterEnabled": "spec, mocha-junit-reporter"
+    "reporterEnabled": "spec, mocha-junit-reporter",
+    "loader": "ts-node/esm"
 }
