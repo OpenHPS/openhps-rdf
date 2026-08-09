@@ -5,12 +5,12 @@ import { poso, ogc, rdf } from '../../src/vocab';
 import { expect } from 'chai';
 
 describe('Absolute3DPosition', () => {
-    const object = new Absolute3DPosition(50.10, 20.5, 4);
+    const object = new Absolute3DPosition(50.1, 20.5, 4);
     object.unit = LengthUnit.METER;
     object.orientation = Orientation.fromAxisAngle({
         x: 0,
         y: 1,
-        z: 2
+        z: 2,
     });
 
     describe('serialization', () => {
@@ -18,16 +18,18 @@ describe('Absolute3DPosition', () => {
 
         before(async () => {
             serialized = RDFSerializer.serialize(object);
-            serialized.id = "http://test"
-            serialized.termType = "NamedNode"
-            console.log(serialized)
-            console.log(await RDFSerializer.stringify(serialized, {
-                prettyPrint: true,
-                baseUri: "http://example.org/"
-            }));
+            serialized.id = 'http://test';
+            serialized.termType = 'NamedNode';
+            console.log(serialized);
+            console.log(
+                await RDFSerializer.stringify(serialized, {
+                    prettyPrint: true,
+                    baseUri: 'http://example.org/',
+                }),
+            );
             console.log(RDFSerializer.deserialize(serialized));
         });
-        
+
         it('should have an absolute position rdf type', () => {
             expect(serialized.predicates[rdf.type]).to.not.be.undefined;
             expect(serialized.predicates[rdf.type][0].value).to.equal(poso.AbsolutePosition);
@@ -39,9 +41,6 @@ describe('Absolute3DPosition', () => {
             expect(serialized.predicates[poso.zAxisValue]).to.not.be.undefined;
         });
 
-        it('should not serialize the orientation', () => {
-
-        });
+        it('should not serialize the orientation', () => {});
     });
-
 });

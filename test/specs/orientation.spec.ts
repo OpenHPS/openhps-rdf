@@ -4,12 +4,11 @@ import 'mocha';
 import { dcterms, poso, RDFSerializer } from '../../src';
 
 describe('Orientation', () => {
-
     const object = Orientation.fromEuler({
         yaw: 180,
         pitch: 45,
         roll: 0,
-        unit: AngleUnit.DEGREE
+        unit: AngleUnit.DEGREE,
     });
 
     describe('serialization', () => {
@@ -25,7 +24,6 @@ describe('Orientation', () => {
             expect(Number(serialized.predicates[poso.pitch][0].value)).to.equal(euler.pitch);
             expect(Number(serialized.predicates[poso.roll][0].value)).to.equal(euler.roll);
         });
-
     });
 
     describe('deserialization', () => {
@@ -39,5 +37,4 @@ describe('Orientation', () => {
             // expect(Math.round(euler.pitch)).to.equal(Math.round(object.toEuler().pitch));
         });
     });
-
 });

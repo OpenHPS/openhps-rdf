@@ -41,8 +41,7 @@ export type RDFSerializerOptions = {
      * Custom (partial) serializer for this member.
      */
     serializer?:
-        | false
-        | ((value: any, object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object>);
+        false | ((value: any, object?: any, options?: MemberSerializerOptions) => Partial<Thing | Quad_Object>);
     /**
      * Custom (partial) deserializer for this member.
      */

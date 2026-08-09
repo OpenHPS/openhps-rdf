@@ -151,7 +151,7 @@ ModelBuilder.create()
 ```
 
 ## Contributing
-Use of OpenHPS, contributions and feedback is highly appreciated. Please read our [contributing guidelines](CONTRIBUTING.md) for more information.
+Use of OpenHPS, contributions and feedback is highly appreciated. Please read our [contributing guidelines](https://github.com/OpenHPS/.github/blob/HEAD/CONTRIBUTING.md) for more information.
 
 ## License
 Copyright (C) 2019-2025 [Maxim Van de Wynckel](https://maximvdw.be/about) & Vrije Universiteit Brussel

@@ -5,53 +5,54 @@ import { DataObject } from '@openhps/core';
 import { expect } from 'chai';
 
 describe('@openhps/rf', () => {
-    RDFSerializer.initialize("rf");
-    const relativeRSSI = new RelativeRSSI("test", -56);
+    RDFSerializer.initialize('rf');
+    const relativeRSSI = new RelativeRSSI('test', -56);
     const object = new DataObject();
     object.addRelativePosition(relativeRSSI);
-    const beacon = new BLEiBeacon(MACAddress.fromString("11:22:33:44:55"));
+    const beacon = new BLEiBeacon(MACAddress.fromString('11:22:33:44:55'));
     beacon.calibratedRSSI = -56;
-    beacon.proximityUUID = BLEUUID.fromString("AAEE");
+    beacon.proximityUUID = BLEUUID.fromString('AAEE');
     beacon.major = 1111;
     beacon.minor = 1234;
-    
+
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(object, {
-            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
         });
 
         it('should serialize models', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
-                prettyPrint: true
+                prettyPrint: true,
             });
-            const deserialize = RDFSerializer.deserializeFromString("https://maximvdw.solidweb.org/public/openhps.ttl#", turtle);
-            
+            const deserialize = RDFSerializer.deserializeFromString(
+                'https://maximvdw.solidweb.org/public/openhps.ttl#',
+                turtle,
+            );
         });
 
-        
         it('should serialize a MACAddress', async () => {
-            const object = new BLEiBeacon(MACAddress.fromString("00:11:22:33:44"));
+            const object = new BLEiBeacon(MACAddress.fromString('00:11:22:33:44'));
             object.calibratedRSSI = -56;
             const turtle = await RDFSerializer.stringify(object, {
                 format: 'text/turtle',
                 prettyPrint: true,
-                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
             });
             console.log(turtle);
         });
 
         it('should serialize a ble object', async () => {
-            const object = new BLEObject(MACAddress.fromString("00:11:22:33:44"));
+            const object = new BLEObject(MACAddress.fromString('00:11:22:33:44'));
             const turtle = await RDFSerializer.stringify(object, {
                 format: 'text/turtle',
                 prettyPrint: true,
-                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
             });
         });
 
         it('should serialize a UUID', () => {
-            const uuid = BLEUUID.fromString("AAEE");
+            const uuid = BLEUUID.fromString('AAEE');
             const serialized = RDFSerializer.serialize(uuid);
             console.log(serialized, uuid);
             const deserialized = RDFSerializer.deserialize(serialized);
@@ -62,10 +63,10 @@ describe('@openhps/rf', () => {
     describe('deserialization', () => {
         let serialized;
         let deserialized;
-        
+
         before(() => {
             serialized = RDFSerializer.serialize(beacon, {
-                baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
             });
             deserialized = RDFSerializer.deserialize(serialized);
         });
@@ -76,5 +77,4 @@ describe('@openhps/rf', () => {
             expect(deserialized.minor).to.not.be.undefined;
         });
     });
-
 });

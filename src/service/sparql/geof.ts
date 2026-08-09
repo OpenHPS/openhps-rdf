@@ -1,6 +1,6 @@
 import { DataFactory, Quad_Object, Term } from 'n3';
 import { ogc } from '../../vocab';
-const wkt = require('wkt'); // eslint-disable-line
+const wkt = require('wkt');
 
 /**
  * GeoSPARQL 1.1 specification is still in draft
