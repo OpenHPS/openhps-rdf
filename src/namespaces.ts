@@ -47,9 +47,12 @@ const namespaces: Namespaces = {
 
 const mirrors: Mirrors = {
     'http://qudt.org/schema/qudt/': 'https://qudt.org/2.1/schema/qudt',
+    // Pinned to the 1.1.0 release tag. The branch URLs this used to point at (master
+    // and the geosparql11 github.io path) both 404 now, and www.opengis.net/def now
+    // serves an HTML application rather than the vocabulary. 1.1 is required: 1.0 has
+    // neither hasSpatialAccuracy nor geoJSONLiteral, both of which this package uses.
     'http://www.opengis.net/ont/geosparql#':
-        'https://raw.githubusercontent.com/opengeospatial/ogc-geosparql/master/vocabularies/geo.ttl',
-    //'http://www.opengis.net/ont/geosparql#': 'https://opengeospatial.github.io/ogc-geosparql/geosparql11/geo.ttl',
+        'https://raw.githubusercontent.com/opengeospatial/ogc-geosparql/1.1.0-ghpages/geosparql11/geo.ttl',
     'http://schema.org/': 'https://schema.org/version/latest/schemaorg-all-http.ttl',
     'http://purl.org/dc/terms/':
         'https://www.dublincore.org/specifications/dublin-core/dcmi-terms/dublin_core_terms.nt',
@@ -57,7 +60,8 @@ const mirrors: Mirrors = {
     'http://xmlns.com/foaf/0.1/': 'http://xmlns.com/foaf/0.1/index.rdf',
     'http://w3id.org/devops-infra/hardware#': 'https://oeg-upm.github.io/devops-infra/ontology/hardware/ontology.ttl',
     'http://www.opengis.net/indoorgml/1.0/core': 'https://schemas.opengis.net/indoorgml/1.0/indoorgmlcore.xsd',
-    'https://w3id.org/seas/': 'https://w3id.org/seas/BuildingOntology-1.0.rdf',
+    // The versioned filename 404s; the unversioned w3id URL content-negotiates.
+    'https://w3id.org/seas/': 'https://w3id.org/seas/BuildingOntology',
 };
 
 export { namespaces, mirrors };
