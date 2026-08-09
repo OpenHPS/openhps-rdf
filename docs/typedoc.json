@@ -6,4 +6,5 @@
     "hideGenerator": true,
     "categorizeByGroup": true,
     "tsconfig": "../tsconfig/tsconfig.app.json",
+    "entryPointStrategy": "expand"
 }

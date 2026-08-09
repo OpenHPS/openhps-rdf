@@ -9,3 +9,7 @@ test-results.xml
 componentsjs-error-state.json
 tmp/
 xunit.xml
+
+# OpenHPS baseline
+.cache/
+.DS_Store
