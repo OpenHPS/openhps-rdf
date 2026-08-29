@@ -1,7 +1,6 @@
-import { Absolute2DPosition } from "@openhps/core";
-import { rdfs, RDFSerializer } from "../../src";
+import { Absolute2DPosition } from '@openhps/core';
+import { rdfs, RDFSerializer, Property } from '../../src';
 import { expect } from 'chai';
-import { Property } from "../../src/";
 
 describe('Property', () => {
     describe('construction', () => {

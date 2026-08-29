@@ -5,7 +5,7 @@ import { geo, ogc, rdf, poso } from '../../src/vocab';
 import { expect } from 'chai';
 
 describe('GeographicalPosition', () => {
-    const object = new GeographicalPosition(50.10, 20.5, 10);
+    const object = new GeographicalPosition(50.1, 20.5, 10);
 
     describe('serialization', () => {
         let serialized = undefined;
@@ -27,9 +27,10 @@ describe('GeographicalPosition', () => {
 
         it('should have a 3d wkt serialization', () => {
             expect(serialized.predicates[ogc.asWKT]).to.not.be.undefined;
-            expect((serialized.predicates[ogc.asWKT][0] as Literal).id).to.equal("\"POINT Z(20.5 50.1 10)\"^^http://www.opengis.net/ont/geosparql#wktLiteral");
+            expect((serialized.predicates[ogc.asWKT][0] as Literal).id).to.equal(
+                '"POINT Z(20.5 50.1 10)"^^http://www.opengis.net/ont/geosparql#wktLiteral',
+            );
         });
-
     });
 
     describe('deserialization', () => {
@@ -49,12 +50,12 @@ describe('GeographicalPosition', () => {
         describe('stringify', () => {
             let serialized = undefined;
             let deserialized = undefined;
-    
+
             before(async () => {
                 serialized = await RDFSerializer.stringify(RDFSerializer.serialize(object));
                 deserialized = RDFSerializer.deserializeFromString(undefined, serialized);
             });
-    
+
             it('should deserialize to a geographical position', () => {
                 expect(deserialized.latitude).to.not.be.undefined;
                 expect(deserialized.latitude).to.not.be.NaN;

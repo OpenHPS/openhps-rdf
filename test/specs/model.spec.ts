@@ -1,10 +1,19 @@
 import 'mocha';
-import { Absolute2DPosition, CallbackSinkNode, CallbackSourceNode, DataFrame, LengthUnit, Model, ModelBuilder, MultilaterationNode } from '@openhps/core';
+import {
+    Absolute2DPosition,
+    CallbackSinkNode,
+    CallbackSourceNode,
+    DataFrame,
+    LengthUnit,
+    Model,
+    ModelBuilder,
+    MultilaterationNode,
+} from '@openhps/core';
 import { RDFSerializer, RDFModelSerializer, Thing } from '../../src';
 import { RelativeRSSIProcessing } from '@openhps/rf';
 
 describe('Model', () => {
-    const object = new Absolute2DPosition(50.10, 20.5);
+    const object = new Absolute2DPosition(50.1, 20.5);
     object.unit = LengthUnit.METER;
 
     describe('serialization', () => {
@@ -13,30 +22,32 @@ describe('Model', () => {
 
         before((done) => {
             ModelBuilder.create()
-                .from(new CallbackSourceNode(() => {
-                    return new DataFrame();
-                }))
+                .from(
+                    new CallbackSourceNode(() => {
+                        return new DataFrame();
+                    }),
+                )
                 .via(new RelativeRSSIProcessing())
                 .via(new MultilaterationNode())
                 .to(new CallbackSinkNode())
-                .build().then(m => {
+                .build()
+                .then((m) => {
                     model = m;
                     serialized = RDFModelSerializer.serialize(m, {
-                        baseUri: "http://openhps.org/terms#"
+                        baseUri: 'http://openhps.org/terms#',
                     });
-                    console.log(serialized)
+                    console.log(serialized);
                     done();
-                }).catch(done);
+                })
+                .catch(done);
         });
-        
+
         it('should have nodes', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
                 prettyPrint: true,
-                baseUri: "http://openhps.org/terms#"
+                baseUri: 'http://openhps.org/terms#',
             });
-            console.log(turtle)
+            console.log(turtle);
         });
-
     });
-
 });

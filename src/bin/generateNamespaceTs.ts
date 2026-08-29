@@ -46,7 +46,9 @@ async function fetchRemoteData(url: string, namespace: string): Promise<Quad[]> 
     });
     const file = response.data;
     let quads: Quad[] = [];
-    const contentType = response.headers['content-type'] ?? '';
+    // axios types headers as AxiosHeaderValue (string | number | boolean | string[]),
+    // so narrow to a string before doing string work on it.
+    const contentType = String(response.headers['content-type'] ?? '');
     if (contentType.includes('application/rdf+xml') || file.startsWith('<?xml version=')) {
         const parser = new RdfXmlParser({
             baseIRI: namespace,
@@ -130,7 +132,7 @@ export async function generateNamespaceTs(
             return (
                 // Only include names that are valid Javascript identifiers (i.e. alphanumeric characters,
                 // underscores and dollar signs allowed, but shouldn't start with a digit)...
-                /^[A-Za-z_\-$](\w|\$|\-)*$/.test(entityName) &&
+                /^[A-Za-z_$-](\w|\$|-)*$/.test(entityName) &&
                 // ...and are actually in this namespace:
                 entity.id.substring(0, namespace.length) === namespace
             );

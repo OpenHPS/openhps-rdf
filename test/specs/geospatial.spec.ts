@@ -7,7 +7,7 @@ import * as path from 'path';
 import { expect } from 'chai';
 
 describe('@openhps/geospatial', () => {
-    RDFSerializer.initialize("geospatial");
+    RDFSerializer.initialize('geospatial');
     const building = new Building('PL9').setUID('pl9').setBounds({
         topLeft: new GeographicalPosition(50.8203726927966, 4.392241309019189, 83),
         width: 46.275,
@@ -40,29 +40,26 @@ describe('@openhps/geospatial', () => {
 
     describe('serialization', () => {
         const serialized = RDFSerializer.serialize(building, {
-            baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+            baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
         });
 
         it('should serialize models', async () => {
             const turtle = await RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
-                prettyPrint: true
+                prettyPrint: true,
             });
-            const geojsonStr = fs.readFileSync(
-                path.join(__dirname, "../data/spaces.geo.json"), 
-                { encoding: 'utf-8' }
-            );
+            const geojsonStr = fs.readFileSync(path.join(__dirname, '../data/spaces.geo.json'), { encoding: 'utf-8' });
             const geojson = JSON.parse(geojsonStr);
-            const spaces = geojson.features.map(feature => SymbolicSpace.fromGeoJSON(feature));
-            Object.values(spaces).forEach(async space => {
+            const spaces = geojson.features.map((feature) => SymbolicSpace.fromGeoJSON(feature));
+            Object.values(spaces).forEach(async (space) => {
                 const serialized = RDFSerializer.serialize(space, {
-                    baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                    baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
                 });
                 const turtle = await RDFSerializer.stringify(serialized, {
                     format: 'text/turtle',
-                    prettyPrint: true
+                    prettyPrint: true,
                 });
-            })
+            });
         });
     });
 
@@ -70,57 +67,54 @@ describe('@openhps/geospatial', () => {
         describe('building', () => {
             let serialized;
             let deserialized;
-    
+
             before(() => {
                 serialized = RDFSerializer.serialize(building, {
-                    baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                    baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
                 });
                 deserialized = RDFSerializer.deserialize(serialized);
             });
-    
-            it('should correct deserialize the correct space', () =>{
+
+            it('should correct deserialize the correct space', () => {
                 expect(deserialized).to.be.instanceOf(Building);
             });
-    
-            it('should contain a geometry', () =>{
+
+            it('should contain a geometry', () => {
                 expect((deserialized as Building).getBounds().length).to.be.gt(4);
             });
-    
+
             it('should still support geojson output', () => {
-                deserialized.toGeoJSON(true).geometry.coordinates
+                deserialized.toGeoJSON(true).geometry.coordinates;
             });
         });
 
         describe('office', () => {
             let serialized;
             let deserialized;
-    
+
             before(() => {
                 serialized = RDFSerializer.serialize(office1, {
-                    baseUri: "https://maximvdw.solidweb.org/public/openhps.ttl#"
+                    baseUri: 'https://maximvdw.solidweb.org/public/openhps.ttl#',
                 });
                 deserialized = RDFSerializer.deserialize(serialized);
             });
-    
-            it('should correct deserialize the correct space', () =>{
+
+            it('should correct deserialize the correct space', () => {
                 expect(deserialized).to.be.instanceOf(Room);
             });
-    
-            it('should contain a geometry', () =>{
+
+            it('should contain a geometry', () => {
                 expect((deserialized as Room).getBounds().length).to.be.gt(4);
             });
 
-
-            it('should use sfWithin on the parent', () =>{
+            it('should use sfWithin on the parent', () => {
                 expect(serialized.predicates[ogc.sfWithin]).to.not.be.undefined;
                 expect(deserialized.parentUID).to.not.be.undefined;
             });
-    
+
             it('should still support geojson output', () => {
-               //console.log(deserialized.getBounds())
+                //console.log(deserialized.getBounds())
             });
         });
     });
-
-
 });

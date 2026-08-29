@@ -1,218 +1,193 @@
 {
-  "name": "@openhps/rdf",
-  "version": "1.1.7",
-  "description": "Open Hybrid Positioning System",
-  "author": "Maxim Van de Wynckel",
-  "license": "Apache-2.0",
-  "sideEffects": [
-    "./**/mapping/**/*"
-  ],
-  "bin": {
-    "openhps-rdf": "./dist/cjs/bin/cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OpenHPS/openhps-rdf.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./dist/cjs/index.js",
-  "types": "./dist/types/index.d.ts",
-  "module": "./dist/esm5/index.js",
-  "es2015": "./dist/esm/index.js",
-  "exports": {
-    ".": {
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
-      "types": "./dist/types/index.d.ts"
+    "name": "@openhps/rdf",
+    "version": "1.1.7",
+    "description": "Open Hybrid Positioning System",
+    "author": "Maxim Van de Wynckel",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/OpenHPS/openhps-rdf.git"
     },
-    "./vocab": {
-      "require": "./dist/cjs/index.vocab.js",
-      "import": "./dist/esm/index.vocab.js",
-      "types": "./dist/types/index.vocab.d.ts"
+    "publishConfig": {
+        "access": "public"
     },
-    "./sparql": {
-      "require": "./dist/cjs/index.sparql.js",
-      "import": "./dist/esm/index.sparql.js",
-      "types": "./dist/types/index.sparql.d.ts"
+    "type": "commonjs",
+    "sideEffects": [
+        "./**/mapping/**/*"
+    ],
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/types/index.d.ts",
+    "module": "./dist/esm/index.js",
+    "es2015": "./dist/esm/index.js",
+    "unpkg": "./dist/web/openhps-rdf.min.js",
+    "jsdelivr": "./dist/web/openhps-rdf.min.js",
+    "bin": {
+        "openhps-rdf": "./dist/cjs/bin/cli.js"
     },
-    "./serialization": {
-      "require": "./dist/cjs/index.serialization.js",
-      "import": "./dist/esm/index.serialization.js",
-      "types": "./dist/types/index.serialization.d.ts"
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js"
+        },
+        "./vocab": {
+            "types": "./dist/types/index.vocab.d.ts",
+            "import": "./dist/esm/index.vocab.js",
+            "require": "./dist/cjs/index.vocab.js"
+        },
+        "./sparql": {
+            "types": "./dist/types/index.sparql.d.ts",
+            "import": "./dist/esm/index.sparql.js",
+            "require": "./dist/cjs/index.sparql.js"
+        },
+        "./serialization": {
+            "types": "./dist/types/index.serialization.d.ts",
+            "import": "./dist/esm/index.serialization.js",
+            "require": "./dist/cjs/index.serialization.js"
+        },
+        "./minimal": {
+            "types": "./dist/types/index.minimal.d.ts",
+            "import": "./dist/esm/index.minimal.js",
+            "require": "./dist/cjs/index.minimal.js"
+        },
+        "./generator": {
+            "types": "./dist/types/index.generator.d.ts",
+            "import": "./dist/esm/index.generator.js",
+            "require": "./dist/cjs/index.generator.js"
+        },
+        "./engine": {
+            "types": "./dist/types/index.engine.d.ts",
+            "import": "./dist/esm/index.engine.js",
+            "require": "./dist/cjs/index.engine.js"
+        },
+        "./models": {
+            "types": "./dist/types/index.models.d.ts",
+            "import": "./dist/esm/index.models.js",
+            "require": "./dist/cjs/index.models.js"
+        },
+        "./package.json": "./package.json"
     },
-    "./minimal": {
-      "require": "./dist/cjs/index.minimal.js",
-      "import": "./dist/esm/index.minimal.js",
-      "types": "./dist/types/index.minimal.d.ts"
+    "files": [
+        "dist/**/*",
+        "src/**/*",
+        "*.js",
+        "*.d.ts"
+    ],
+    "scripts": {
+        "cli": "ts-node ./src/bin/cli.ts",
+        "benchmark": "ts-node test/bench/serialization.bench.ts",
+        "examples": "shx cp node_modules/@openhps/*/dist/web/*.* examples/common/ && shx cp dist/web/*.* examples/common/ && serve ./examples",
+        "test": "mocha --config test/.mocharc.json",
+        "cover": "c8 mocha --config test/.mocharc.json",
+        "cover:ci": "c8 mocha --config test/.mocharc.ci.json && c8 report --reporter=cobertura",
+        "lint": "eslint . && node scripts/check-peers.mjs",
+        "lint:fix": "npm run lint -- --fix",
+        "update": "ncu -u -x eslint,chai,chalk",
+        "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
+        "build": "npm run clean && npm run build:generate && npm-run-all --parallel build:ts:* && npm run build:webpack",
+        "build:comunica": "npm-run-all --parallel build:comunica:*",
+        "build:comunica:default": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
+        "build:ts:cjs": "tsc --build ./tsconfig/tsconfig.bundle.cjs.json",
+        "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json && node ./scripts/finalize-esm.mjs",
+        "build:declarations": "ts-node ./src/bin/generate.ts",
+        "build:ts:types": "tsc --build ./tsconfig/tsconfig.bundle.types.json",
+        "build:webpack": "npm-run-all --parallel build:webpack:*",
+        "build:webpack:prod": "webpack --env prod --progress --",
+        "build:webpack:dev": "webpack --env dev --progress --",
+        "build:typedoc": "typedoc --options docs/typedoc.json",
+        "bump:development": "commit-and-tag-version --prerelease alpha -m 'chore(alpha): %s' --skip.changelog",
+        "bump:beta": "commit-and-tag-version --prerelease beta -m 'chore(beta): %s' --skip.changelog",
+        "bump:release": "commit-and-tag-version -m 'chore(release): %s' --skip.changelog",
+        "prepare": "husky",
+        "build:generate": "npm-run-all --parallel build:comunica build:declarations"
     },
-    "./generator": {
-      "require": "./dist/cjs/index.generator.js",
-      "import": "./dist/esm/index.generator.js",
-      "types": "./dist/types/index.generator.d.ts"
+    "keywords": [
+        "openhps",
+        "rdf",
+        "semantic linked data",
+        "linked data"
+    ],
+    "dependencies": {
+        "@comunica/query-sparql": "^4.2.0",
+        "@inquirer/prompts": "^7.8.4",
+        "@types/n3": "^1.26.0",
+        "axios": "^1.11.0",
+        "chalk": "^4",
+        "fs-extra": "^11.3.1",
+        "jsdoc3-parser": "^3.0.0",
+        "jsonld": "^8.3.3",
+        "n3": "^1.26.0",
+        "rdfxml-streaming-parser": "^3.1.0",
+        "sparqljs": "^3.7.3",
+        "tslib": "^2.8.1",
+        "wkt": "^0.1.1"
     },
-    "./engine": {
-      "require": "./dist/cjs/index.engine.js",
-      "import": "./dist/esm/index.engine.js",
-      "types": "./dist/types/index.engine.d.ts"
+    "peerDependencies": {
+        "@openhps/core": ">=1.0.16 <2",
+        "reflect-metadata": ">=0.2.2 <1"
     },
-    "./models": {
-      "require": "./dist/cjs/index.models.js",
-      "import": "./dist/esm/index.models.js",
-      "types": "./dist/types/index.models.d.ts"
+    "optionalDependencies": {
+        "@openhps/fingerprinting": ">=0.1.9",
+        "@openhps/geospatial": ">=0.1.33",
+        "@openhps/rf": ">=1.0.4",
+        "@openhps/video": ">=1.0.3"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^19.8.1",
+        "@commitlint/config-conventional": "^19.8.1",
+        "@comunica/runner": "^4.2.0",
+        "@eslint/js": "^9.34.0",
+        "@openhps/core": "^1.0.16",
+        "@openhps/fingerprinting": "^0.1.8",
+        "@openhps/geospatial": "^0.1.33",
+        "@openhps/rf": "^1.0.4",
+        "@openhps/video": "^1.0.3",
+        "@types/benchmark": "^2.1.5",
+        "@types/chai": "^5.2.2",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^24.3.0",
+        "@types/sparqljs": "^3.1.12",
+        "benchmark": "^2.1.4",
+        "buffer": "^6.0.3",
+        "c8": "^12.0.0",
+        "chai": "^6.2.2",
+        "commit-and-tag-version": "^13.1.2",
+        "eslint": "^9.34.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-jsdoc": "^54.1.1",
+        "eslint-plugin-prettier": "^5.5.4",
+        "globals": "^16.3.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.7",
+        "mocha": "^11.8.0",
+        "mocha-junit-reporter": "^2.2.1",
+        "mocha-multi-reporters": "^1.5.1",
+        "node-fetch": "^3.3.2",
+        "npm-check-updates": "^18.0.2",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^3.9.6",
+        "reflect-metadata": ">=0.2.2",
+        "serve": "^14.2.4",
+        "shx": "^0.4.0",
+        "terser-webpack-plugin": "^5.3.14",
+        "ts-node": "^10.9.2",
+        "typedoc": "^0.28.20",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.66.0",
+        "webpack": "^5.101.3",
+        "webpack-bundle-analyzer": "^4.10.2",
+        "webpack-cli": "^6.0.1"
+    },
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "packageManager": "npm@10.9.2",
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run lint",
+            "pre-push": "npm run test",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
     }
-  },
-  "unpkg": "dist/web/openhps-rdf.all.min.js",
-  "jsdelivr": "dist/web/openhps-rdf.all.min.js",
-  "files": [
-    "dist/**/*",
-    "src/**/*",
-    "*.js",
-    "*.d.ts"
-  ],
-  "scripts": {
-    "cli": "ts-node ./src/bin/cli.ts",
-    "benchmark": "ts-node test/bench/serialization.bench.ts",
-    "examples": "shx cp node_modules/@openhps/*/dist/web/*.* examples/common/ && shx cp dist/web/*.* examples/common/ && serve ./examples",
-    "test": "mocha --config test/.mocharc.json",
-    "cover": "nyc mocha --config test/.mocharc.json && nyc report --reporter=cobertura",
-    "cover:ci": "nyc mocha --config test/.mocharc.json --reporter mocha-multi-reporters && nyc report --reporter=cobertura",
-    "lint": "eslint src/ --ignore-pattern bin --ignore-pattern engine-*.js --ignore-pattern **/vocab/*.ts",
-    "lint:fix": "npm run lint -- --fix",
-    "update": "ncu -u -x eslint,chai,chalk",
-    "clean": "shx rm -rf ./dist && shx rm -rf ./docs/out",
-    "build": "npm run clean && npm-run-all --parallel build:comunica build:declarations && npm-run-all --parallel build:ts:* && npm run build:webpack",
-    "build:comunica": "npm-run-all --parallel build:comunica:*",
-    "build:comunica:default": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
-    "build:ts:cjs": "tsc --build ./tsconfig/tsconfig.bundle.cjs.json",
-    "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json",
-    "build:ts:esm5": "tsc --build ./tsconfig/tsconfig.bundle.esm5.json",
-    "build:declarations": "ts-node ./src/bin/generate.ts",
-    "build:ts:types": "tsc --build ./tsconfig/tsconfig.bundle.types.json",
-    "build:webpack": "npm-run-all --parallel build:webpack:*",
-    "build:webpack:prod": "webpack --env prod --progress --",
-    "build:webpack:dev": "webpack --env dev --progress --",
-    "build:typedoc": "typedoc --options docs/typedoc.json",
-    "bump:development": "standard-version --prerelease alpha -m 'chore(alpha): %s' --skip.changelog",
-    "bump:beta": "standard-version --prerelease beta -m 'chore(beta): %s' --skip.changelog",
-    "bump:release": "standard-version -m 'chore(release): %s' --skip.changelog"
-  },
-  "keywords": [
-    "openhps",
-    "rdf",
-    "semantic linked data",
-    "linked data"
-  ],
-  "dependencies": {
-    "@comunica/query-sparql": "^4.2.0",
-    "@inquirer/prompts": "^7.8.4",
-    "@types/n3": "^1.26.0",
-    "axios": "^1.11.0",
-    "chalk": "^4",
-    "fs-extra": "^11.3.1",
-    "jsdoc3-parser": "^3.0.0",
-    "jsonld": "^8.3.3",
-    "n3": "^1.26.0",
-    "rdfxml-streaming-parser": "^3.1.0",
-    "sparqljs": "^3.7.3",
-    "wkt": "^0.1.1"
-  },
-  "optionalDependencies": {
-    "@openhps/fingerprinting": ">=0.1.9",
-    "@openhps/geospatial": ">=0.1.33",
-    "@openhps/rf": ">=1.0.4",
-    "@openhps/video": ">=1.0.3"
-  },
-  "peerDependencies": {
-    "@openhps/core": ">=0.7.0",
-    "reflect-metadata": ">=0.2.1"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@comunica/runner": "^4.2.0",
-    "@eslint/compat": "^1.3.2",
-    "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.34.0",
-    "@openhps/core": "^1.0.16",
-    "@openhps/fingerprinting": "^0.1.8",
-    "@openhps/geospatial": "^0.1.30",
-    "@openhps/rf": "^1.0.4",
-    "@openhps/video": "^1.0.3",
-    "@types/axios": "^0.14.0",
-    "@types/benchmark": "^2.1.5",
-    "@types/chai": "^5.2.2",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^24.3.0",
-    "@types/node-fetch": "^3.0.3",
-    "@types/sparqljs": "^3.1.12",
-    "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "@typescript-eslint/parser": "^8.41.0",
-    "benchmark": "^2.1.4",
-    "buffer": "^6.0.3",
-    "chai": "^6.0.1",
-    "eslint": "^9.34.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-deprecation": "^3.0.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsdoc": "^54.1.1",
-    "eslint-plugin-prettier": "^5.5.4",
-    "globals": "^16.3.0",
-    "husky": "^9.1.7",
-    "mocha": "^11.7.1",
-    "mocha-junit-reporter": "^2.2.1",
-    "mocha-multi-reporters": "^1.5.1",
-    "node-fetch": "^3.3.2",
-    "npm-check-updates": "^18.0.2",
-    "npm-run-all": "^4.1.5",
-    "nyc": "^17.1.0",
-    "prettier": "^3.6.2",
-    "reflect-metadata": ">=0.2.2",
-    "serve": "^14.2.4",
-    "shx": "^0.4.0",
-    "standard-version": "^9.5.0",
-    "terser-webpack-plugin": "^5.3.14",
-    "ts-node": "^10.9.2",
-    "typedoc": "^0.28.11",
-    "typescript": "^5.9",
-    "webpack": "^5.101.3",
-    "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^6.0.1"
-  },
-  "nyc": {
-    "branches": 0,
-    "lines": 20,
-    "functions": 17,
-    "statements": 20,
-    "include": [
-      "src"
-    ],
-    "exclude": [
-      "test",
-      "src/bin"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "cache": true,
-    "all": true,
-    "check-coverage": true,
-    "report-dir": "./coverage"
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint",
-      "pre-push": "npm run test",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  }
 }

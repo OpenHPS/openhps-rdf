@@ -6,11 +6,11 @@ import { RDFSerializer } from '../../src';
 describe('Store', () => {
     describe('changelog', () => {
         it('should keep a changelog', () => {
-            const object = new DataObject("mvdewync");
-            object.displayName = "Maxim";
-            const store = RDFSerializer.serializeToStore(object, "https://test.com/");
+            const object = new DataObject('mvdewync');
+            object.displayName = 'Maxim';
+            const store = RDFSerializer.serializeToStore(object, 'https://test.com/');
             const objectWithChangeLog = createChangeLog(object);
-            objectWithChangeLog.displayName = "Maxim123";
+            objectWithChangeLog.displayName = 'Maxim123';
             const changelog = RDFSerializer.serializeToChangeLog(objectWithChangeLog);
             store.addQuads(changelog.additions);
             store.removeQuads(changelog.deletions);

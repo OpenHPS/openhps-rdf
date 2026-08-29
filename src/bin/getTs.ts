@@ -82,7 +82,7 @@ export function getTs(
     const comment = getComment(node, store);
     let formattedComment = typeof comment === 'string' ? comment.replace(/\n/g, '\n * ') : comment;
 
-    let identifier = node.id.substring(namespace.length).replace(/\-/g, '_');
+    let identifier = node.id.substring(namespace.length).replace(/-/g, '_');
     if (reservedWords.includes(identifier)) {
         identifier = '_' + identifier;
     }
