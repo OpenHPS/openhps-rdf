@@ -109,7 +109,7 @@
     ],
     "dependencies": {
         "@comunica/query-sparql": "^4.2.0",
-        "@inquirer/prompts": "^7.8.4",
+        "@inquirer/prompts": "^8.6.0",
         "@types/n3": "^1.26.0",
         "axios": "^1.11.0",
         "chalk": "^4",
