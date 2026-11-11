@@ -20,6 +20,8 @@
 This OpenHPS module adds RDF data support to the OpenHPS framework. The main vocabulary used for serializing data is the
 POsitioning System Ontology (POSO) ontology that was presented at ISWC 2022.
 
+Maintained by [MVdW-Software](https://mvdw-software.com).
+
 ## Getting Started
 If you have [npm installed](https://www.npmjs.com/get-npm), start using @openhps/rdf with the following command.
 ```bash
