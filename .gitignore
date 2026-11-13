@@ -1,6 +1,7 @@
 node_modules/
 dist/
-src/vocab/
+src/vocab/*
+!src/vocab/seas.ts
 docs/out/
 coverage/
 artifacts/
