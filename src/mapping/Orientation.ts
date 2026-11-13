@@ -33,10 +33,10 @@ SerializableObject({
                 // Other orientation
             }
 
-            if (thing.predicates[qudt.Unit]) {
-                if (thing.predicates[qudt.Unit][0].value === qudt_unit.DEG) {
+            if (thing.predicates[qudt.unit]) {
+                if (thing.predicates[qudt.unit][0].value === qudt_unit.DEG) {
                     unit = AngleUnit.DEGREE;
-                } else if (thing.predicates[qudt.Unit][0].value === qudt_unit.RAD) {
+                } else if (thing.predicates[qudt.unit][0].value === qudt_unit.RAD) {
                     unit = AngleUnit.RADIAN;
                 }
             } else {

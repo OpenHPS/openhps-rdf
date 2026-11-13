@@ -2,6 +2,7 @@ import {
     ArrayTypeDescriptor,
     MapTypeDescriptor,
     ObjectMemberMetadata,
+    SetTypeDescriptor,
     ObjectMetadata,
     Serializer,
     SerializerFn,
@@ -359,8 +360,8 @@ export class InternalRDFSerializer extends Serializer {
     }
 
     protected serializeSet(
-        sourceObject: Map<any, any>,
-        typeDescriptor?: MapTypeDescriptor,
+        sourceObject: Set<any>,
+        typeDescriptor?: SetTypeDescriptor,
         memberName?: string,
         _?: Serializer,
         memberOptions?: ObjectMemberMetadata,
@@ -370,7 +371,7 @@ export class InternalRDFSerializer extends Serializer {
             .map((obj) => {
                 return this.convertSingleValue(
                     obj,
-                    typeDescriptor.valueType,
+                    typeDescriptor.elementType,
                     memberName,
                     memberOptions,
                     serializerOptions,

@@ -137,12 +137,12 @@ export class RDFBuilder {
             if (index === -1) {
                 return this;
             }
-            data.slice(index, 1);
+            data.splice(index, 1);
             this.deletions.push(DataFactory.quad(this.subject, DataFactory.namedNode(predicate), obj as Quad_Object));
             if (data.length > 0) {
                 this.thing.predicates[predicate] = data;
             } else {
-                delete this.thing.predicates;
+                delete this.thing.predicates[predicate];
             }
         }
         return this;
