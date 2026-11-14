@@ -99,7 +99,7 @@
         "bump:beta": "commit-and-tag-version --prerelease beta -m 'chore(beta): %s' --skip.changelog",
         "bump:release": "commit-and-tag-version -m 'chore(release): %s' --skip.changelog",
         "prepare": "husky",
-        "build:generate": "npm-run-all --parallel build:comunica build:declarations"
+        "build:generate": "npm run build:comunica"
     },
     "keywords": [
         "openhps",
