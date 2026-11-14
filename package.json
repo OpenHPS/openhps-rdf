@@ -57,7 +57,7 @@
         },
         "./engine": {
             "types": "./dist/types/index.engine.d.ts",
-            "import": "./dist/esm/index.engine.js",
+            "import": "./dist/cjs/index.engine.js",
             "require": "./dist/cjs/index.engine.js"
         },
         "./models": {
@@ -88,7 +88,7 @@
         "build:comunica": "npm-run-all --parallel build:comunica:*",
         "build:comunica:default": "comunica-compile-config config/config-default.json > src/service/engine-default.js",
         "build:ts:cjs": "tsc --build ./tsconfig/tsconfig.bundle.cjs.json && shx cp ./src/service/engine-default.js ./dist/cjs/service/engine-default.js",
-        "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json && node ./scripts/finalize-esm.mjs && shx cp ./src/service/engine-default.js ./dist/esm/service/engine-default.js",
+        "build:ts:esm": "tsc --build ./tsconfig/tsconfig.bundle.esm.json && node ./scripts/finalize-esm.mjs",
         "build:declarations": "ts-node ./src/bin/generate.ts",
         "build:ts:types": "tsc --build ./tsconfig/tsconfig.bundle.types.json",
         "build:webpack": "npm-run-all --parallel build:webpack:*",
