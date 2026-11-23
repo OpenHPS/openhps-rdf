@@ -112,7 +112,7 @@
         "@inquirer/prompts": "^8.8.0",
         "@types/n3": "^1.26.6",
         "axios": "^1.21.1",
-        "chalk": "^4",
+        "chalk": "^6",
         "fs-extra": "^11.4.1",
         "jsdoc3-parser": "^3.0.0",
         "jsonld": "^9.0.0",
